@@ -4,38 +4,31 @@ on:
     branches:
       - main
 jobs:
-  build:
-    name: Build
+  build_and_deploy:
+    name: Build and Deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2.3.2
       - name: Install Dependencies
-        run: npm install      
+        run: npm install
       - name: Build
         env:
-          CI: false        
+          CI: false
         run: npm run build
+      - name: Install Firebase CLI
+        uses: google/cloud-actions/install-firebase-cli@v1
       - name: Archive Production Artifact
         uses: actions/upload-artifact@v2
         with:
           name: build
           path: build
-  deploy:
-    name: Deploy
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2.3.2
-      - name: Download Artifact
+      - name: Deploy to Firebase (using downloaded artifact)
         uses: actions/download-artifact@v2
         with:
           name: build
           path: build
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only hosting
+        run: firebase deploy --only hosting
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
