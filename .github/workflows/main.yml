@@ -1,4 +1,4 @@
-name: Firebase Deployment
+name: Despliegue Firebase
 on:
   push:
     branches:
@@ -11,19 +11,16 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2.3.2
       - name: Install Dependencies
-        run: npm install
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools  # Installs globally
+        run: npm install      
       - name: Build
         env:
-          CI: true        
+          CI: false        
         run: npm run build
       - name: Archive Production Artifact
         uses: actions/upload-artifact@v2
         with:
           name: build
           path: build
-
   deploy:
     name: Deploy
     needs: build
