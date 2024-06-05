@@ -1,17 +1,31 @@
-import proofisillasLogo from '/proofisillas.svg'
+//importacion componentes
 import './App.css'
+import Home from './components/Home';
+import Login from './components/Login';
+import { useState } from 'react';
+
+
+//importacion modulos Firebase
+import appFirebase from '../src/credenciales';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+const auth = getAuth(appFirebase);
+
 
 function App() {
 
+  const [usuario, setUsuario] = useState(null)
+
+  onAuthStateChanged(auth, (usuarioFirebase) => {
+    if (usuarioFirebase) {
+      setUsuario(usuarioFirebase) //usuario correctamente autenticado
+    } else {
+      setUsuario(null) //usuario incorrectamente autenticado
+    }
+  });
+
   return (
     <>
-      <div className="bg-slate-100 dark:bg-slate-800">
-        <a href="javascript:location.reload()">
-          <img src={proofisillasLogo} className="logo" alt="Proofisillas logo" />
-        </a>
-        <h1 className="text-5xl not-italic font-bold">BIENVENIDO A PROOFIMASTER</h1>
-        <h2 className="text-2xl italic font-bold">Gestiona tu negocio fácilmente y enfocate en la productividad</h2>
-      </div>
+      {usuario ? <Home correoUsuario = {usuario.email} /> : <Login/>} 
     </>
   )
 }
