@@ -16,8 +16,8 @@ jobs:
         env:
           CI: false
         run: npm run build
-      - name: Install Firebase CLI
-        uses: google/cloud-actions/install-firebase-cli@v1
+      - name: Install Firebase CLI (using npm)
+        run: npm install -g firebase-tools      
       - name: Archive Production Artifact
         uses: actions/upload-artifact@v2
         with:
