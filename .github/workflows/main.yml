@@ -11,7 +11,9 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2.3.2
       - name: Install Dependencies
-        run: npm install      
+        run: npm install
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools  # Installs globally
       - name: Build
         env:
           CI: false        
@@ -21,6 +23,7 @@ jobs:
         with:
           name: build
           path: build
+
   deploy:
     name: Deploy
     needs: build
