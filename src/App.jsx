@@ -6,7 +6,7 @@ function App() {
   return (
     <>
       <div className="bg-slate-100 dark:bg-slate-800">
-        <a href="https://vitejs.dev" target="_blank">
+        <a href="javascript:location.reload()">
           <img src={proofisillasLogo} className="logo" alt="Proofisillas logo" />
         </a>
         <h1 className="text-5xl not-italic font-bold">BIENVENIDO A PROOFIMASTER</h1>
