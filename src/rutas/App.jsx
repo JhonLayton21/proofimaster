@@ -1,13 +1,14 @@
 //importacion componentes
-import './App.css'
-import Home from './components/Home';
-import Login from './components/Login';
+import '../App.css';
+import Home from '../componentes/Home';
+import Login from '../componentes/Login';
 import { useState } from 'react';
 
 
 //importacion modulos Firebase
-import appFirebase from '../src/credenciales';
+import appFirebase from '../credenciales';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { Outlet } from 'react-router-dom';
 const auth = getAuth(appFirebase);
 
 
@@ -26,6 +27,9 @@ function App() {
   return (
     <>
       {usuario ? <Home correoUsuario = {usuario.email} /> : <Login/>} 
+      <div id='detail'>
+        <Outlet />
+      </div>
     </>
   )
 }
