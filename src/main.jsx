@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './rutas/App.jsx';
+import Login from './componentes/Login.jsx';
 import ErrorPage from './paginaError.jsx';
 import Configuracion from './componentes/configuracion.jsx';
 import Root from './rutas/Root.jsx';

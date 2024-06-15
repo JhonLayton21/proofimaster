@@ -2,13 +2,13 @@ import React, { useState } from 'react'
 import Proofisillas2 from '../../public/proofisillas2.svg';
 import '../App.css'
 
-//CONFIGURACION DE FIREBASE
+//CONFIGURACION FIREBASE
 import appFirebase from '../credenciales'
 
-//FUNCIONES DE FIREBASE
+//MODULOS FIREBASE
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
-//INSTANCIA DE CONFIG FIREBASE
+//INSTANCIA INICIAL AUTENTICACION
 const auth = getAuth(appFirebase);
 
 const Login = () => {

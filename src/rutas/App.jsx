@@ -1,16 +1,20 @@
-//importacion componentes
+//IMPORTACIONES BASICAS
 import '../App.css';
 import Home from '../componentes/Home';
 import Login from '../componentes/Login';
 import { useState } from 'react';
 
-
-//importacion modulos Firebase
+//CONFIGURACION FIREBASE
 import appFirebase from '../credenciales';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { Outlet } from 'react-router-dom';
-const auth = getAuth(appFirebase);
 
+//IMPORTACION MODULOS FIREBASE
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
+//MODULOS ENRUTAMIENTO
+import { Outlet } from 'react-router-dom';
+
+//INSTANCIA INICIAL AUTENTICACION
+const auth = getAuth(appFirebase);
 
 function App() {
 
