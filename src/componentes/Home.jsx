@@ -10,11 +10,29 @@ const Home = ({ correoUsuario }) => {
     return (
         <div className="grid grid-cols-4 gap-0 h-full">
             {/* MENU LATERAL */}
-            <div className="p-8 hidden md:block min-w-[320px] max-w-full">
-                <h1 className="text-left md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl pb-2 font-bold whitespace-nowrap overflow-hidden">PROOFIMASTER</h1>
-                <h2 className="text-left text-[#242424] font-semibold">Proofisillas LTDA.</h2>
-                <h3 className="text-left text-[#242424] font-semibold">NIT: 1234567890</h3>
+            <div class="flex items-center justify-center p-8 hidden md:block min-w-[320px] max-w-full">
+                <div class="flex flex-col space-y-2"> <h1 class="text-left md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl pb-2 font-bold whitespace-nowrap overflow-hidden">PROOFIMASTER</h1>
+                    <h2 class="text-left text-[#242424] font-semibold">Proofisillas LTDA.</h2>
+                    <h3 class="text-left text-[#242424] font-semibold">NIT: 1234567890</h3>
+                    <ul class="list-none mt-4"> <li class="text-left hover:text-orange-500 font-semibold text-2rem">
+                        <Link to="/productos">Productos</Link>
+                    </li>
+                        <li class="text-left hover:text-orange-500 font-semibold text-2rem">
+                            <Link to="/ventas">Ventas</Link>
+                        </li>
+                        <li class="text-left hover:text-orange-500 font-semibold text-2rem">
+                            <Link to="/proveedores">Proveedores</Link>
+                        </li>
+                        <li class="text-left hover:text-orange-500 font-semibold text-2rem">
+                            <Link to="/clientes">Clientes</Link>
+                        </li>
+                        <li class="text-left hover:text-orange-500 font-semibold text-2rem">
+                            <Link to="/informes">Informes</Link>
+                        </li>
+                    </ul>
+                </div>
             </div>
+
 
             {/* MENU PRINCIPAL */}
             <div className="bg-[#242424] col-span-4 md:col-span-3 p-8 min-w-[320px] w-full">
