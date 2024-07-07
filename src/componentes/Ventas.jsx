@@ -1,8 +1,18 @@
 import React from 'react';
+import MenuLateral from './MenuLateral';
+import MenuPrincipal from './MenuPrincipal';
 
 const Ventas = () => {
   return (
-    <h1>Ventas</h1>
+    <div className="grid grid-cols-4 gap-0 h-full">
+
+      {/* MENU LATERAL */}
+      <MenuLateral />
+
+      {/* MENU PRINCIPAL */}
+      <MenuPrincipal />
+      
+    </div>
   );
 };
 
