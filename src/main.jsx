@@ -11,6 +11,7 @@ import Clientes from './componentes/Clientes.jsx';
 import Informes from './componentes/Informes.jsx';
 import Root from './rutas/Root.jsx';
 import './index.css';
+import './credenciales.js';
 
 //IMPORTACIONES PARA ENRUTAMIENTO
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';

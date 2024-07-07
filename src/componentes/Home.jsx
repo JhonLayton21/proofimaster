@@ -54,16 +54,16 @@ const Home = ({ correoUsuario }) => {
                 <h1 className="text-left text-3xl pt-8 font-bold whitespace-nowrap overflow-hidden">MENÚ PRINCIPAL</h1>
                 <p className="text-left text-[#757575] ">Accede rápidamente al contenido de Proofisillas</p>
                 <div className="py-12 grid grid-cols-4 gap-4">
-                    <div className="col-span-1 bg-white w-[300px] h-[300px] rounded">
+                    <div className="col-span-1 bg-white w-[150px] h-[300px] rounded">
                         <h1 className="text-[#242424] p-2 text-left text-xl font-bold whitespace-nowrap overflow-hidden">PRODUCTOS PRINCIPALES</h1>
                     </div>
-                    <div className="col-span-1 bg-white w-[300px] h-[300px] rounded">
+                    <div className="col-span-1 bg-white w-[150px] h-[300px] rounded">
                         <h1 className="text-[#242424] p-2 text-left text-xl font-bold whitespace-nowrap overflow-hidden">TOTAL DE VENTAS</h1>
                     </div>
                     <div className="col-span-1 bg-[#FFCD29] w-[150px] h-[300px] rounded">
                         <h1 className="text-[#242424] p-2 text-left text-xl font-bold break-words">ALERTAS DE STOCK</h1>
                     </div>
-                    <div className="col-span-1 bg-white w-[300px] h-[300px] rounded"></div>
+                    <div className="col-span-1 bg-white w-[150px] h-[300px] rounded"></div>
                 </div>
                 <div className="py-4 grid grid-cols-4">
                     <div className="col-span-2 bg-[#FCD19C] w-[300px] h-[300px] rounded"></div>

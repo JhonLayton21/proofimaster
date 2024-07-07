@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 //CONFIGURACION FIREBASE
 import appFirebase from '../credenciales';
+import '../credenciales';
 
 //IMPORTACION MODULOS FIREBASE
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
