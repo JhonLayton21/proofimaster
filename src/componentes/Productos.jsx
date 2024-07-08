@@ -1,6 +1,7 @@
 import React from "react";
 import MenuLateral from "./MenuLateral";
 import MenuPrincipal from "./MenuPrincipal";
+import TablaProductos from "./TablaProductos";
 
 const Productos = () => {
   return (

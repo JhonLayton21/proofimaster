@@ -9,7 +9,7 @@ const MenuPrincipal = ({ correoUsuario }) => {
 
     return (
         <>
-            <div className="bg-[#242424] col-span-2 md:col-span-3 p-8 min-w-[320px] w-full">
+            <div className="bg-[#242424] col-span-4 md:col-span-3 p-8 min-w-[320px] w-full">
                 <div className="grid grid-cols-2">
                     <div className="col-span-1">
                         <p className="text-xl font-semibold text-right">Documentación</p>
