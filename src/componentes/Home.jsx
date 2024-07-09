@@ -11,7 +11,7 @@ const Home = ({ correoUsuario }) => {
             <MenuLateral />
 
             {/* MENU PRINCIPAL */}
-            <MenuPrincipal />
+            <MenuPrincipal showTablaProductos={false} />
         </div>
     );
 };

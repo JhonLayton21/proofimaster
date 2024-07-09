@@ -10,7 +10,7 @@ const Clientes = () => {
       <MenuLateral />
 
       {/* MENU PRINCIPAL */}
-      <MenuPrincipal />
+      <MenuPrincipal showTablaProductos={false} />
 
     </div>
   );

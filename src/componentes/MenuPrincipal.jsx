@@ -2,10 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import { getAuth, signOut } from 'firebase/auth';
 import appFirebase from '../credenciales';
 import { Link } from "react-router-dom";
+import TablaProductos from "./TablaProductos";
 
 const auth = getAuth(appFirebase);
 
-const MenuPrincipal = ({ correoUsuario }) => {
+const MenuPrincipal = ({ correoUsuario, showTablaProductos }) => {
 
     return (
         <>
@@ -25,7 +26,9 @@ const MenuPrincipal = ({ correoUsuario }) => {
                         </button>
                     </div>
                 </div>
+                {showTablaProductos && <TablaProductos />}
             </div>
+            
         </>
     )
 }

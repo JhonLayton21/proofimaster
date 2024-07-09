@@ -1,7 +1,6 @@
 import React from "react";
 import MenuLateral from "./MenuLateral";
-import MenuPrincipal from "./MenuPrincipal";
-import TablaProductos from "./TablaProductos";
+import PaginaProductos from "./PaginaProductos";
 
 const Productos = () => {
   return (
@@ -10,8 +9,8 @@ const Productos = () => {
       {/* MENU LATERAL */}
       <MenuLateral />
 
-      {/* MENU PRINCIPAL */}
-      <MenuPrincipal />
+      {/* PAGINA PRODUCTOS (incluye MenuPrincipal y TablaProductos) */}
+      <PaginaProductos />
 
     </div>
   );
