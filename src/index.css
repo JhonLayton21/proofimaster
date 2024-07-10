@@ -8,7 +8,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #CF7300;
+  background-color: #ff7b00;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -44,10 +44,14 @@ button:hover {
   border-color: #ffffff;
 }
 
+input{
+  background-color: transparent;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #D3D3D3;
+    color: #D3D3D3;
+    background-color: #ff7b00;
   }
 
   button {

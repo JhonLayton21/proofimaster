@@ -10,10 +10,10 @@ const MenuPrincipal = ({ correoUsuario, showTablaProductos }) => {
 
     return (
         <>
-            <div className="bg-[#242424] col-span-4 md:col-span-3 p-8 min-w-[320px] w-full">
+            <div className="dark:bg-[#242424] bg-[#D3D3D3] col-span-4 md:col-span-3 p-8 min-w-[320px] w-full">
                 <div className="grid grid-cols-2">
                     <div className="col-span-1">
-                        <p className="text-xl font-semibold text-right">Documentación</p>
+                        <p className="text-slate-800 text-xl font-semibold text-right">Documentación</p>
                         <p className="text-xl font-medium text-[#757575] text-right">Entiende la plataforma</p>
                     </div>
                     <div className="col-span-1">
