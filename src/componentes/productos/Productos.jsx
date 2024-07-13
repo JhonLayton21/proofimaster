@@ -1,5 +1,5 @@
 import React from "react";
-import MenuLateral from "./MenuLateral";
+import MenuLateral from "../MenuLateral";
 import PaginaProductos from "./PaginaProductos";
 
 const Productos = () => {

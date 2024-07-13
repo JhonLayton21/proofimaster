@@ -1,6 +1,6 @@
 import React from 'react';
-import MenuLateral from './MenuLateral';
-import MenuPrincipal from './MenuPrincipal';
+import MenuLateral from '../MenuLateral';
+import MenuPrincipal from '../MenuPrincipal';
 
 const Clientes = () => {
   return (

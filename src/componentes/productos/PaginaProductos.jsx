@@ -1,5 +1,5 @@
 import React from "react";
-import MenuPrincipal from "./MenuPrincipal";
+import MenuPrincipal from "../MenuPrincipal";
 
 const PaginaProductos = () => {
   return (

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { getAuth, signOut } from 'firebase/auth';
 import appFirebase from '../credenciales';
 import { Link } from "react-router-dom";
-import TablaProductos from "./TablaProductos";
+import TablaProductos from "../componentes/productos/TablaProductos";
 
 const auth = getAuth(appFirebase);
 

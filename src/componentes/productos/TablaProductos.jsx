@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { db } from "../credenciales";
+import { db } from "../../credenciales";
 import ModalAgregarProducto from "./ModalAgregarProducto";
 import ModalEditarProducto from "./ModalEditarProducto";
 

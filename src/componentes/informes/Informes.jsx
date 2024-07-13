@@ -1,8 +1,8 @@
 import React from 'react';
-import MenuLateral from './MenuLateral';
-import MenuPrincipal from './MenuPrincipal';
+import MenuLateral from '../MenuLateral';
+import MenuPrincipal from '../MenuPrincipal';
 
-const Ventas = () => {
+const Informes = () => {
   return (
     <div className="grid grid-cols-4 gap-0 h-full">
 
@@ -11,9 +11,9 @@ const Ventas = () => {
 
       {/* MENU PRINCIPAL */}
       <MenuPrincipal showTablaProductos={false} />
-
+      
     </div>
   );
 };
 
-export default Ventas;
+export default Informes;
