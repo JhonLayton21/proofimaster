@@ -35,27 +35,82 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
+                                    <textarea
+                                        name="descripcionProducto"
+                                        placeholder="Descripción Producto"
+                                        value={newProduct.descripcionProducto}
+                                        onChange={handleInputChange}
+                                        className="input-class m-4 text-[#757575]"
+                                    />
+                                    <select
+                                        name="referenciaProducto"
+                                        value={newProduct.referenciaProducto}
+                                        onChange={handleInputChange}
+                                        className="input-class m-4 text-[#757575]"
+                                    >
+                                        <option value="" disabled>Seleccione Referencia</option>
+                                        {/* Añade opciones aquí */}
+                                    </select>
+                                    <select
+                                        name="marcaProducto"
+                                        value={newProduct.marcaProducto}
+                                        onChange={handleInputChange}
+                                        className="input-class m-4 text-[#757575]"
+                                    >
+                                        <option value="" disabled>Seleccione Marca</option>
+                                        {/* Añade opciones aquí */}
+                                    </select>
                                     <input
-                                        type="number"
-                                        name="cantidadProducto"
-                                        placeholder="Cantidad"
-                                        value={newProduct.cantidadProducto}
+                                        type="text"
+                                        name="precioCompra"
+                                        placeholder="Precio Compra"
+                                        value={newProduct.precioCompra}
+                                        onChange={handleInputChange}
+                                        className="input-class m-4 text-[#757575]"
+                                    />
+                                    <input
+                                        type="text"
+                                        name="precioVenta"
+                                        placeholder="Precio Venta"
+                                        value={newProduct.precioVenta}
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <input
                                         type="number"
-                                        name="valorUnitarioProducto"
-                                        placeholder="Valor Unitario"
-                                        value={newProduct.valorUnitarioProducto}
+                                        name="stock"
+                                        placeholder="Stock"
+                                        value={newProduct.stock}
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <input
                                         type="number"
-                                        name="valorTotalProducto"
-                                        placeholder="Valor Total"
-                                        value={newProduct.valorTotalProducto}
+                                        name="numeroMinimoStock"
+                                        placeholder="Número Mínimo Stock"
+                                        value={newProduct.numeroMinimoStock}
+                                        onChange={handleInputChange}
+                                        className="input-class m-4 text-[#757575]"
+                                    />
+                                    <select
+                                        name="proveedor"
+                                        value={newProduct.proveedor}
+                                        onChange={handleInputChange}
+                                        className="input-class m-4 text-[#757575]"
+                                    >
+                                        <option value="" disabled>Seleccione Proveedor</option>
+                                        {/* Añade opciones aquí */}
+                                    </select>
+                                    <input
+                                        type="date"
+                                        name="fechaEntrada"
+                                        value={newProduct.fechaEntrada}
+                                        onChange={handleInputChange}
+                                        className="input-class m-4 text-[#757575]"
+                                    />
+                                    <input
+                                        type="file"
+                                        name="imagenProducto"
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
@@ -72,8 +127,6 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                 </button>
                             </form>
                         </div>
-
-
                         {/*footer*/}
                     </div>
                 </div>
@@ -84,4 +137,5 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
 };
 
 export default ModalAgregarProducto;
+
 
