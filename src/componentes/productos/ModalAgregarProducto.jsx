@@ -1,6 +1,6 @@
 import React from "react";
 
-const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInputChange }) => {
+const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInputChange, referencias, marcas, proveedores }) => {
     if (!isOpen) return null;
 
     return (
@@ -49,7 +49,11 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                         className="input-class m-4 text-[#757575]"
                                     >
                                         <option value="" disabled>Seleccione Referencia</option>
-                                        {/* Añade opciones aquí */}
+                                        {referencias.map(referencia => (
+                                            <option key={referencia.id} value={referencia.id}>
+                                                {referencia.nombreReferencia}
+                                            </option>
+                                        ))}
                                     </select>
                                     <select
                                         name="marcaProducto"
@@ -57,14 +61,18 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     >
-                                        <option value="" disabled>Seleccione Marca</option>
-                                        {/* Añade opciones aquí */}
+                                        <option value="">Seleccionar Marca</option>
+                                        {marcas.map(marca => (
+                                            <option key={marca.id} value={marca.id}>
+                                                {marca.marcaProducto}
+                                            </option>
+                                        ))}
                                     </select>
                                     <input
                                         type="text"
                                         name="precioCompra"
                                         placeholder="Precio Compra"
-                                        value={newProduct.precioCompra}
+                                        value={newProduct.precioCompraProducto}
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
@@ -72,7 +80,7 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                         type="text"
                                         name="precioVenta"
                                         placeholder="Precio Venta"
-                                        value={newProduct.precioVenta}
+                                        value={newProduct.precioVentaProducto}
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
@@ -88,7 +96,7 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                         type="number"
                                         name="numeroMinimoStock"
                                         placeholder="Número Mínimo Stock"
-                                        value={newProduct.numeroMinimoStock}
+                                        value={newProduct.nivelMinimoStock}
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
@@ -99,12 +107,16 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                         className="input-class m-4 text-[#757575]"
                                     >
                                         <option value="" disabled>Seleccione Proveedor</option>
-                                        {/* Añade opciones aquí */}
+                                        {proveedores.map(proveedor => (
+                                            <option key={proveedor.id} value={proveedor.id}>
+                                                {proveedor.nombreProveedor}
+                                            </option>
+                                        ))}
                                     </select>
                                     <input
                                         type="date"
                                         name="fechaEntrada"
-                                        value={newProduct.fechaEntrada}
+                                        value={newProduct.fechaEntradaProducto}
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
@@ -137,5 +149,6 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
 };
 
 export default ModalAgregarProducto;
+
 
 

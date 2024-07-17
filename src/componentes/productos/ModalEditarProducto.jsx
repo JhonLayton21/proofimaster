@@ -1,6 +1,14 @@
 import React from "react";
 
-const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handleEditInputChange }) => {
+const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${day}-${month}-${year}`;
+};
+
+const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handleEditInputChange, referencias, marcas, proveedores }) => {
     if (!isOpen) return null;
 
     return (
@@ -33,29 +41,96 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                         placeholder="Nombre Producto"
                                         value={editingProduct.nombreProducto}
                                         onChange={handleEditInputChange}
-                                        className="input-class m-4 text-[#757575] bg-transparent"
+                                        className="input-class m-4 text-[#757575]"
+                                    />
+                                    <textarea
+                                        name="descripcionProducto"
+                                        placeholder="Descripción Producto"
+                                        value={editingProduct.descripcionProducto}
+                                        onChange={handleEditInputChange}
+                                        className="input-class m-4 text-[#757575]"
+                                    />
+                                    <select
+                                        name="referenciaProducto"
+                                        value={editingProduct.referenciaProducto}
+                                        onChange={handleEditInputChange}
+                                        className="input-class m-4 text-[#757575]"
+                                    >
+                                        <option value="" disabled>Seleccione Referencia</option>
+                                        {referencias.map(referencia => (
+                                            <option key={referencia.id} value={referencia.id}>
+                                                {referencia.nombreReferencia}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <select
+                                        name="marcaProducto"
+                                        value={editingProduct.marcaProducto}
+                                        onChange={handleEditInputChange}
+                                        className="input-class m-4 text-[#757575]"
+                                    >
+                                        <option value="">Seleccionar Marca</option>
+                                        {marcas.map(marca => (
+                                            <option key={marca.id} value={marca.id}>
+                                                {marca.marcaProducto}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <input
+                                        type="text"
+                                        name="precioCompra"
+                                        placeholder="Precio Compra"
+                                        value={editingProduct.precioCompraProducto}
+                                        onChange={handleEditInputChange}
+                                        className="input-class m-4 text-[#757575]"
                                     />
                                     <input
-                                        type="number"
-                                        name="cantidadProducto"
-                                        placeholder="Cantidad"
-                                        value={editingProduct.cantidadProducto}
+                                        type="text"
+                                        name="precioVenta"
+                                        placeholder="Precio Venta"
+                                        value={editingProduct.precioVentaProducto}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <input
                                         type="number"
-                                        name="valorUnitarioProducto"
-                                        placeholder="Valor Unitario"
-                                        value={editingProduct.valorUnitarioProducto}
+                                        name="stock"
+                                        placeholder="Stock"
+                                        value={editingProduct.stock}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <input
                                         type="number"
-                                        name="valorTotalProducto"
-                                        placeholder="Valor Total"
-                                        value={editingProduct.valorTotalProducto}
+                                        name="numeroMinimoStock"
+                                        placeholder="Número Mínimo Stock"
+                                        value={editingProduct.nivelMinimoStock}
+                                        onChange={handleEditInputChange}
+                                        className="input-class m-4 text-[#757575]"
+                                    />
+                                    <select
+                                        name="proveedor"
+                                        value={editingProduct.proveedor}
+                                        onChange={handleEditInputChange}
+                                        className="input-class m-4 text-[#757575]"
+                                    >
+                                        <option value="" disabled>Seleccione Proveedor</option>
+                                        {proveedores.map(proveedor => (
+                                            <option key={proveedor.id} value={proveedor.id}>
+                                                {proveedor.nombreProveedor}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <input
+                                        type="date"
+                                        name="fechaEntrada"
+                                        value={editingProduct.fechaEntradaProducto ? formatTimestamp(editingProduct.fechaEntradaProducto) : ''}
+                                        onChange={handleEditInputChange}
+                                        className="input-class m-4 text-[#757575]"
+                                    />
+                                    <input
+                                        type="file"
+                                        name="imagenProducto"
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
@@ -72,8 +147,6 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                 </button>
                             </form>
                         </div>
-
-
                         {/*footer*/}
                     </div>
                 </div>
@@ -84,3 +157,4 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
 };
 
 export default ModalEditarProducto;
+

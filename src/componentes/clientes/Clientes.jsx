@@ -1,6 +1,6 @@
 import React from 'react';
 import MenuLateral from '../MenuLateral';
-import MenuPrincipal from '../MenuPrincipal';
+import PaginaClientes from './PaginaClientes';
 
 const Clientes = () => {
   return (
@@ -10,7 +10,7 @@ const Clientes = () => {
       <MenuLateral />
 
       {/* MENU PRINCIPAL */}
-      <MenuPrincipal showTablaProductos={false} />
+      <PaginaClientes />
 
     </div>
   );

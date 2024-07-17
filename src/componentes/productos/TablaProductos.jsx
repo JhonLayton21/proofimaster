@@ -13,8 +13,10 @@ const formatTimestamp = (timestamp) => {
 const TablaProductos = () => {
     // Estados para almacenar datos y controlar la interfaz
     const [productos, setProductos] = useState([]);
+    const [referencias, setReferencias] = useState([]);
+    const [marcas, setMarcas] = useState([]);
     const [proveedores, setProveedores] = useState([]);
-    const [newProduct, setNewProduct] = useState({ nombreProducto: "", descripcionProducto: "", referenciaProducto: "", marcaProducto: "", precioCompra: '', precioVenta: '', stock: '', numeroMinimoStock: '', proveedorId: '', fechaEntrada: '', imagenProducto: '' });
+    const [newProduct, setNewProduct] = useState({ nombreProducto: "", descripcionProducto: "", referenciaProducto: "", marcaProducto: "", precioCompraProducto: '', precioVentaProducto: '', stock: '', nivelMinimoStock: '', proveedorId: '', fechaEntradaProducto: '', imagenProducto: '' });
     const [editingProduct, setEditingProduct] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -29,28 +31,39 @@ const TablaProductos = () => {
             const fetchedProducts = [];
             for (const doc of productsSnapshot.docs) {
                 const productData = doc.data();
-                
-                // Obtener datos de la referencia del producto y del proveedor
-                const referenciaDoc = await getDoc(productData.referenciaProducto);
-                const proveedorDoc = await getDoc(productData.proveedorId);
-                const marcaDoc = await getDoc(productData.marcaProducto);
-                
-                // Construir objeto de producto con datos extendidos
-                fetchedProducts.push({ 
-                    id: doc.id, 
-                    ...productData, 
-                    referenciaProducto: referenciaDoc.exists() ? referenciaDoc.data() : {},
-                    proveedorId: proveedorDoc.exists() ? proveedorDoc.data() : {},
-                    marcaProducto: marcaDoc.exists() ? marcaDoc.data(): {}
-                });
             }
             
             // Actualizar estado con los productos obtenidos
             setProductos(fetchedProducts);
         });
 
-        // Función de limpieza para cancelar la suscripción
-        return () => unsubscribeProducts();
+        const referenciasRef = collection(db, 'referenciaProductos');
+        const marcasRef = collection(db, 'marcaProductos');
+        const proveedoresRef = collection(db, 'proveedores');
+
+        const unsubscribeReferencias = onSnapshot(referenciasRef, (referenciasSnapshot) => {
+            const fetchedReferencias = referenciasSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setReferencias(fetchedReferencias);
+        });
+
+        const unsubscribeMarcas = onSnapshot(marcasRef, (marcasSnapshot) => {
+            const fetchedMarcas = marcasSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setMarcas(fetchedMarcas);
+        });
+
+        const unsubscribeProveedores = onSnapshot(proveedoresRef, (proveedoresSnapshot) => {
+            const fetchedProveedores = proveedoresSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setProveedores(fetchedProveedores);
+        });
+
+        return () => {
+            unsubscribeMarcas();
+            unsubscribeProducts();
+            unsubscribeProveedores();
+            unsubscribeReferencias()
+        }
+
+        
     }, []);
 
     // Función para agregar un nuevo producto
@@ -67,12 +80,12 @@ const TablaProductos = () => {
             descripcionProducto: "", 
             referenciaProducto: "", 
             marcaProducto: "", 
-            precioCompra: '', 
-            precioVenta: '', 
+            precioCompraProducto: '', 
+            precioVentaProducto: '', 
             stock: '', 
-            numeroMinimoStock: '', 
+            nivelMinimoStock: '', 
             proveedorId: '', 
-            fechaEntrada: '', 
+            fechaEntradaProducto: '', 
             imagenProducto: '' 
         });
         setIsAddModalOpen(false);
@@ -109,12 +122,6 @@ const TablaProductos = () => {
     const handleEditInputChange = (e) => {
         const { name, value } = e.target;
         setEditingProduct({ ...editingProduct, [name]: value });
-    };
-
-    // Función para obtener el nombre del proveedor por su ID
-    const getProveedorNombre = (proveedorId) => {
-        const proveedor = proveedores.find((prov) => prov.id === proveedorId);
-        return proveedor ? proveedor.nombreProveedor : 'Desconocido';
     };
 
     // Renderizado de la tabla de productos y modales de agregar/editar
@@ -203,7 +210,10 @@ const TablaProductos = () => {
                 onSubmit={agregarProducto}
                 newProduct={newProduct}
                 handleInputChange={handleInputChange}
+                referencias={referencias}
+                marcas={marcas}
                 proveedores={proveedores} // Pasar proveedores al modal de agregar
+
             />
 
             {/* Modal para editar producto existente */}
@@ -213,6 +223,8 @@ const TablaProductos = () => {
                 onSubmit={editarProducto}
                 editingProduct={editingProduct}
                 handleEditInputChange={handleEditInputChange}
+                referencias={referencias}
+                marcas={marcas}
                 proveedores={proveedores} // Pasar proveedores al modal de editar
             />
         </div>

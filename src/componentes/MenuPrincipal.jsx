@@ -3,12 +3,13 @@ import { getAuth, signOut } from 'firebase/auth';
 import appFirebase from '../credenciales';
 import { Link } from "react-router-dom";
 import TablaProductos from "../componentes/productos/TablaProductos";
+import TablaClientes from "../componentes/clientes/TablaClientes";
 import { faFileLines } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const auth = getAuth(appFirebase);
 
-const MenuPrincipal = ({ correoUsuario, showTablaProductos }) => {
+const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes }) => {
 
     return (
         <>
@@ -30,6 +31,7 @@ const MenuPrincipal = ({ correoUsuario, showTablaProductos }) => {
                     </div>
                 </div>
                 {showTablaProductos && <TablaProductos />}
+                {showTablaClientes && <TablaClientes />}
             </div>
             
         </>
