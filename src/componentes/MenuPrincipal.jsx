@@ -25,9 +25,7 @@ const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes })
                         <p className="text-xl font-medium text-[#757575] text-right">Administrador</p>
 
                         <Link to="/configuracion">Configuracion</Link>
-                        <button className="btn btn-primary" onClick={() => signOut(auth)}>
-                            Cerrar sesión
-                        </button>
+                        
                     </div>
                 </div>
                 {showTablaProductos && <TablaProductos />}
