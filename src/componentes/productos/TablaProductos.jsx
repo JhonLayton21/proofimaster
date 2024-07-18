@@ -3,6 +3,8 @@ import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, getDoc } fro
 import { db } from "../../credenciales";
 import ModalAgregarProducto from "./ModalAgregarProducto";
 import ModalEditarProducto from "./ModalEditarProducto";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 // Función para formatear Timestamps de Firestore a una cadena legible
 const formatTimestamp = (timestamp) => {
@@ -139,6 +141,7 @@ const TablaProductos = () => {
                             <button
                                 className="text-neutral-100 font-bold bg-green-600 hover:bg-green-800 cursor-pointer"
                                 onClick={() => setIsAddModalOpen(true)}>
+                                <FontAwesomeIcon icon={faPlus} className="fa-xl mr-6" />
                                 Agregar producto
                             </button>
                         </th>
@@ -170,12 +173,14 @@ const TablaProductos = () => {
                                             setIsEditModalOpen(true);
                                         }}>
                                         Editar
+                                        <FontAwesomeIcon icon={faPenToSquare} className=" ml-1" />
                                     </a>
                                     <a
                                         href="#"
                                         className="font-medium text-red-600 dark:text-red-500 hover:underline"
                                         onClick={() => eliminarProducto(producto.id)}>
                                         Eliminar
+                                        <FontAwesomeIcon icon={faTrashCan} className=" ml-1" />
                                     </a>
                                 </td>
                             </tr>

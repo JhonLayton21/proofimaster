@@ -3,6 +3,8 @@ import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, getDoc, getD
 import { db } from "../../credenciales";
 import ModalAgregarCliente from "./ModalAgregarCliente";
 import ModalEditarCliente from "./ModalEditarCliente";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 const TablaClientes = () => {
     // Estados para almacenar datos y controlar la interfaz
@@ -104,6 +106,7 @@ const TablaClientes = () => {
                             <button
                                 className="text-neutral-100 font-bold bg-green-600 hover:bg-green-800 cursor-pointer"
                                 onClick={() => setIsAddModalOpen(true)}>
+                                <FontAwesomeIcon icon={faPlus} className="fa-xl mr-6" />
                                 Agregar Cliente
                             </button>
                         </th>
@@ -135,12 +138,14 @@ const TablaClientes = () => {
                                             setIsEditModalOpen(true);
                                         }}>
                                         Editar
+                                        <FontAwesomeIcon icon={faPenToSquare} className=" ml-1" />
                                     </a>
                                     <a
                                         href="#"
                                         className="font-medium text-red-600 dark:text-red-500 hover:underline"
                                         onClick={() => eliminarCliente(cliente.id)}>
                                         Eliminar
+                                        <FontAwesomeIcon icon={faTrashCan} className=" ml-1" />
                                     </a>
                                 </td>
                             </tr>
