@@ -10,7 +10,7 @@ const Proveedores = () => {
       <MenuLateral />
 
       {/* MENU PRINCIPAL */}
-      <MenuPrincipal showTablaProductos={false} />
+      <MenuPrincipal showTablaProveedores={true} />
       
     </div>
   );

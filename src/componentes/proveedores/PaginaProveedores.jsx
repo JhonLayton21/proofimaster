@@ -1,7 +1,7 @@
 import React from "react";
 import MenuPrincipal from "../MenuPrincipal";
 
-const PaginaProductos = () => {
+const PaginaProveedores = () => {
   return (
     <>
       <MenuPrincipal showTablaClientes={true}  />
@@ -9,4 +9,4 @@ const PaginaProductos = () => {
   );
 };
 
-export default PaginaProductos;
+export default PaginaProveedores;
