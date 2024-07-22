@@ -10,7 +10,7 @@ const Proveedores = () => {
       <MenuLateral />
 
       {/* MENU PRINCIPAL */}
-      <MenuPrincipal showTablaProveedores={true} />
+      <MenuPrincipal showTablaProveedores={true} titulo={"PROVEEDORES"} subtitulo={"Conecta tus proveedores de confianza"} />
       
     </div>
   );

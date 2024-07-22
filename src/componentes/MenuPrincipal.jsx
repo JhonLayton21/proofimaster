@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const auth = getAuth(appFirebase);
 
-const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, showTablaProveedores }) => {
+const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, showTablaProveedores, titulo, subtitulo }) => {
 
     return (
         <>
@@ -42,6 +42,10 @@ const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, s
                             </div>
                         </div>
                     </div>
+                </div>
+                <div>
+                    <h1 className="text-left text-slate-800 font-bold pt-16">{titulo}</h1>
+                    <h2 className="text-left text-[#757575] font-semibold">{subtitulo}</h2>
                 </div>
 
                 {showTablaProductos && <TablaProductos />}

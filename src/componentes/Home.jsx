@@ -11,7 +11,7 @@ const Home = ({ correoUsuario }) => {
             <MenuLateral />
 
             {/* MENU PRINCIPAL */}
-            <MenuPrincipal showTablaProductos={false} correoUsuario={correoUsuario} />
+            <MenuPrincipal showTablaProductos={false} correoUsuario={correoUsuario} titulo={"MENÚ PRINCIPAL"} subtitulo={"Ingresa rápidamente a los datos guardados en Proofimaster"} />
         </div>
     );
 };

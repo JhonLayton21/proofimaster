@@ -10,7 +10,7 @@ const Ventas = () => {
       <MenuLateral />
 
       {/* MENU PRINCIPAL */}
-      <MenuPrincipal showTablaProductos={false} />
+      <MenuPrincipal showTablaProductos={false} titulo={"VENTAS"} subtitulo={"Seguimiento y control de transacciones"} />
 
     </div>
   );

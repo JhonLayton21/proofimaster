@@ -10,7 +10,7 @@ const Informes = () => {
       <MenuLateral />
 
       {/* MENU PRINCIPAL */}
-      <MenuPrincipal showTablaProductos={false} />
+      <MenuPrincipal showTablaProductos={false} titulo={"INFORMES"} subtitulo={"Impulsa tu negocio con reportes e informes detallados"} />
       
     </div>
   );
