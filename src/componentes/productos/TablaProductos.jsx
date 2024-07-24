@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, getDoc } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "../../credenciales";
 import ModalAgregarProducto from "./ModalAgregarProducto";
 import ModalEditarProducto from "./ModalEditarProducto";
@@ -12,13 +12,32 @@ const formatTimestamp = (timestamp) => {
     return date.toLocaleDateString();
 };
 
+// Función para convertir una cadena de fecha a un Timestamp de Firestore
+const parseDateToTimestamp = (dateString) => {
+    const [day, month, year] = dateString.split('/');
+    const date = new Date(year, month - 1, day);
+    return Timestamp.fromDate(date);
+};
+
 const TablaProductos = () => {
     // Estados para almacenar datos y controlar la interfaz
     const [productos, setProductos] = useState([]);
     const [referencias, setReferencias] = useState([]);
     const [marcas, setMarcas] = useState([]);
     const [proveedores, setProveedores] = useState([]);
-    const [newProduct, setNewProduct] = useState({ nombreProducto: "", descripcionProducto: "", referenciaProducto: "", marcaProducto: "", precioCompraProducto: '', precioVentaProducto: '', stock: '', nivelMinimoStock: '', proveedorId: '', fechaEntradaProducto: '', imagenProducto: '' });
+    const [newProduct, setNewProduct] = useState({
+        nombreProducto: "",
+        descripcionProducto: "",
+        referenciaProducto: "",
+        marcaProducto: "",
+        precioCompraProducto: "",
+        precioVentaProducto: "",
+        stock: "",
+        nivelMinimoStock: "",
+        proveedorId: "",
+        fechaEntradaProducto: "",
+        imagenProducto: null
+    });
     const [editingProduct, setEditingProduct] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -26,69 +45,75 @@ const TablaProductos = () => {
 
     // Efecto para cargar productos desde Firestore al montar el componente
     useEffect(() => {
-        const productsRef = collection(db, 'productos');
+        const fetchProductos = async () => {
+            try {
+                const productsRef = collection(db, 'productos');
+                const snapshot = await getDocs(productsRef);
+                const fetchedProducts = await Promise.all(snapshot.docs.map(async (doc) => {
+                    const data = doc.data();
 
-        // Suscripción a cambios en la colección de productos
-        const unsubscribeProducts = onSnapshot(productsRef, async (productsSnapshot) => {
-            const fetchedProducts = [];
-            for (const doc of productsSnapshot.docs) {
-                const productData = doc.data();
+                    // Verifica y resuelve la referencia de marcaProducto
+                    if (data.marcaProducto && data.marcaProducto instanceof doc.constructor) {
+                        const marcaProductoSnapshot = await getDoc(data.marcaProducto);
+                        if (marcaProductoSnapshot.exists()) {
+                            data.marcaProducto = { id: marcaProductoSnapshot.id, ...marcaProductoSnapshot.data() };
+                        }
+                    }
+
+                    // Verifica y resuelve la referencia de referenciaProducto
+                    if (data.referenciaProducto && data.referenciaProducto instanceof doc.constructor) {
+                        const referenciaProductoSnapshot = await getDoc(data.referenciaProducto);
+                        if (referenciaProductoSnapshot.exists()) {
+                            data.referenciaProducto = { id: referenciaProductoSnapshot.id, ...referenciaProductoSnapshot.data() };
+                        }
+                    }
+
+                    // Verifica y resuelve la referencia de proveedorId
+                    if (data.proveedorId && data.proveedorId instanceof doc.constructor) {
+                        const proveedorIdSnapshot = await getDoc(data.proveedorId);
+                        if (proveedorIdSnapshot.exists()) {
+                            data.proveedorId = { id: proveedorIdSnapshot.id, ...proveedorIdSnapshot.data() };
+                        }
+                    }
+
+                    return { id: doc.id, ...data };
+                }));
+                setProductos(fetchedProducts);
+            } catch (error) {
+                console.error("Error fetching products: ", error);
             }
-            
-            // Actualizar estado con los productos obtenidos
-            setProductos(fetchedProducts);
-        });
+        };
 
-        const referenciasRef = collection(db, 'referenciaProductos');
-        const marcasRef = collection(db, 'marcaProductos');
-        const proveedoresRef = collection(db, 'proveedores');
-
-        const unsubscribeReferencias = onSnapshot(referenciasRef, (referenciasSnapshot) => {
-            const fetchedReferencias = referenciasSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setReferencias(fetchedReferencias);
-        });
-
-        const unsubscribeMarcas = onSnapshot(marcasRef, (marcasSnapshot) => {
-            const fetchedMarcas = marcasSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setMarcas(fetchedMarcas);
-        });
-
-        const unsubscribeProveedores = onSnapshot(proveedoresRef, (proveedoresSnapshot) => {
-            const fetchedProveedores = proveedoresSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setProveedores(fetchedProveedores);
-        });
-
-        return () => {
-            unsubscribeMarcas();
-            unsubscribeProducts();
-            unsubscribeProveedores();
-            unsubscribeReferencias()
-        }
-
-        
+        fetchProductos();
     }, []);
 
     // Función para agregar un nuevo producto
     const agregarProducto = async (e) => {
         e.preventDefault();
         const productsRef = collection(db, 'productos');
-        
+
+        // Convertir fechaEntradaProducto de cadena a Timestamp
+        const productToAdd = {
+            ...newProduct,
+            fechaEntradaProducto: parseDateToTimestamp(newProduct.fechaEntradaProducto)
+        };
+
         // Agregar nuevo documento a la colección de productos
-        await addDoc(productsRef, newProduct);
-        
+        await addDoc(productsRef, productToAdd);
+
         // Limpiar formulario y cerrar modal de agregar
-        setNewProduct({ 
-            nombreProducto: "", 
-            descripcionProducto: "", 
-            referenciaProducto: "", 
-            marcaProducto: "", 
-            precioCompraProducto: '', 
-            precioVentaProducto: '', 
-            stock: '', 
-            nivelMinimoStock: '', 
-            proveedorId: '', 
-            fechaEntradaProducto: '', 
-            imagenProducto: '' 
+        setNewProduct({
+            nombreProducto: "",
+            descripcionProducto: "",
+            referenciaProducto: "",
+            marcaProducto: "",
+            precioCompraProducto: "",
+            precioVentaProducto: "",
+            stock: "",
+            nivelMinimoStock: "",
+            proveedorId: "",
+            fechaEntradaProducto: "",
+            imagenProducto: null
         });
         setIsAddModalOpen(false);
     };
@@ -97,10 +122,16 @@ const TablaProductos = () => {
     const editarProducto = async (e) => {
         e.preventDefault();
         const productDoc = doc(db, 'productos', editingProduct.id);
-        
+
+        // Convertir fechaEntradaProducto de cadena a Timestamp
+        const productToUpdate = {
+            ...editingProduct,
+            fechaEntradaProducto: parseDateToTimestamp(editingProduct.fechaEntradaProducto)
+        };
+
         // Actualizar documento existente en la colección de productos
-        await updateDoc(productDoc, editingProduct);
-        
+        await updateDoc(productDoc, productToUpdate);
+
         // Limpiar estado de producto en edición y cerrar modal de edición
         setEditingProduct(null);
         setIsEditModalOpen(false);
@@ -109,7 +140,7 @@ const TablaProductos = () => {
     // Función para eliminar un producto por su ID
     const eliminarProducto = async (id) => {
         const productDoc = doc(db, 'productos', id);
-        
+
         // Eliminar documento de la colección de productos
         await deleteDoc(productDoc);
     };
@@ -215,10 +246,6 @@ const TablaProductos = () => {
                 onSubmit={agregarProducto}
                 newProduct={newProduct}
                 handleInputChange={handleInputChange}
-                referencias={referencias}
-                marcas={marcas}
-                proveedores={proveedores} // Pasar proveedores al modal de agregar
-
             />
 
             {/* Modal para editar producto existente */}
@@ -227,16 +254,14 @@ const TablaProductos = () => {
                 onClose={() => setIsEditModalOpen(false)}
                 onSubmit={editarProducto}
                 editingProduct={editingProduct}
-                handleEditInputChange={handleEditInputChange}
-                referencias={referencias}
-                marcas={marcas}
-                proveedores={proveedores} // Pasar proveedores al modal de editar
+                handleInputChange={handleEditInputChange}
             />
         </div>
     );
 };
 
 export default TablaProductos;
+
 
 
 

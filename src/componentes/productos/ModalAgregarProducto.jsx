@@ -1,6 +1,58 @@
-import React from "react";
+import React, { useEffect, useState } from 'react';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { db } from "../../credenciales";
 
-const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInputChange, referencias, marcas, proveedores }) => {
+// Función para formatear Timestamps de Firestore a una cadena legible
+const formatTimestamp = (timestamp) => {
+    const date = timestamp.toDate();
+    return date.toLocaleDateString();
+};
+
+const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInputChange }) => {
+
+    const [referencias, setReferencias] = useState([]);
+    const [marcas, setMarcas] = useState([]);
+    const [proveedores, setProveedores] = useState([]);
+
+    useEffect(() => {
+        const fetchReferencias = async () => {
+            try {
+                const referenciasRef = collection(db, 'referenciaProductos');
+                const snapshot = await getDocs(referenciasRef);
+                const fetchedReferencias = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setReferencias(fetchedReferencias);
+            } catch (error) {
+                console.error("Error fetching referencias: ", error);
+            }
+        };
+
+        const fetchMarcas = async () => {
+            try {
+                const marcasRef = collection(db, 'marcaProductos');
+                const snapshot = await getDocs(marcasRef);
+                const fetchedMarcas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setMarcas(fetchedMarcas);
+            } catch (error) {
+                console.error("Error fetching marcas: ", error);
+            }
+        };
+
+        const fetchProveedores = async () => {
+            try {
+                const proveedoresRef = collection(db, 'proveedores');
+                const snapshot = await getDocs(proveedoresRef);
+                const fetchedProveedores = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setProveedores(fetchedProveedores);
+            } catch (error) {
+                console.error("Error fetching proveedores: ", error);
+            }
+        };
+
+        fetchReferencias();
+        fetchMarcas();
+        fetchProveedores();
+    }, []);
+
     if (!isOpen) return null;
 
     return (
@@ -64,13 +116,13 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                         <option value="">Seleccionar Marca</option>
                                         {marcas.map(marca => (
                                             <option key={marca.id} value={marca.id}>
-                                                {marca.marcaProducto}
+                                                {marca.nombreProducto}
                                             </option>
                                         ))}
                                     </select>
                                     <input
                                         type="text"
-                                        name="precioCompra"
+                                        name="precioCompraProducto"
                                         placeholder="Precio Compra"
                                         value={newProduct.precioCompraProducto}
                                         onChange={handleInputChange}
@@ -78,7 +130,7 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                     />
                                     <input
                                         type="text"
-                                        name="precioVenta"
+                                        name="precioVentaProducto"
                                         placeholder="Precio Venta"
                                         value={newProduct.precioVentaProducto}
                                         onChange={handleInputChange}
@@ -94,8 +146,8 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                     />
                                     <input
                                         type="number"
-                                        name="numeroMinimoStock"
-                                        placeholder="Número Mínimo Stock"
+                                        name="nivelMinimoStock"
+                                        placeholder="Nivel Mínimo Stock"
                                         value={newProduct.nivelMinimoStock}
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
@@ -115,8 +167,8 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                     </select>
                                     <input
                                         type="date"
-                                        name="fechaEntrada"
-                                        value={newProduct.fechaEntradaProducto}
+                                        name="fechaEntradaProducto"
+                                        value={newProduct.fechaEntradaProducto ? formatTimestamp(newProduct.fechaEntradaProducto) : '' }
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
@@ -149,6 +201,7 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
 };
 
 export default ModalAgregarProducto;
+
 
 
 
