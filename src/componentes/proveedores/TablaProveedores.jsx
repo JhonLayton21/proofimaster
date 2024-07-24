@@ -116,7 +116,7 @@ const TablaProveedores = () => {
                 <tbody>
                     {Proveedores.map((Proveedor) => (
                         <React.Fragment key={Proveedor.id}>
-                            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <tr className="bg-white border-b dark:bg-[#292929] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#202020]">
                                 <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white ">
                                     <button
                                         onClick={() => setExpandedProviderId(expandedProviderId === Proveedor.id ? null : Proveedor.id)}
@@ -152,7 +152,7 @@ const TablaProveedores = () => {
                                 </td>
                             </tr>
                             {expandedProviderId === Proveedor.id && (
-                                <tr className="bg-gray-50 dark:bg-gray-700">
+                                <tr className="bg-gray-50 dark:bg-[#202020]">
                                     <td colSpan="10" className="px-6 py-4">
                                         <div className="p-4">
                                             <p><strong>Nombre: </strong>{Proveedor.nombreProveedor}</p>
