@@ -2,11 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from "../../credenciales";
 
-// Función para formatear Timestamps de Firestore a una cadena legible
-const formatTimestamp = (timestamp) => {
-    const date = timestamp.toDate();
-    return date.toLocaleDateString();
-};
 
 const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInputChange }) => {
 
@@ -168,7 +163,7 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                     <input
                                         type="date"
                                         name="fechaEntradaProducto"
-                                        value={newProduct.fechaEntradaProducto ? formatTimestamp(newProduct.fechaEntradaProducto) : '' }
+                                        value={newProduct.fechaEntradaProducto}
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />

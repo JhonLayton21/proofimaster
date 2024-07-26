@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { collection, getDocs} from 'firebase/firestore';
+import { db } from "../../credenciales";
 
 const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
@@ -8,7 +10,50 @@ const formatTimestamp = (timestamp) => {
     return `${day}-${month}-${year}`;
 };
 
-const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handleEditInputChange, referencias, marcas, proveedores }) => {
+const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handleEditInputChange }) => {
+    const [referencias, setReferencias] = useState([]);
+    const [marcas, setMarcas] = useState([]);
+    const [proveedores, setProveedores] = useState([]);
+
+    useEffect(() => {
+        const fetchReferencias = async () => {
+            try {
+                const referenciasRef = collection(db, 'referenciaProductos');
+                const snapshot = await getDocs(referenciasRef);
+                const fetchedReferencias = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setReferencias(fetchedReferencias);
+            } catch (error) {
+                console.error("Error fetching referencias: ", error);
+            }
+        };
+
+        const fetchMarcas = async () => {
+            try {
+                const marcasRef = collection(db, 'marcaProductos');
+                const snapshot = await getDocs(marcasRef);
+                const fetchedMarcas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setMarcas(fetchedMarcas);
+            } catch (error) {
+                console.error("Error fetching marcas: ", error);
+            }
+        };
+
+        const fetchProveedores = async () => {
+            try {
+                const proveedoresRef = collection(db, 'proveedores');
+                const snapshot = await getDocs(proveedoresRef);
+                const fetchedProveedores = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setProveedores(fetchedProveedores);
+            } catch (error) {
+                console.error("Error fetching proveedores: ", error);
+            }
+        };
+
+        fetchReferencias();
+        fetchMarcas();
+        fetchProveedores();
+    }, []);
+
     if (!isOpen) return null;
 
     return (
@@ -72,7 +117,7 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                         <option value="">Seleccionar Marca</option>
                                         {marcas.map(marca => (
                                             <option key={marca.id} value={marca.id}>
-                                                {marca.marcaProducto}
+                                                {marca.nombreProducto}
                                             </option>
                                         ))}
                                     </select>
@@ -123,7 +168,7 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                     </select>
                                     <input
                                         type="date"
-                                        name="fechaEntrada"
+                                        name="fechaEntradaProducto"
                                         value={editingProduct.fechaEntradaProducto ? formatTimestamp(editingProduct.fechaEntradaProducto) : ''}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"

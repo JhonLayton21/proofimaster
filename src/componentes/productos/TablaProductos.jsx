@@ -6,25 +6,13 @@ import ModalEditarProducto from "./ModalEditarProducto";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
-// Función para formatear Timestamps de Firestore a una cadena legible
-const formatTimestamp = (timestamp) => {
-    const date = timestamp.toDate();
-    return date.toLocaleDateString();
-};
-
-// Función para convertir una cadena de fecha a un Timestamp de Firestore
-const parseDateToTimestamp = (dateString) => {
-    const [day, month, year] = dateString.split('/');
-    const date = new Date(year, month - 1, day);
-    return Timestamp.fromDate(date);
-};
+const convertirTimestamp = (timestamp) => {
+    const fecha = timestamp.toDate();
+    return fecha.toLocaleDateString();
+}
 
 const TablaProductos = () => {
-    // Estados para almacenar datos y controlar la interfaz
     const [productos, setProductos] = useState([]);
-    const [referencias, setReferencias] = useState([]);
-    const [marcas, setMarcas] = useState([]);
-    const [proveedores, setProveedores] = useState([]);
     const [newProduct, setNewProduct] = useState({
         nombreProducto: "",
         descripcionProducto: "",
@@ -43,7 +31,6 @@ const TablaProductos = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [expandedProductId, setExpandedProductId] = useState(null);
 
-    // Efecto para cargar productos desde Firestore al montar el componente
     useEffect(() => {
         const fetchProductos = async () => {
             try {
@@ -52,7 +39,6 @@ const TablaProductos = () => {
                 const fetchedProducts = await Promise.all(snapshot.docs.map(async (doc) => {
                     const data = doc.data();
 
-                    // Verifica y resuelve la referencia de marcaProducto
                     if (data.marcaProducto && data.marcaProducto instanceof doc.constructor) {
                         const marcaProductoSnapshot = await getDoc(data.marcaProducto);
                         if (marcaProductoSnapshot.exists()) {
@@ -60,7 +46,6 @@ const TablaProductos = () => {
                         }
                     }
 
-                    // Verifica y resuelve la referencia de referenciaProducto
                     if (data.referenciaProducto && data.referenciaProducto instanceof doc.constructor) {
                         const referenciaProductoSnapshot = await getDoc(data.referenciaProducto);
                         if (referenciaProductoSnapshot.exists()) {
@@ -68,7 +53,6 @@ const TablaProductos = () => {
                         }
                     }
 
-                    // Verifica y resuelve la referencia de proveedorId
                     if (data.proveedorId && data.proveedorId instanceof doc.constructor) {
                         const proveedorIdSnapshot = await getDoc(data.proveedorId);
                         if (proveedorIdSnapshot.exists()) {
@@ -87,21 +71,21 @@ const TablaProductos = () => {
         fetchProductos();
     }, []);
 
-    // Función para agregar un nuevo producto
     const agregarProducto = async (e) => {
         e.preventDefault();
         const productsRef = collection(db, 'productos');
 
-        // Convertir fechaEntradaProducto de cadena a Timestamp
-        const productToAdd = {
+        // convertir fechaEntradaProducto a Timestamp antes de guardar
+        const fecha = new Date(newProduct.fechaEntradaProducto);
+        const fechaUTC = new Date(fecha.getUTCFullYear(), fecha.getUTCMonth(), fecha.getUTCDate());
+
+        const productoTimestamp = {
             ...newProduct,
-            fechaEntradaProducto: parseDateToTimestamp(newProduct.fechaEntradaProducto)
+            fechaEntradaProducto: Timestamp.fromDate(fechaUTC)
         };
 
-        // Agregar nuevo documento a la colección de productos
-        await addDoc(productsRef, productToAdd);
+        await addDoc(productsRef, productoTimestamp);
 
-        // Limpiar formulario y cerrar modal de agregar
         setNewProduct({
             nombreProducto: "",
             descripcionProducto: "",
@@ -118,46 +102,40 @@ const TablaProductos = () => {
         setIsAddModalOpen(false);
     };
 
-    // Función para editar un producto existente
     const editarProducto = async (e) => {
         e.preventDefault();
         const productDoc = doc(db, 'productos', editingProduct.id);
 
-        // Convertir fechaEntradaProducto de cadena a Timestamp
-        const productToUpdate = {
-            ...editingProduct,
-            fechaEntradaProducto: parseDateToTimestamp(editingProduct.fechaEntradaProducto)
-        };
+        await updateDoc(productDoc);
 
-        // Actualizar documento existente en la colección de productos
-        await updateDoc(productDoc, productToUpdate);
-
-        // Limpiar estado de producto en edición y cerrar modal de edición
         setEditingProduct(null);
         setIsEditModalOpen(false);
     };
 
-    // Función para eliminar un producto por su ID
     const eliminarProducto = async (id) => {
         const productDoc = doc(db, 'productos', id);
-
-        // Eliminar documento de la colección de productos
         await deleteDoc(productDoc);
     };
 
-    // Manejar cambios en el formulario de agregar producto
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setNewProduct({ ...newProduct, [name]: value });
-    };
 
-    // Manejar cambios en el formulario de editar producto
+        //convertir la fecha a Timestamp si el campo es fechaEntradaProducto
+        if (name === 'fechaEntradaProducto') {
+            setNewProduct({ ...newProduct, [name]: value});
+        }else{
+            setNewProduct({ ...newProduct, [name]: value});
+        }
+
+        setNewProduct({ ...newProduct, [name]: value });
+    };    
+
     const handleEditInputChange = (e) => {
         const { name, value } = e.target;
-        setEditingProduct({ ...editingProduct, [name]: value });
+
+        setEditingProduct({ ...editingProduct, [name]: value});
     };
 
-    // Renderizado de la tabla de productos y modales de agregar/editar
     return (
         <div className="relative overflow-x-auto rounded-lg pt-8">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -192,7 +170,7 @@ const TablaProductos = () => {
                                     {producto.nombreProducto}
                                 </th>
                                 <td className="px-6 py-4">{producto.stock}</td>
-                                <td className="px-6 py-4">{producto.fechaEntradaProducto ? formatTimestamp(producto.fechaEntradaProducto) : ''}</td>
+                                <td className="px-6 py-4">{producto.fechaEntradaProducto ? convertirTimestamp(producto.fechaEntradaProducto) : "" }</td>
                                 <td className="px-6 py-4">{producto.precioCompraProducto}</td>
                                 <td className="px-6 py-4">{producto.precioVentaProducto}</td>
                                 <td className="px-6 py-4 text-right">
@@ -228,7 +206,7 @@ const TablaProductos = () => {
                                             <p><strong>Stock: </strong>{producto.stock}</p>
                                             <p><strong>Nivel minimo Stock: </strong>{producto.nivelMinimoStock}</p>
                                             <p><strong>Proveedor: </strong>{producto.proveedorId.nombreProveedor}</p>
-                                            <p><strong>Fecha de entrada: </strong>{producto.fechaEntradaProducto ? formatTimestamp(producto.fechaEntradaProducto) : ''}</p>
+                                            <p><strong>Fecha de entrada: </strong>{producto.fechaEntradaProducto ? convertirTimestamp(producto.fechaEntradaProducto) : "" }</p>
                                             <p><strong>Imagen: </strong>{producto.imagenProducto}</p>
                                         </div>
                                     </td>
@@ -239,7 +217,6 @@ const TablaProductos = () => {
                 </tbody>
             </table>
 
-            {/* Modal para agregar nuevo producto */}
             <ModalAgregarProducto
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
@@ -248,7 +225,6 @@ const TablaProductos = () => {
                 handleInputChange={handleInputChange}
             />
 
-            {/* Modal para editar producto existente */}
             <ModalEditarProducto
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
@@ -261,11 +237,3 @@ const TablaProductos = () => {
 };
 
 export default TablaProductos;
-
-
-
-
-
-
-
-
