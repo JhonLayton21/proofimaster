@@ -32,44 +32,42 @@ const TablaProductos = () => {
     const [expandedProductId, setExpandedProductId] = useState(null);
 
     useEffect(() => {
-        const fetchProductos = async () => {
-            try {
-                const productsRef = collection(db, 'productos');
-                const snapshot = await getDocs(productsRef);
-                const fetchedProducts = await Promise.all(snapshot.docs.map(async (doc) => {
-                    const data = doc.data();
+        const productsRef = collection(db, 'productos');
 
-                    if (data.marcaProducto && data.marcaProducto instanceof doc.constructor) {
-                        const marcaProductoSnapshot = await getDoc(data.marcaProducto);
-                        if (marcaProductoSnapshot.exists()) {
-                            data.marcaProducto = { id: marcaProductoSnapshot.id, ...marcaProductoSnapshot.data() };
-                        }
+        const unsubscribe = onSnapshot(productsRef, async (snapshot) => {
+            const fetchedProducts = await Promise.all(snapshot.docs.map(async (doc) => {
+                const data = doc.data();
+
+                if (data.marcaProducto && data.marcaProducto instanceof doc.constructor) {
+                    const marcaProductoSnapshot = await getDoc(data.marcaProducto);
+                    if (marcaProductoSnapshot.exists()) {
+                        data.marcaProducto = { id: marcaProductoSnapshot.id, ...marcaProductoSnapshot.data() };
                     }
+                }
 
-                    if (data.referenciaProducto && data.referenciaProducto instanceof doc.constructor) {
-                        const referenciaProductoSnapshot = await getDoc(data.referenciaProducto);
-                        if (referenciaProductoSnapshot.exists()) {
-                            data.referenciaProducto = { id: referenciaProductoSnapshot.id, ...referenciaProductoSnapshot.data() };
-                        }
+                if (data.referenciaProducto && data.referenciaProducto instanceof doc.constructor) {
+                    const referenciaProductoSnapshot = await getDoc(data.referenciaProducto);
+                    if (referenciaProductoSnapshot.exists()) {
+                        data.referenciaProducto = { id: referenciaProductoSnapshot.id, ...referenciaProductoSnapshot.data() };
                     }
+                }
 
-                    if (data.proveedorId && data.proveedorId instanceof doc.constructor) {
-                        const proveedorIdSnapshot = await getDoc(data.proveedorId);
-                        if (proveedorIdSnapshot.exists()) {
-                            data.proveedorId = { id: proveedorIdSnapshot.id, ...proveedorIdSnapshot.data() };
-                        }
+                if (data.proveedorId && data.proveedorId instanceof doc.constructor) {
+                    const proveedorIdSnapshot = await getDoc(data.proveedorId);
+                    if (proveedorIdSnapshot.exists()) {
+                        data.proveedorId = { id: proveedorIdSnapshot.id, ...proveedorIdSnapshot.data() };
                     }
+                }
 
-                    return { id: doc.id, ...data };
-                }));
-                setProductos(fetchedProducts);
-            } catch (error) {
-                console.error("Error fetching products: ", error);
-            }
-        };
+                return { id: doc.id, ...data };
+            }));
+            setProductos(fetchedProducts);
+        });
 
-        fetchProductos();
+        // Cleanup listener on component unmount
+        return () => unsubscribe();
     }, []);
+
 
     const agregarProducto = async (e) => {
         e.preventDefault();
@@ -122,18 +120,18 @@ const TablaProductos = () => {
 
         //convertir la fecha a Timestamp si el campo es fechaEntradaProducto
         if (name === 'fechaEntradaProducto') {
-            setNewProduct({ ...newProduct, [name]: value});
-        }else{
-            setNewProduct({ ...newProduct, [name]: value});
+            setNewProduct({ ...newProduct, [name]: value });
+        } else {
+            setNewProduct({ ...newProduct, [name]: value });
         }
 
         setNewProduct({ ...newProduct, [name]: value });
-    };    
+    };
 
     const handleEditInputChange = (e) => {
         const { name, value } = e.target;
 
-        setEditingProduct({ ...editingProduct, [name]: value});
+        setEditingProduct({ ...editingProduct, [name]: value });
     };
 
     return (
@@ -170,7 +168,7 @@ const TablaProductos = () => {
                                     {producto.nombreProducto}
                                 </th>
                                 <td className="px-6 py-4">{producto.stock}</td>
-                                <td className="px-6 py-4">{producto.fechaEntradaProducto ? convertirTimestamp(producto.fechaEntradaProducto) : "" }</td>
+                                <td className="px-6 py-4">{producto.fechaEntradaProducto ? convertirTimestamp(producto.fechaEntradaProducto) : ""}</td>
                                 <td className="px-6 py-4">{producto.precioCompraProducto}</td>
                                 <td className="px-6 py-4">{producto.precioVentaProducto}</td>
                                 <td className="px-6 py-4 text-right">
@@ -206,7 +204,7 @@ const TablaProductos = () => {
                                             <p><strong>Stock: </strong>{producto.stock}</p>
                                             <p><strong>Nivel minimo Stock: </strong>{producto.nivelMinimoStock}</p>
                                             <p><strong>Proveedor: </strong>{producto.proveedorId.nombreProveedor}</p>
-                                            <p><strong>Fecha de entrada: </strong>{producto.fechaEntradaProducto ? convertirTimestamp(producto.fechaEntradaProducto) : "" }</p>
+                                            <p><strong>Fecha de entrada: </strong>{producto.fechaEntradaProducto ? convertirTimestamp(producto.fechaEntradaProducto) : ""}</p>
                                             <p><strong>Imagen: </strong>{producto.imagenProducto}</p>
                                         </div>
                                     </td>
