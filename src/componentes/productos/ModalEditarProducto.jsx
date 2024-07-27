@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs} from 'firebase/firestore';
+import { collection, onSnapshot, Timestamp } from 'firebase/firestore';
 import { db } from "../../credenciales";
 
-const formatTimestamp = (timestamp) => {
-    const date = new Date(timestamp);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${day}-${month}-${year}`;
+const convertirTimestamp = (timestamp) => {
+    if (timestamp instanceof Timestamp) {
+        const fecha = timestamp.toDate();
+        const year = fecha.getFullYear();
+        const month = String(fecha.getMonth() + 1).padStart(2, '0');
+        const day = String(fecha.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    } else if (timestamp instanceof Date) {
+        const year = timestamp.getFullYear();
+        const month = String(timestamp.getMonth() + 1).padStart(2, '0');
+        const day = String(timestamp.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
 };
 
 const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handleEditInputChange }) => {
@@ -16,42 +23,32 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
     const [proveedores, setProveedores] = useState([]);
 
     useEffect(() => {
-        const fetchReferencias = async () => {
-            try {
-                const referenciasRef = collection(db, 'referenciaProductos');
-                const snapshot = await getDocs(referenciasRef);
-                const fetchedReferencias = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setReferencias(fetchedReferencias);
-            } catch (error) {
-                console.error("Error fetching referencias: ", error);
-            }
-        };
+        const unsubscribeReferencias = onSnapshot(collection(db, 'referenciaProductos'), (snapshot) => {
+            const fetchedReferencias = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setReferencias(fetchedReferencias);
+        }, (error) => {
+            console.error("Error fetching referencias: ", error);
+        });
 
-        const fetchMarcas = async () => {
-            try {
-                const marcasRef = collection(db, 'marcaProductos');
-                const snapshot = await getDocs(marcasRef);
-                const fetchedMarcas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setMarcas(fetchedMarcas);
-            } catch (error) {
-                console.error("Error fetching marcas: ", error);
-            }
-        };
+        const unsubscribeMarcas = onSnapshot(collection(db, 'marcaProductos'), (snapshot) => {
+            const fetchedMarcas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setMarcas(fetchedMarcas);
+        }, (error) => {
+            console.error("Error fetching marcas: ", error);
+        });
 
-        const fetchProveedores = async () => {
-            try {
-                const proveedoresRef = collection(db, 'proveedores');
-                const snapshot = await getDocs(proveedoresRef);
-                const fetchedProveedores = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setProveedores(fetchedProveedores);
-            } catch (error) {
-                console.error("Error fetching proveedores: ", error);
-            }
-        };
+        const unsubscribeProveedores = onSnapshot(collection(db, 'proveedores'), (snapshot) => {
+            const fetchedProveedores = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setProveedores(fetchedProveedores);
+        }, (error) => {
+            console.error("Error fetching proveedores: ", error);
+        });
 
-        fetchReferencias();
-        fetchMarcas();
-        fetchProveedores();
+        return () => {
+            unsubscribeReferencias();
+            unsubscribeMarcas();
+            unsubscribeProveedores();
+        };
     }, []);
 
     if (!isOpen) return null;
@@ -60,9 +57,7 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
         <>
             <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
                 <div className="relative w-auto my-6 mx-auto max-w-3xl">
-                    {/*content*/}
                     <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                        {/*header*/}
                         <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t dark:bg-[#242424]">
                             <h3 className="text-3xl font-semibold text-[#f97316]">
                                 Editar Producto
@@ -76,7 +71,6 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                 </span>
                             </button>
                         </div>
-                        {/*body*/}
                         <div className="relative p-6 flex-auto dark:bg-[#242424]">
                             <form onSubmit={onSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -114,7 +108,7 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     >
-                                        <option value="">Seleccionar Marca</option>
+                                        <option value="" disabled>Seleccionar Marca</option>
                                         {marcas.map(marca => (
                                             <option key={marca.id} value={marca.id}>
                                                 {marca.nombreProducto}
@@ -123,7 +117,7 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                     </select>
                                     <input
                                         type="text"
-                                        name="precioCompra"
+                                        name="precioCompraProducto"
                                         placeholder="Precio Compra"
                                         value={editingProduct.precioCompraProducto}
                                         onChange={handleEditInputChange}
@@ -131,7 +125,7 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                     />
                                     <input
                                         type="text"
-                                        name="precioVenta"
+                                        name="precioVentaProducto"
                                         placeholder="Precio Venta"
                                         value={editingProduct.precioVentaProducto}
                                         onChange={handleEditInputChange}
@@ -147,8 +141,8 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                     />
                                     <input
                                         type="number"
-                                        name="numeroMinimoStock"
-                                        placeholder="Número Mínimo Stock"
+                                        name="nivelMinimoStock"
+                                        placeholder="Nivel Mínimo Stock"
                                         value={editingProduct.nivelMinimoStock}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
@@ -169,7 +163,7 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                     <input
                                         type="date"
                                         name="fechaEntradaProducto"
-                                        value={editingProduct.fechaEntradaProducto ? formatTimestamp(editingProduct.fechaEntradaProducto) : ''}
+                                        value={editingProduct.fechaEntradaProducto ? convertirTimestamp(editingProduct.fechaEntradaProducto) : ""}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
@@ -192,7 +186,6 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                 </button>
                             </form>
                         </div>
-                        {/*footer*/}
                     </div>
                 </div>
             </div>
@@ -202,4 +195,5 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
 };
 
 export default ModalEditarProducto;
+
 

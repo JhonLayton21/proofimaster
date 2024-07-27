@@ -104,7 +104,15 @@ const TablaProductos = () => {
         e.preventDefault();
         const productDoc = doc(db, 'productos', editingProduct.id);
 
-        await updateDoc(productDoc);
+        // Convertir fechaEntradaProducto a Timestamp antes de actualizar
+        const fecha = new Date(editingProduct.fechaEntradaProducto);
+        const fechaUTC = new Date(fecha.getUTCFullYear(), fecha.getUTCMonth(), fecha.getUTCDate());
+        const productoActualizado = {
+            ...editingProduct,
+            fechaEntradaProducto: Timestamp.fromDate(fechaUTC)
+        };
+
+        await updateDoc( productDoc, productoActualizado);
 
         setEditingProduct(null);
         setIsEditModalOpen(false);
@@ -124,14 +132,16 @@ const TablaProductos = () => {
         } else {
             setNewProduct({ ...newProduct, [name]: value });
         }
-
-        setNewProduct({ ...newProduct, [name]: value });
     };
 
     const handleEditInputChange = (e) => {
         const { name, value } = e.target;
 
-        setEditingProduct({ ...editingProduct, [name]: value });
+        if (name === 'fechaEntradaProducto') {
+            setEditingProduct({ ...editingProduct, [name]: value });
+        } else {
+            setEditingProduct({ ...editingProduct, [name]: value });
+        }
     };
 
     return (
@@ -228,7 +238,7 @@ const TablaProductos = () => {
                 onClose={() => setIsEditModalOpen(false)}
                 onSubmit={editarProducto}
                 editingProduct={editingProduct}
-                handleInputChange={handleEditInputChange}
+                handleEditInputChange={handleEditInputChange}
             />
         </div>
     );
