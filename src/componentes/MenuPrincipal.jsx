@@ -13,10 +13,10 @@ const auth = getAuth(appFirebase);
 const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, showTablaProveedores, titulo, subtitulo }) => {
     return (
         <>
-            <div className="dark:bg-[#242424] bg-[#D3D3D3] col-span-4 md:col-span-3 p-4 md:p-8 min-w-[320px] w-full">
+            <div className="dark:bg-[#242424] bg-[#D3D3D3] md:p-8 min-w-[320px] w-full h-full">
                 {/* HEADER */}
                 <div className="flex flex-col md:flex-row items-center justify-between bg-gray-100 dark:bg-[#292929] p-4 rounded-md space-y-4 md:space-y-0">
-                    <div className="text-slate-800 dark:text-slate-50 font-bold text-2xl md:text-3xl text-left">
+                    <div className="text-[#ff6f00]  font-bold text-2xl md:text-3xl text-left">
                         <h3>Bienvenido de nuevo, usuario</h3>
                     </div>
                     <div className="flex flex-col md:flex-row items-center justify-end space-x-0 md:space-x-8 space-y-4 md:space-y-0 w-full md:w-auto">
