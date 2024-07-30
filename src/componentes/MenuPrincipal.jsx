@@ -7,10 +7,11 @@ import TablaClientes from "../componentes/clientes/TablaClientes";
 import TablaProveedores from "../componentes/proveedores/TablaProveedores";
 import { faEllipsisV, faFileLines, faImagePortrait } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import BentoGrid from "./BentoGrid";
 
 const auth = getAuth(appFirebase);
 
-const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, showTablaProveedores, titulo, subtitulo }) => {
+const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, showTablaProveedores, titulo, subtitulo, children }) => {
     return (
         <>
             <div className="dark:bg-[#242424] bg-[#D3D3D3] md:p-8 min-w-[320px] w-full h-full">
@@ -46,6 +47,8 @@ const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, s
                     <h1 className="text-left text-slate-800 dark:text-slate-50 font-bold text-xl md:text-2xl">{titulo}</h1>
                     <h2 className="text-left text-[#757575] font-semibold text-lg md:text-xl">{subtitulo}</h2>
                 </div>
+
+                {children}
 
                 <div className="mt-8">
                     {showTablaProductos && <TablaProductos />}
