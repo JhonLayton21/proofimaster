@@ -16,7 +16,7 @@ const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, s
         <>
             <div className="dark:bg-[#242424] bg-[#D3D3D3] md:p-8 min-w-[320px] w-full min-h-screen overflow-auto">
                 {/* HEADER */}
-                <div className="flex flex-col md:flex-row items-center justify-between bg-gray-100 dark:bg-[#292929] p-4 rounded-md space-y-4 md:space-y-0">
+                <div className="flex flex-col md:flex-row items-center justify-between bg-gray-100 dark:bg-[#292929] p-4 rounded-md space-y-4 md:space-y-0 m-2 md:m-0">
                     <div className="text-[#ff6f00] font-bold text-2xl md:text-3xl text-left">
                         <h3>Bienvenido de nuevo, usuario</h3>
                     </div>
@@ -44,10 +44,11 @@ const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, s
                 </div>
 
                 <div className="pt-8 md:pt-16">
-                    <h1 className="text-left text-slate-800 dark:text-slate-50 font-bold text-xl md:text-2xl">{titulo}</h1>
-                    <h2 className="text-left text-[#757575] font-semibold text-lg md:text-xl">{subtitulo}</h2>
+                    <h1 className="text-left text-slate-800 dark:text-slate-50 font-bold text-xl md:text-2xl px-2 md:px-0">{titulo}</h1>
+                    <h2 className="text-left text-[#757575] font-semibold text-lg md:text-xl px-2 md:px-0">{subtitulo}</h2>
                 </div>
 
+                {/* CONTENIDO PRINCIPAL  */}
                 {children}
 
                 <div className="mt-8">
