@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import TablaProductos from "../componentes/productos/TablaProductos";
 import TablaClientes from "../componentes/clientes/TablaClientes";
 import TablaProveedores from "../componentes/proveedores/TablaProveedores";
-import { faEllipsisV, faFileLines, faImagePortrait } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisV, faFileLines, faImagePortrait, faBell, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BentoGrid from "./BentoGrid";
 import MenuCuenta from "./MenuCuenta";

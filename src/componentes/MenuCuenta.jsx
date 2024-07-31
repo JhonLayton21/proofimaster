@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { faCircleUser } from '@fortawesome/free-solid-svg-icons';
+import { faCircleUser, faFileLines, faBell, faEnvelope, faGear, faImagePortrait } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getAuth, signOut } from 'firebase/auth';
 import appFirebase from '../credenciales';
@@ -71,7 +71,7 @@ export default function MenuCuenta() {
               ref={dropdown}
               onFocus={() => setDropdownOpen(true)}
               onBlur={() => setDropdownOpen(false)}
-              className={`absolute right-0 top-full w-[240px] divide-y divide-stroke overflow-hidden rounded-lg bg-white dark:divide-dark-3 dark:bg-[#292929] ${dropdownOpen ? "block" : "hidden"}`}
+              className={`absolute right-0 top-full w-[240px] divide-y divide-stroke overflow-hidden rounded-lg z-40 bg-white dark:divide-dark-3 dark:bg-[#292929] ${dropdownOpen ? "block" : "hidden"}`}
             >
               <div className="flex items-center gap-3 px-4 py-3">
                 <div className="relative aspect-square w-10 rounded-full">
@@ -93,21 +93,34 @@ export default function MenuCuenta() {
                   className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                 >
                   Ver perfil
-                </a>
+                  <FontAwesomeIcon icon={faImagePortrait} className="text-slate-800 dark:text-slate-50 fa-lg" /> </a>
                 <Link to="/configuracion"
                   href="#0"
                   className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                 >
                   Configuración
-                </Link>
+                  <FontAwesomeIcon icon={faGear} className="text-slate-800 dark:text-slate-50 fa-lg" /> </Link>
               </div>
               <div>
                 <a
                   href="#0"
                   className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                 >
+                  Ir al correo
+                  <FontAwesomeIcon icon={faEnvelope} className="text-slate-800 dark:text-slate-50 fa-lg cursor-pointer" /> </a>
+                <a
+                  href="#0"
+                  className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                >
+                  Consultar alertas
+                  <FontAwesomeIcon icon={faBell} className="text-slate-800 dark:text-slate-50 fa-lg cursor-pointer" /> </a>
+                <a
+                  href="#0"
+                  className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                >
                   Documentación
-                </a>
+                  <FontAwesomeIcon icon={faFileLines} className="text-slate-800 dark:text-slate-50 fa-lg" /> </a>
+
               </div>
               <div>
                 <button className="flex w-full items-center justify-between px-4 py-2.5 text-sm font-medium text-dark hover:bg-gray-50 dark:text-[#ff6f00] dark:bg-[#292929] dark:hover:bg-white/5 border-none" onClick={() => signOut(auth)}>
