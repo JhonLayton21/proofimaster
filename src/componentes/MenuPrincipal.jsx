@@ -8,6 +8,7 @@ import TablaProveedores from "../componentes/proveedores/TablaProveedores";
 import { faEllipsisV, faFileLines, faImagePortrait } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BentoGrid from "./BentoGrid";
+import MenuCuenta from "./MenuCuenta";
 
 const auth = getAuth(appFirebase);
 
@@ -34,11 +35,10 @@ const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, s
                                 <p className="text-sm text-slate-800 dark:text-slate-50 font-bold text-left">{correoUsuario}</p>
                                 <p className="text-sm font-medium text-[#757575] dark:text-[#757575] text-left">Administrador</p>
                             </div>
-                            <div className="relative">
-                                <Link to="/configuracion" className="absolute top-1/2 right-0 transform -translate-y-1/2 text-gray-500">
-                                    <FontAwesomeIcon icon={faEllipsisV} className="fa-2xl text-slate-800 dark:text-slate-50" />
-                                </Link>
-                            </div>
+
+                        </div>
+                        <div className="relative">
+                            <MenuCuenta />
                         </div>
                     </div>
                 </div>

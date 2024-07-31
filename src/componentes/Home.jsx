@@ -13,7 +13,7 @@ const Home = ({ correoUsuario }) => {
 
             {/* MENU PRINCIPAL */}
             <div className="w-full h-full md:col-span-10 overflow-y-auto">
-                <BentoGrid />
+                <BentoGrid correoUsuario={correoUsuario} />
             </div>
         </div>
     );
