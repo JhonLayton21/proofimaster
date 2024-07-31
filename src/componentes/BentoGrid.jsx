@@ -17,10 +17,10 @@ const BentoGrid = ({ correoUsuario }) => {
                     </ol>
                 </div>
                 <div className="bentoItem col-span-6 lg:col-span-4 row-span-1 lg:row-span-2">Total de ventas</div>
-                <div className="bentoItem col-span-6 lg:col-span-2 row-span-1 lg:row-span-2 !bg-yellow-400">Alertas de stock</div>
+                <div className="bentoItem col-span-6 lg:col-span-2 row-span-1 lg:row-span-2">Alertas de stock</div>
                 <div className="bentoItem col-span-6 lg:col-span-2">Proveedores</div>
                 <div className="bentoItem col-span-6 lg:col-span-2">Clientes frecuentes</div>
-                <div className="bentoItem col-span-6 lg:col-span-8 row-span-1 lg:row-span-2 !bg-sky-200">Informes generados</div>
+                <div className="bentoItem col-span-6 lg:col-span-8 row-span-1 lg:row-span-2">Informes generados</div>
                 <div className="bentoItem col-span-12 lg:col-span-4 row-span-1 lg:row-span-1">Usuarios activos</div>
             </div>
         </MenuPrincipal>

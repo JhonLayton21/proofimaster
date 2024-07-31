@@ -71,7 +71,7 @@ export default function MenuCuenta() {
               ref={dropdown}
               onFocus={() => setDropdownOpen(true)}
               onBlur={() => setDropdownOpen(false)}
-              className={`absolute right-0 top-full w-[240px] divide-y divide-stroke overflow-hidden rounded-lg bg-white dark:divide-dark-3 dark:bg-dark-2 ${dropdownOpen ? "block" : "hidden"}`}
+              className={`absolute right-0 top-full w-[240px] divide-y divide-stroke overflow-hidden rounded-lg bg-white dark:divide-dark-3 dark:bg-[#292929] ${dropdownOpen ? "block" : "hidden"}`}
             >
               <div className="flex items-center gap-3 px-4 py-3">
                 <div className="relative aspect-square w-10 rounded-full">
@@ -110,7 +110,7 @@ export default function MenuCuenta() {
                 </a>
               </div>
               <div>
-                <button className="flex w-full items-center justify-between px-4 py-2.5 text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5" onClick={() => signOut(auth)}>
+                <button className="flex w-full items-center justify-between px-4 py-2.5 text-sm font-medium text-dark hover:bg-gray-50 dark:text-[#ff6f00] dark:bg-[#292929] dark:hover:bg-white/5 border-none" onClick={() => signOut(auth)}>
                   Cerrar sesión
                 </button>
               </div>
