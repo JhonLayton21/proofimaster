@@ -4,7 +4,7 @@ import MenuPrincipal from "./MenuPrincipal";
 const BentoGrid = ({ correoUsuario }) => {
     return (
         <MenuPrincipal correoUsuario={correoUsuario} titulo={"MENÚ PRINCIPAL"} subtitulo={"Ingresa rápidamente a los datos guardados en Proofimaster"} >
-            <div className="grid grid-cols-12 grid-rows-4 gap-2 mt-8 px-2 md:px-0 ">
+            <div className="grid grid-cols-12 grid-rows-4 gap-2 mt-8 px-2 md:px-0">
                 <div className="bentoItem col-span-6 lg:col-span-4 row-span-1 lg:row-span-2">
                     <h2 className="text-lg font-bold mb-4">Productos principales</h2>
                     <ol className="list-decimal list-inside mb-4 px-4 ">

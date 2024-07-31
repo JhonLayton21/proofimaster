@@ -89,8 +89,16 @@ input{
   font-size: larger;
   background-color: #292929;
   border-radius: 6px;
-  color: #f8fafc; /*text-slate 50*/
+  color: f8fafc; /*text-slate 50*/
+  border: 2px solid rgba(128, 128, 128, 0.136);
 }
+
+.bentoItem:hover {
+  --tw-shadow: 0 25px 50px -12px rgba(255, 106, 0, 0.582);
+    --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 
 @media (prefers-color-scheme: light) {
   :root {
@@ -99,7 +107,7 @@ input{
   }
 
   .bentoItem {
-    background-color: #f3f4f6;
+    background-color: white;
     color: #1e293b; /*text-slate 800*/
   }
 
