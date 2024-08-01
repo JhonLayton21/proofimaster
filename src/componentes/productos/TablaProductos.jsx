@@ -13,6 +13,9 @@ const convertirTimestamp = (timestamp) => {
 
 const TablaProductos = () => {
     const [productos, setProductos] = useState([]);
+    const [referencias, setReferencias] = useState([]);
+    const [marcas, setMarcas] = useState([]);
+    const [proveedores, setProveedores] = useState([]);
     const [newProduct, setNewProduct] = useState({
         nombreProducto: "",
         descripcionProducto: "",
@@ -32,42 +35,61 @@ const TablaProductos = () => {
     const [expandedProductId, setExpandedProductId] = useState(null);
 
     useEffect(() => {
-        const productsRef = collection(db, 'productos');
+        /* Referencia y obtención productos */
+        const fetchProductos = async () => {
+            try {
+                const productosRef = collection(db, "productos");
+                const snapshot = await getDocs(productosRef);
 
-        const unsubscribe = onSnapshot(productsRef, async (snapshot) => {
-            const fetchedProducts = await Promise.all(snapshot.docs.map(async (doc) => {
-                const data = doc.data();
+                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setProductos(data); // Asignar los datos obtenidos al estado
+            } catch (error) {
+                console.error("Error al mostrar productos: ", error);
+            }
+        }
 
-                if (data.marcaProducto && data.marcaProducto instanceof doc.constructor) {
-                    const marcaProductoSnapshot = await getDoc(data.marcaProducto);
-                    if (marcaProductoSnapshot.exists()) {
-                        data.marcaProducto = { id: marcaProductoSnapshot.id, ...marcaProductoSnapshot.data() };
-                    }
-                }
+        /* Referencia y obtención marcas */
+        const fetchMarcaProductos = async () => {
+            try {
+                const marcaProductosRef = collection(db, "marcaProductos");
+                const snapshot = await getDocs(marcaProductosRef);
+                const tiposData = snapshot.docs.map(doc => doc.data().nombreProducto);
+                setMarcas(tiposData);
+            } catch (error) {
+                console.error("Error al mostrar marca de productos: ", error);
+            }
+        };
 
-                if (data.referenciaProducto && data.referenciaProducto instanceof doc.constructor) {
-                    const referenciaProductoSnapshot = await getDoc(data.referenciaProducto);
-                    if (referenciaProductoSnapshot.exists()) {
-                        data.referenciaProducto = { id: referenciaProductoSnapshot.id, ...referenciaProductoSnapshot.data() };
-                    }
-                }
+        /* Referencia y obtención referencias */
+        const fetchReferenciaProductos = async () => {
+            try {
+                const referenciaProductosRef = collection(db, "referenciaProductos");
+                const snapshot = await getDocs(referenciaProductosRef);
+                const tiposData = snapshot.docs.map(doc => doc.data().nombreReferencia);
+                setReferencias(tiposData);
+            } catch (error) {
+                console.error("Error al mostrar referencia de productos: ", error);
+            }
+        };
 
-                if (data.proveedorId && data.proveedorId instanceof doc.constructor) {
-                    const proveedorIdSnapshot = await getDoc(data.proveedorId);
-                    if (proveedorIdSnapshot.exists()) {
-                        data.proveedorId = { id: proveedorIdSnapshot.id, ...proveedorIdSnapshot.data() };
-                    }
-                }
+        /* Referencia y obtención proveedores */
+        const fetchProveedorProductos = async () => {
+            try {
+                const proveedorProductosRef = collection(db, "proveedores");
+                const snapshot = await getDocs(proveedorProductosRef);
+                const tiposData = snapshot.docs.map(doc => doc.data().nombreProveedor);
+                setProveedores(tiposData);
+            } catch (error) {
+                console.error("Error al mostrar proveedor de productos: ", error);
+            }
+        };
 
-                return { id: doc.id, ...data };
-            }));
-            setProductos(fetchedProducts);
-        });
-
-        // Cleanup listener on component unmount
-        return () => unsubscribe();
+        fetchProductos();
+        fetchMarcaProductos();
+        fetchReferenciaProductos();
+        fetchProveedorProductos();
     }, []);
-
+    
 
     const agregarProducto = async (e) => {
         e.preventDefault();
@@ -207,13 +229,13 @@ const TablaProductos = () => {
                                         <div className="p-4">
                                             <p><strong>Nombre: </strong>{producto.nombreProducto}</p>
                                             <p><strong>Descripción: </strong>{producto.descripcionProducto}</p>
-                                            <p><strong>Referencia: </strong>{producto.referenciaProducto.nombreReferencia}</p>
-                                            <p><strong>Marca: </strong>{producto.marcaProducto.nombreProducto}</p>
+                                            <p><strong>Referencia: </strong>{producto.referenciaProducto}</p>
+                                            <p><strong>Marca: </strong>{producto.marcaProducto}</p>
                                             <p><strong>Precio de compra: </strong>{producto.precioCompraProducto}</p>
                                             <p><strong>Precio de venta: </strong>{producto.precioVentaProducto}</p>
                                             <p><strong>Stock: </strong>{producto.stock}</p>
                                             <p><strong>Nivel minimo Stock: </strong>{producto.nivelMinimoStock}</p>
-                                            <p><strong>Proveedor: </strong>{producto.proveedorId.nombreProveedor}</p>
+                                            <p><strong>Proveedor: </strong>{producto.proveedorId}</p>
                                             <p><strong>Fecha de entrada: </strong>{producto.fechaEntradaProducto ? convertirTimestamp(producto.fechaEntradaProducto) : ""}</p>
                                             <p><strong>Imagen: </strong>{producto.imagenProducto}</p>
                                         </div>
@@ -231,6 +253,9 @@ const TablaProductos = () => {
                 onSubmit={agregarProducto}
                 newProduct={newProduct}
                 handleInputChange={handleInputChange}
+                referencias={referencias}
+                marcas={marcas}
+                proveedores={proveedores}
             />
 
             <ModalEditarProducto
@@ -239,6 +264,9 @@ const TablaProductos = () => {
                 onSubmit={editarProducto}
                 editingProduct={editingProduct}
                 handleEditInputChange={handleEditInputChange}
+                referencias={referencias}
+                marcas={marcas}
+                proveedores={proveedores}
             />
         </div>
     );

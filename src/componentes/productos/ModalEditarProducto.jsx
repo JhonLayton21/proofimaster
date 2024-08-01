@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, Timestamp } from 'firebase/firestore';
-import { db } from "../../credenciales";
+import React from "react";
+import { Timestamp } from 'firebase/firestore';
 
 const convertirTimestamp = (timestamp) => {
     if (timestamp instanceof Timestamp) {
@@ -17,39 +16,7 @@ const convertirTimestamp = (timestamp) => {
     }
 };
 
-const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handleEditInputChange }) => {
-    const [referencias, setReferencias] = useState([]);
-    const [marcas, setMarcas] = useState([]);
-    const [proveedores, setProveedores] = useState([]);
-
-    useEffect(() => {
-        const unsubscribeReferencias = onSnapshot(collection(db, 'referenciaProductos'), (snapshot) => {
-            const fetchedReferencias = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setReferencias(fetchedReferencias);
-        }, (error) => {
-            console.error("Error fetching referencias: ", error);
-        });
-
-        const unsubscribeMarcas = onSnapshot(collection(db, 'marcaProductos'), (snapshot) => {
-            const fetchedMarcas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setMarcas(fetchedMarcas);
-        }, (error) => {
-            console.error("Error fetching marcas: ", error);
-        });
-
-        const unsubscribeProveedores = onSnapshot(collection(db, 'proveedores'), (snapshot) => {
-            const fetchedProveedores = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setProveedores(fetchedProveedores);
-        }, (error) => {
-            console.error("Error fetching proveedores: ", error);
-        });
-
-        return () => {
-            unsubscribeReferencias();
-            unsubscribeMarcas();
-            unsubscribeProveedores();
-        };
-    }, []);
+const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handleEditInputChange, referencias, marcas, proveedores }) => {
 
     if (!isOpen) return null;
 
@@ -96,9 +63,9 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                         className="input-class m-4 text-[#757575]"
                                     >
                                         <option value="" disabled>Seleccione Referencia</option>
-                                        {referencias.map(referencia => (
-                                            <option key={referencia.id} value={referencia.id}>
-                                                {referencia.nombreReferencia}
+                                        {referencias.map((nombreReferencia, index) => (  
+                                            <option key={index} value={nombreReferencia}>
+                                                {nombreReferencia}
                                             </option>
                                         ))}
                                     </select>
@@ -109,9 +76,9 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                         className="input-class m-4 text-[#757575]"
                                     >
                                         <option value="" disabled>Seleccionar Marca</option>
-                                        {marcas.map(marca => (
-                                            <option key={marca.id} value={marca.id}>
-                                                {marca.nombreProducto}
+                                        {marcas.map((nombreProducto, index) => (
+                                            <option key={index} value={nombreProducto}>
+                                                {nombreProducto}
                                             </option>
                                         ))}
                                     </select>
@@ -148,15 +115,15 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <select
-                                        name="proveedor"
-                                        value={editingProduct.proveedor}
+                                        name="proveedorId"
+                                        value={editingProduct.proveedorId}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     >
                                         <option value="" disabled>Seleccione Proveedor</option>
-                                        {proveedores.map(proveedor => (
-                                            <option key={proveedor.id} value={proveedor.id}>
-                                                {proveedor.nombreProveedor}
+                                        {proveedores.map((nombreProveedor, index) => (
+                                            <option key={index} value={nombreProveedor}>
+                                                {nombreProveedor}
                                             </option>
                                         ))}
                                     </select>

@@ -26,7 +26,7 @@ const TablaClientes = () => {
                 const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 setClientes(data); // Asignar los datos obtenidos al estado
             } catch (error) {
-                console.error("Error fetching data: ", error);
+                console.error("Error al mostrar clientes: ", error);
             }
         }
 
@@ -37,7 +37,7 @@ const TablaClientes = () => {
                 const tiposData = snapshot.docs.map(doc => doc.data().tipo);
                 setTipoClientes(tiposData);
             } catch (error) {
-                console.error("Error fetching client types: ", error);
+                console.error("Error al mostrar tipo de clientes: ", error);
             }
         };
 

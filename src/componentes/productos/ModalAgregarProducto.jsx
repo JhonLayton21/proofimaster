@@ -1,52 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
-import { db } from "../../credenciales";
+import React from 'react';
+import { Timestamp } from 'firebase/firestore';
+
+const convertirTimestamp = (timestamp) => {
+    if (timestamp instanceof Timestamp) {
+        const fecha = timestamp.toDate();
+        const year = fecha.getFullYear();
+        const month = String(fecha.getMonth() + 1).padStart(2, '0');
+        const day = String(fecha.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    } else if (timestamp instanceof Date) {
+        const year = timestamp.getFullYear();
+        const month = String(timestamp.getMonth() + 1).padStart(2, '0');
+        const day = String(timestamp.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+};
 
 
-const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInputChange }) => {
-
-    const [referencias, setReferencias] = useState([]);
-    const [marcas, setMarcas] = useState([]);
-    const [proveedores, setProveedores] = useState([]);
-
-    useEffect(() => {
-        const fetchReferencias = async () => {
-            try {
-                const referenciasRef = collection(db, 'referenciaProductos');
-                const snapshot = await getDocs(referenciasRef);
-                const fetchedReferencias = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setReferencias(fetchedReferencias);
-            } catch (error) {
-                console.error("Error fetching referencias: ", error);
-            }
-        };
-
-        const fetchMarcas = async () => {
-            try {
-                const marcasRef = collection(db, 'marcaProductos');
-                const snapshot = await getDocs(marcasRef);
-                const fetchedMarcas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setMarcas(fetchedMarcas);
-            } catch (error) {
-                console.error("Error fetching marcas: ", error);
-            }
-        };
-
-        const fetchProveedores = async () => {
-            try {
-                const proveedoresRef = collection(db, 'proveedores');
-                const snapshot = await getDocs(proveedoresRef);
-                const fetchedProveedores = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setProveedores(fetchedProveedores);
-            } catch (error) {
-                console.error("Error fetching proveedores: ", error);
-            }
-        };
-
-        fetchReferencias();
-        fetchMarcas();
-        fetchProveedores();
-    }, []);
+const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInputChange, referencias, marcas, proveedores }) => {
 
     if (!isOpen) return null;
 
@@ -96,9 +67,9 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                         className="input-class m-4 text-[#757575]"
                                     >
                                         <option value="" disabled>Seleccione Referencia</option>
-                                        {referencias.map(referencia => (
-                                            <option key={referencia.id} value={referencia.id}>
-                                                {referencia.nombreReferencia}
+                                        {referencias.map((nombreReferencia, index ) => (
+                                            <option key={index} value={nombreReferencia}>
+                                                {nombreReferencia}
                                             </option>
                                         ))}
                                     </select>
@@ -109,9 +80,9 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                         className="input-class m-4 text-[#757575]"
                                     >
                                         <option value="">Seleccionar Marca</option>
-                                        {marcas.map(marca => (
-                                            <option key={marca.id} value={marca.id}>
-                                                {marca.nombreProducto}
+                                        {marcas.map((nombreProducto, index ) => (
+                                            <option key={index} value={nombreProducto}>
+                                                {nombreProducto}
                                             </option>
                                         ))}
                                     </select>
@@ -148,22 +119,22 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <select
-                                        name="proveedor"
-                                        value={newProduct.proveedor}
+                                        name="proveedorId"
+                                        value={newProduct.proveedorId}
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     >
                                         <option value="" disabled>Seleccione Proveedor</option>
-                                        {proveedores.map(proveedor => (
-                                            <option key={proveedor.id} value={proveedor.id}>
-                                                {proveedor.nombreProveedor}
+                                        {proveedores.map((nombreProveedor, index ) => (
+                                            <option key={index} value={nombreProveedor}>
+                                                {nombreProveedor}
                                             </option>
                                         ))}
                                     </select>
                                     <input
                                         type="date"
                                         name="fechaEntradaProducto"
-                                        value={newProduct.fechaEntradaProducto}
+                                        value={newProduct.fechaEntradaProducto ? convertirTimestamp(newProduct.fechaEntradaProducto) : ""}
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
