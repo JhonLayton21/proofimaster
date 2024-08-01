@@ -21,13 +21,13 @@ const MenuLateral = () => {
                     {/* HEADER */}
                     <div className="border-b border-solid">
                         <div className="flex items-center justify-between pb-6">
-                            <h1 className="text-left text-slate-100 hover:text-orange-800 md:text-xl lg:text-2xl xl:text-3xl font-bold whitespace-nowrap overflow-hidden">
+                            <h1 className="text-left text-slate-100 hover:text-orange-800 md:text-xl lg:text-2xl font-bold whitespace-nowrap overflow-hidden">
                                 <Link to="/">PROOFIMASTER</Link>
                             </h1>
                             <FontAwesomeIcon icon={faBars} className="fa-2x hover:text-orange-800 text-slate-100 cursor-pointer" />
                         </div>
-                        <h2 className="text-left text-[#242424] font-semibold text-xl pb-2">Proofisillas LTDA.</h2>
-                        <h3 className="text-left text-[#242424] font-semibold text-xl pb-6">NIT: 1234567890</h3>
+                        <h2 className="text-left text-[#242424] font-semibold text-base pb-2">Proofisillas LTDA.</h2>
+                        <h3 className="text-left text-[#242424] font-semibold text-base pb-6">NIT: 1234567890</h3>
                     </div>
 
                     {/* MAIN */}
