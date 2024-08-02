@@ -9,10 +9,11 @@ import { faEllipsisV, faFileLines, faImagePortrait, faBell, faEnvelope } from '@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BentoGrid from "./BentoGrid";
 import MenuCuenta from "./MenuCuenta";
+import TablaVentas from "./ventas/TablaVentas";
 
 const auth = getAuth(appFirebase);
 
-const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, showTablaProveedores, titulo, subtitulo, children }) => {
+const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, showTablaProveedores, showTablaVentas, titulo, subtitulo, children }) => {
     return (
         <>
             <div className="dark:bg-[#242424] bg-[#eeeeee] md:p-8 min-w-[320px] w-full min-h-screen overflow-auto">
@@ -55,6 +56,7 @@ const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, s
                     {showTablaProductos && <TablaProductos />}
                     {showTablaClientes && <TablaClientes />}
                     {showTablaProveedores && <TablaProveedores />}
+                    {showTablaVentas && <TablaVentas />}
                 </div>
             </div>
         </>

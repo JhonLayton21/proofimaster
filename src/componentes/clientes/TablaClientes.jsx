@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 const TablaClientes = () => {
-    // Estados para almacenar datos y controlar la interfaz
+    // Inicialización de estados
     const [newClient, setNewClient] = useState({ nombreCliente: "", emailCliente: "", telefonoCliente: "", direccionCliente: "", tipoCliente: '' });
     const [editingClient, setEditingClient] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -16,7 +16,7 @@ const TablaClientes = () => {
     const [clientes, setClientes] = useState([]);
     const [tipoClientes, setTipoClientes] = useState([]);
 
-    // Efecto para cargar clientes desde Firestore al montar el componente
+    // Efecto recuperar los datos
     useEffect(() => {
         const fetchClientes = async () => {
             try {

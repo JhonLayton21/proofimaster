@@ -13,7 +13,7 @@ const Ventas = () => {
 
       {/* MENU PRINCIPAL */}
       <div className="col-span-12 md:col-span-10">
-        <MenuPrincipal showTablaProductos={false} titulo={"VENTAS"} subtitulo={"Seguimiento y control de transacciones"} />
+        <MenuPrincipal showTablaVentas={true} titulo={"VENTAS"} subtitulo={"Seguimiento y control de transacciones"} />
       </div>
 
 
