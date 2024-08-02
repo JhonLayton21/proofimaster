@@ -29,9 +29,9 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
 
     return (
         <>
-            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-                <div className="relative w-auto my-6 mx-auto max-w-3xl">
-                    <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none min-h-screen">
+                <div className="relative w-auto my-6 mx-auto max-w-3xl max-h-screen">
+                    <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none overflow-y-auto">
                         <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t dark:bg-[#242424]">
                             <h3 className="text-3xl font-semibold text-[#f97316]">
                                 Agregar Venta
@@ -47,11 +47,12 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                         </div>
                         <div className="relative p-6 flex-auto dark:bg-[#242424]">
                             <div className="grid grid-rows-6 grid-cols-12 gap-4">
-                                <div className="row-span-3 col-span-12 md:col-span-6 bg-white rounded-lg p-4 dark:bg-[#353535]">
+
+                                {/* DATOS PRODUCTOS */}
+                                <div className="row-span-3 col-span-12 md:col-span-6 bg-white rounded-lg p-4 dark:bg-[#292929] flex flex-col">
                                     <h3 className="text-xl text-left font-semibold text-[#f97316] mb-2">Datos Productos</h3>
-                                    <form onSubmit={handleSubmit}>
-                                        <h2 className="text-base text-left ml-2 font-semibold mt-2 text-[#f97316]">Seleccionar Productos</h2>
-                                        <div className="grid grid-cols-1  gap-4">
+                                    <form onSubmit={handleSubmit} className="flex-grow flex flex-col">
+                                        <div className="grid grid-cols-1 gap-4 flex-grow">
                                             {productos.map(producto => (
                                                 <div key={producto.id} className="flex items-center">
                                                     <input
@@ -61,7 +62,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                                         onChange={() => manejarCambioCheckbox(producto)}
                                                         className="m-2"
                                                     />
-                                                    <label htmlFor={producto.id} className="text-left flex-grow text-[#f97316]">{producto.nombreProducto} - ${producto.precioVentaProducto}</label>
+                                                    <label htmlFor={producto.id} className="text-left flex-grow text-[#757575] dark:text-[#757575]">{producto.nombreProducto} - {producto.precioVentaProducto} COP</label>
                                                     {productosSeleccionados[producto.id] && (
                                                         <input
                                                             type="number"
@@ -74,24 +75,134 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                                 </div>
                                             ))}
                                         </div>
-
-
                                     </form>
                                 </div>
 
-                                <div className="row-span-3 col-span-12 md:col-span-6 bg-white rounded-lg p-4 dark:bg-[#353535]">
+                                {/* DATOS CLIENTE */}
+                                <div className="row-span-3 col-span-12 md:col-span-6 flex flex-col bg-white rounded-lg p-4 dark:bg-[#292929]">
                                     <h3 className="text-xl text-left font-semibold text-[#f97316] mb-2">Datos Cliente</h3>
-                                    {/* Contenido de Datos Cliente */}
+                                    <select className="w-full p-2 my-4 border rounded-md text-[#757575]">
+                                        <option value="">Seleccione un cliente</option>
+                                        <option value="cliente1">Cliente 1</option>
+                                        <option value="cliente2">Cliente 2</option>
+                                        {/* Agrega más opciones según sea necesario */}
+                                    </select>
+                                    <div className="flex items-center justify-center mb-4">
+                                        <div className="w-16 h-16 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 flex-grow">
+                                        <div className="md:col-span-2 flex justify-center">
+                                            <input
+                                                type="text"
+                                                placeholder="Nombre"
+                                                disabled
+                                                className="w-full md:w-1/2 p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                            />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            placeholder="Correo"
+                                            disabled
+                                            className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Teléfono"
+                                            disabled
+                                            className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Dirección"
+                                            disabled
+                                            className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Método de pago"
+                                            disabled
+                                            className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                        />
+                                    </div>
                                 </div>
 
-                                <div className="row-span-3 col-span-12 md:col-span-6 bg-white rounded-lg p-4 dark:bg-[#353535]">
+                                {/* DATOS VENTA */}
+                                <div className="row-span-3 col-span-12 md:col-span-6 flex flex-col bg-white rounded-lg p-4 dark:bg-[#292929]">
                                     <h3 className="text-xl text-left font-semibold text-[#f97316] mb-2">Datos Venta</h3>
-                                    {/* Contenido de Datos Venta */}
+                                    <div className="grid grid-cols-1 gap-4 flex-grow">
+                                        <div className="flex items-center justify-start">
+                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">ID venta</label>
+                                            <input
+                                                type="text"
+                                                className="w-2/3 p-2 border border-[#E06D00] rounded-md bg-transparent text-[#757575]"
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-start">
+                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Fecha venta</label>
+                                            <input
+                                                type="date"
+                                                className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]" 
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-start">
+                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Estado venta</label>
+                                            <input
+                                                type="text"
+                                                className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-start">
+                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Método de pago</label>
+                                            <input
+                                                type="text"
+                                                className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-start">
+                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Descuento (si aplica)</label>
+                                            <input
+                                                type="text"
+                                                className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div className="row-span-3 col-span-12 md:col-span-6 bg-white rounded-lg p-4 dark:bg-[#353535]">
+                                {/* DATOS PEDIDO */}
+                                <div className="row-span-3 col-span-12 md:col-span-6 flex flex-col bg-white rounded-lg p-4 dark:bg-[#292929]">
                                     <h3 className="text-xl text-left font-semibold text-[#f97316] mb-2">Datos Pedido</h3>
-                                    {/* Contenido de Datos Pedido */}
+                                    <div className="grid grid-cols-1 gap-4 flex-grow">
+                                        <div className="flex items-center justify-start">
+                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Nota (si aplica)</label>
+                                            <input
+                                                type="text"
+                                                className="w-2/3 p-2 border rounded-md text-[#757575] bg-gray-200 dark:bg-gray-600"
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-start">
+                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Método de envío</label>
+                                            <input
+                                                type="text"
+                                                className="w-2/3 p-2 border rounded-md text-[#757575] bg-gray-200 dark:bg-gray-600"
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-start">
+                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Subtotal</label>
+                                            <input
+                                                type="text"
+                                                className="w-2/3 p-2 border rounded-md text-[#757575] bg-gray-200 dark:bg-gray-600"
+                                            />
+                                        </div>
+                                    </div>
+                                    <hr className="my-4 border-t-2 border-orange-500" />
+                                    <div className="flex items-center justify-start">
+                                        <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">TOTAL</label>
+                                        <input
+                                            type="text"
+                                            disabled
+                                            className="w-2/3 p-2 border rounded-md text-[#757575] bg-gray-200 dark:bg-gray-600"
+                                        />
+                                    </div>
                                 </div>
 
                             </div>
@@ -106,12 +217,11 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                 Cancelar
                             </button>
                         </div>
-
-
                     </div>
                 </div>
             </div>
             <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+
         </>
     );
 };
