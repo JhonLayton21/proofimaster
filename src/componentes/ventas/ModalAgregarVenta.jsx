@@ -21,7 +21,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
         e.preventDefault();
 
         const productosFiltrados = Object.values(productosSeleccionados).filter(Boolean);
-        
+
         onSubmit({ ...newSale, productos: productosFiltrados });
     };
 
@@ -46,54 +46,68 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                             </button>
                         </div>
                         <div className="relative p-6 flex-auto dark:bg-[#242424]">
-                            <form onSubmit={handleSubmit}>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input
-                                        type="text"
-                                        name="nombreCliente"
-                                        placeholder="Nombre del Cliente"
-                                        value={newSale.nombreCliente}
-                                        onChange={handleInputChange}
-                                        className="input-class m-4 text-[#757575]"
-                                    />
-                                </div>
-                                <h2 className="text-xl font-semibold mt-4 text-[#f97316]">Seleccionar Productos</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {productos.map(producto => (
-                                        <div key={producto.id} className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                id={producto.id}
-                                                checked={!!productosSeleccionados[producto.id]}
-                                                onChange={() => manejarCambioCheckbox(producto)}
-                                                className="m-2"
-                                            />
-                                            <label htmlFor={producto.id} className="flex-grow text-[#f97316]">{producto.nombreProducto} - ${producto.precioVentaProducto}</label>
-                                            {productosSeleccionados[producto.id] && (
-                                                <input
-                                                    type="number"
-                                                    min="1"
-                                                    value={productosSeleccionados[producto.id].cantidad}
-                                                    onChange={(e) => manejarCambioCantidad(producto.id, parseInt(e.target.value))}
-                                                    className="input-class ml-2 text-[#757575]"
-                                                />
-                                            )}
+                            <div className="grid grid-rows-6 grid-cols-12 gap-4">
+                                <div className="row-span-3 col-span-12 md:col-span-6 bg-white rounded-lg p-4 dark:bg-[#353535]">
+                                    <h3 className="text-xl text-left font-semibold text-[#f97316] mb-2">Datos Productos</h3>
+                                    <form onSubmit={handleSubmit}>
+                                        <h2 className="text-base text-left ml-2 font-semibold mt-2 text-[#f97316]">Seleccionar Productos</h2>
+                                        <div className="grid grid-cols-1  gap-4">
+                                            {productos.map(producto => (
+                                                <div key={producto.id} className="flex items-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={producto.id}
+                                                        checked={!!productosSeleccionados[producto.id]}
+                                                        onChange={() => manejarCambioCheckbox(producto)}
+                                                        className="m-2"
+                                                    />
+                                                    <label htmlFor={producto.id} className="text-left flex-grow text-[#f97316]">{producto.nombreProducto} - ${producto.precioVentaProducto}</label>
+                                                    {productosSeleccionados[producto.id] && (
+                                                        <input
+                                                            type="number"
+                                                            min="1"
+                                                            value={productosSeleccionados[producto.id].cantidad}
+                                                            onChange={(e) => manejarCambioCantidad(producto.id, parseInt(e.target.value))}
+                                                            className="input-class ml-6 text-[#757575]"
+                                                        />
+                                                    )}
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))}
+
+
+                                    </form>
                                 </div>
 
-                                <button type="submit" className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-4 mt-2 ease-linear transition-all duration-150">
-                                    Agregar Venta
-                                </button>
-                                <button
-                                    type="button"
-                                    className="text-slate-50 bg-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                                    onClick={onClose}
-                                >
-                                    Cancelar
-                                </button>
-                            </form>
+                                <div className="row-span-3 col-span-12 md:col-span-6 bg-white rounded-lg p-4 dark:bg-[#353535]">
+                                    <h3 className="text-xl text-left font-semibold text-[#f97316] mb-2">Datos Cliente</h3>
+                                    {/* Contenido de Datos Cliente */}
+                                </div>
+
+                                <div className="row-span-3 col-span-12 md:col-span-6 bg-white rounded-lg p-4 dark:bg-[#353535]">
+                                    <h3 className="text-xl text-left font-semibold text-[#f97316] mb-2">Datos Venta</h3>
+                                    {/* Contenido de Datos Venta */}
+                                </div>
+
+                                <div className="row-span-3 col-span-12 md:col-span-6 bg-white rounded-lg p-4 dark:bg-[#353535]">
+                                    <h3 className="text-xl text-left font-semibold text-[#f97316] mb-2">Datos Pedido</h3>
+                                    {/* Contenido de Datos Pedido */}
+                                </div>
+
+                            </div>
+                            <button type="submit" className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-4 mt-2 ease-linear transition-all duration-150">
+                                Agregar Venta
+                            </button>
+                            <button
+                                type="button"
+                                className="text-slate-50 bg-red-500 background-transparent font-bold uppercase px-6 py-3 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                onClick={onClose}
+                            >
+                                Cancelar
+                            </button>
                         </div>
+
+
                     </div>
                 </div>
             </div>
