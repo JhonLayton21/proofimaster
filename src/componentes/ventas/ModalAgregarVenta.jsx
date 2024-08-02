@@ -46,41 +46,39 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                             </button>
                         </div>
                         <div className="relative p-6 flex-auto dark:bg-[#242424]">
-                            <div className="grid grid-rows-6 grid-cols-12 gap-4">
+                            <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
 
                                 {/* DATOS PRODUCTOS */}
-                                <div className="row-span-3 col-span-12 md:col-span-6 bg-white rounded-lg p-4 dark:bg-[#292929] flex flex-col">
-                                    <h3 className="text-xl text-left font-semibold text-[#f97316] mb-2">Datos Productos</h3>
-                                    <form onSubmit={handleSubmit} className="flex-grow flex flex-col">
-                                        <div className="grid grid-cols-1 gap-4 flex-grow">
-                                            {productos.map(producto => (
-                                                <div key={producto.id} className="flex items-center">
+                                <div className="bg-white rounded-lg p-4 dark:bg-[#292929] flex flex-col">
+                                    <h3 className="text-xl font-semibold text-[#f97316] mb-2">Datos Productos</h3>
+                                    <div className="grid grid-cols-1 gap-4">
+                                        {productos.map(producto => (
+                                            <div key={producto.id} className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    id={producto.id}
+                                                    checked={!!productosSeleccionados[producto.id]}
+                                                    onChange={() => manejarCambioCheckbox(producto)}
+                                                    className="m-2"
+                                                />
+                                                <label htmlFor={producto.id} className="text-left flex-grow text-[#757575] dark:text-[#757575]">{producto.nombreProducto} - {producto.precioVentaProducto} COP</label>
+                                                {productosSeleccionados[producto.id] && (
                                                     <input
-                                                        type="checkbox"
-                                                        id={producto.id}
-                                                        checked={!!productosSeleccionados[producto.id]}
-                                                        onChange={() => manejarCambioCheckbox(producto)}
-                                                        className="m-2"
+                                                        type="number"
+                                                        min="1"
+                                                        value={productosSeleccionados[producto.id].cantidad}
+                                                        onChange={(e) => manejarCambioCantidad(producto.id, parseInt(e.target.value))}
+                                                        className="input-class ml-6 text-[#757575]"
                                                     />
-                                                    <label htmlFor={producto.id} className="text-left flex-grow text-[#757575] dark:text-[#757575]">{producto.nombreProducto} - {producto.precioVentaProducto} COP</label>
-                                                    {productosSeleccionados[producto.id] && (
-                                                        <input
-                                                            type="number"
-                                                            min="1"
-                                                            value={productosSeleccionados[producto.id].cantidad}
-                                                            onChange={(e) => manejarCambioCantidad(producto.id, parseInt(e.target.value))}
-                                                            className="input-class ml-6 text-[#757575]"
-                                                        />
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </form>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 {/* DATOS CLIENTE */}
-                                <div className="row-span-3 col-span-12 md:col-span-6 flex flex-col bg-white rounded-lg p-4 dark:bg-[#292929]">
-                                    <h3 className="text-xl text-left font-semibold text-[#f97316] mb-2">Datos Cliente</h3>
+                                <div className="bg-white rounded-lg p-4 dark:bg-[#292929]">
+                                    <h3 className="text-xl font-semibold text-[#f97316] mb-2">Datos Cliente</h3>
                                     <select className="w-full p-2 my-4 border rounded-md text-[#757575]">
                                         <option value="">Seleccione un cliente</option>
                                         <option value="cliente1">Cliente 1</option>
@@ -90,7 +88,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                     <div className="flex items-center justify-center mb-4">
                                         <div className="w-16 h-16 rounded-full bg-gray-300 dark:bg-gray-700"></div>
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 flex-grow">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                         <div className="md:col-span-2 flex justify-center">
                                             <input
                                                 type="text"
@@ -127,38 +125,38 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                 </div>
 
                                 {/* DATOS VENTA */}
-                                <div className="row-span-3 col-span-12 md:col-span-6 flex flex-col bg-white rounded-lg p-4 dark:bg-[#292929]">
-                                    <h3 className="text-xl text-left font-semibold text-[#f97316] mb-2">Datos Venta</h3>
-                                    <div className="grid grid-cols-1 gap-4 flex-grow">
-                                        <div className="flex items-center justify-start">
+                                <div className="bg-white rounded-lg p-4 dark:bg-[#292929]">
+                                    <h3 className="text-xl font-semibold text-[#f97316] mb-2">Datos Venta</h3>
+                                    <div className="grid grid-cols-1 gap-4">
+                                        <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">ID venta</label>
                                             <input
                                                 type="text"
                                                 className="w-2/3 p-2 border border-[#E06D00] rounded-md bg-transparent text-[#757575]"
                                             />
                                         </div>
-                                        <div className="flex items-center justify-start">
+                                        <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Fecha venta</label>
                                             <input
                                                 type="date"
-                                                className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]" 
+                                                className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
                                         </div>
-                                        <div className="flex items-center justify-start">
+                                        <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Estado venta</label>
                                             <input
                                                 type="text"
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
                                         </div>
-                                        <div className="flex items-center justify-start">
+                                        <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Método de pago</label>
                                             <input
                                                 type="text"
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
                                         </div>
-                                        <div className="flex items-center justify-start">
+                                        <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Descuento (si aplica)</label>
                                             <input
                                                 type="text"
@@ -169,24 +167,24 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                 </div>
 
                                 {/* DATOS PEDIDO */}
-                                <div className="row-span-3 col-span-12 md:col-span-6 flex flex-col bg-white rounded-lg p-4 dark:bg-[#292929]">
-                                    <h3 className="text-xl text-left font-semibold text-[#f97316] mb-2">Datos Pedido</h3>
-                                    <div className="grid grid-cols-1 gap-4 flex-grow">
-                                        <div className="flex items-center justify-start">
+                                <div className="bg-white rounded-lg p-4 dark:bg-[#292929]">
+                                    <h3 className="text-xl font-semibold text-[#f97316] mb-2">Datos Pedido</h3>
+                                    <div className="grid grid-cols-1 gap-4">
+                                        <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Nota (si aplica)</label>
                                             <input
                                                 type="text"
                                                 className="w-2/3 p-2 border rounded-md text-[#757575] bg-gray-200 dark:bg-gray-600"
                                             />
                                         </div>
-                                        <div className="flex items-center justify-start">
+                                        <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Método de envío</label>
                                             <input
                                                 type="text"
                                                 className="w-2/3 p-2 border rounded-md text-[#757575] bg-gray-200 dark:bg-gray-600"
                                             />
                                         </div>
-                                        <div className="flex items-center justify-start">
+                                        <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Subtotal</label>
                                             <input
                                                 type="text"
@@ -195,7 +193,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                         </div>
                                     </div>
                                     <hr className="my-4 border-t-2 border-orange-500" />
-                                    <div className="flex items-center justify-start">
+                                    <div className="flex items-center">
                                         <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">TOTAL</label>
                                         <input
                                             type="text"
@@ -205,22 +203,25 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                     </div>
                                 </div>
 
-                            </div>
-                            <button type="submit" className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-4 mt-2 ease-linear transition-all duration-150">
-                                Agregar Venta
-                            </button>
-                            <button
-                                type="button"
-                                className="text-slate-50 bg-red-500 background-transparent font-bold uppercase px-6 py-3 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                                onClick={onClose}
-                            >
-                                Cancelar
-                            </button>
+                                <div className="flex justify-between mt-4">
+                                    <button type="submit" className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none">
+                                        Agregar Venta
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="text-slate-50 bg-red-500 background-transparent font-bold uppercase px-6 py-3 text-sm outline-none focus:outline-none"
+                                        onClick={onClose}
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
             <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+
 
         </>
     );
