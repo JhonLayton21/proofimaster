@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 
-const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChange, productos }) => {
+const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChange, productos, clientes }) => {
     const [productosSeleccionados, setProductosSeleccionados] = useState({});
+    const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
 
     const manejarCambioCheckbox = (producto) => {
         setProductosSeleccionados(prev => ({
@@ -17,12 +18,18 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
         }));
     };
 
+    const manejarCambioCliente = (e) => {
+        const clienteId = e.target.value;
+        const cliente = clientes.find(cliente => cliente.id === clienteId);
+        setClienteSeleccionado(cliente);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
         const productosFiltrados = Object.values(productosSeleccionados).filter(Boolean);
 
-        onSubmit({ ...newSale, productos: productosFiltrados });
+        onSubmit({ ...newSale, productos: productosFiltrados, cliente: clienteSeleccionado });
     };
 
     if (!isOpen) return null;
@@ -79,49 +86,56 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                 {/* DATOS CLIENTE */}
                                 <div className="bg-white rounded-lg p-4 dark:bg-[#292929]">
                                     <h3 className="text-xl font-semibold text-[#f97316] mb-2">Datos Cliente</h3>
-                                    <select className="w-full p-2 my-4 border rounded-md text-[#757575]">
+                                    <select className="w-full p-2 my-4 border rounded-md text-[#757575]" onChange={manejarCambioCliente}>
                                         <option value="">Seleccione un cliente</option>
-                                        <option value="cliente1">Cliente 1</option>
-                                        <option value="cliente2">Cliente 2</option>
-                                        {/* Agrega más opciones según sea necesario */}
+                                        {clientes.map(cliente => (
+                                            <option key={cliente.id} value={cliente.id}>{cliente.nombreCliente}</option>
+                                        ))}
                                     </select>
                                     <div className="flex items-center justify-center mb-4">
                                         <div className="w-16 h-16 rounded-full bg-gray-300 dark:bg-gray-700"></div>
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                        <div className="md:col-span-2 flex justify-center">
+                                    {clienteSeleccionado && (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                            <div className="md:col-span-2 flex justify-center">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Nombre"
+                                                    value={clienteSeleccionado.nombreCliente}
+                                                    disabled
+                                                    className="w-full md:w-1/2 p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                                />
+                                            </div>
                                             <input
                                                 type="text"
-                                                placeholder="Nombre"
+                                                placeholder="Correo"
+                                                value={clienteSeleccionado.emailCliente}
                                                 disabled
-                                                className="w-full md:w-1/2 p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                                className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Teléfono"
+                                                value={clienteSeleccionado.telefonoCliente}
+                                                disabled
+                                                className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Dirección"
+                                                value={clienteSeleccionado.direccionCliente}
+                                                disabled
+                                                className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Método de pago"
+                                                value={clienteSeleccionado.tipoCliente}
+                                                disabled
+                                                className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
                                             />
                                         </div>
-                                        <input
-                                            type="text"
-                                            placeholder="Correo"
-                                            disabled
-                                            className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Teléfono"
-                                            disabled
-                                            className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Dirección"
-                                            disabled
-                                            className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Método de pago"
-                                            disabled
-                                            className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
-                                        />
-                                    </div>
+                                    )}
                                 </div>
 
                                 {/* DATOS VENTA */}
@@ -221,12 +235,11 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                 </div>
             </div>
             <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
-
-
         </>
     );
 };
 
 export default ModalAgregarVenta;
+
 
 

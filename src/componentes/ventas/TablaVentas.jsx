@@ -13,6 +13,7 @@ const TablaVentas = () => {
     const [editingSale, setEditingSale] = useState(null);
     const [ventas, setVentas] = useState([]);
     const [productos, setProductos] = useState([]);
+    const [clientes, setClientes] = useState([]);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [expandedSaleId, setExpandedSaleId] = useState(null);
@@ -44,6 +45,19 @@ const TablaVentas = () => {
             }
         }
 
+        const obtenerClientes = async () => {
+            try {
+                const clientesRef = collection(db, "clientes");
+                const snapshot = await getDocs(clientesRef);
+
+                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setClientes(data); // Asignar los datos obtenidos al estado
+            } catch (error) {
+                console.error("Error al mostrar los clientes");
+            }
+        }
+
+        obtenerClientes();
         obtenerVentas();
         obtenerProductos();
     }, []);
@@ -170,6 +184,8 @@ const TablaVentas = () => {
                 newSale={newSale}
                 handleInputChange={handleInputChange}
                 productos={productos}
+                clientes={clientes}
+                ventas={ventas}
             />
 
             {/* Modal para editar Venta existente */}
@@ -180,6 +196,8 @@ const TablaVentas = () => {
                 editingSale={editingSale}
                 handleEditInputChange={handleEditInputChange}
                 productos={productos}
+                clientes={clientes}
+                ventas={ventas}
             />
         </div>
     );
