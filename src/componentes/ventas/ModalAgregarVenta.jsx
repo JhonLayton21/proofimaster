@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChange, productos, clientes }) => {
+const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChange, productos, clientes, estadoVentas, metodoPago }) => {
     const [productosSeleccionados, setProductosSeleccionados] = useState({});
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
 
@@ -143,13 +143,6 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                     <h3 className="text-xl font-semibold text-[#f97316] mb-2">Datos Venta</h3>
                                     <div className="grid grid-cols-1 gap-4">
                                         <div className="flex items-center">
-                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">ID venta</label>
-                                            <input
-                                                type="text"
-                                                className="w-2/3 p-2 border border-[#E06D00] rounded-md bg-transparent text-[#757575]"
-                                            />
-                                        </div>
-                                        <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Fecha venta</label>
                                             <input
                                                 type="date"
@@ -157,23 +150,46 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                             />
                                         </div>
                                         <div className="flex items-center">
-                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Estado venta</label>
-                                            <input
-                                                type="text"
+                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Estado de venta</label>
+                                            <select
+                                                name="estadoVenta"
+                                                value={newSale.estadoVenta}
+                                                onChange={handleInputChange}
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
-                                            />
+                                            >
+                                                <option value="" disabled>Seleccione estado venta</option>
+                                                {estadoVentas.map((estado, index) => (
+                                                    <option key={index} value={estado}>
+                                                        {estado}
+                                                    </option>
+                                                ))}
+                                            </select>
                                         </div>
                                         <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Método de pago</label>
-                                            <input
-                                                type="text"
+                                            <select
+                                                name="metodoPago"
+                                                value={newSale.metodoPago}
+                                                onChange={handleInputChange}
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
-                                            />
+                                            >
+                                                <option value="" disabled>Seleccione metodo de pago</option>
+                                                {metodoPago.map((metodo, index) => (
+                                                    <option key={index} value={metodo}>
+                                                        {metodo}
+                                                    </option>
+                                                ))}
+                                            </select>
                                         </div>
                                         <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Descuento (si aplica)</label>
                                             <input
-                                                type="text"
+                                                type="number"
+                                                name="descuentoVenta"
+                                                value={newSale.descuentoVenta}
+                                                onChange={handleInputChange}
+                                                min={0}
+                                                max={100}
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
                                         </div>

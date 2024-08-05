@@ -9,11 +9,13 @@ import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-i
 const TablaVentas = () => {
 
     /* Inicialización de estados */
-    const [newSale, setNewSale] = useState({ nombreCliente: "", productos: [] });
+    const [newSale, setNewSale] = useState({ nombreCliente: "", productos: [], estadoVenta: "", metodoPago: "", descuentoVenta: "" });
     const [editingSale, setEditingSale] = useState(null);
     const [ventas, setVentas] = useState([]);
     const [productos, setProductos] = useState([]);
     const [clientes, setClientes] = useState([]);
+    const [estadoVentas, setEstadoVentas] = useState([]);
+    const [metodoPago, setMetodoPago] = useState([]);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [expandedSaleId, setExpandedSaleId] = useState(null);
@@ -57,6 +59,32 @@ const TablaVentas = () => {
             }
         }
 
+        const obtenerEstadoVenta = async () => {
+            try {
+                const estadoVentaRef = collection(db, "estadoVenta");
+                const snapshot = await getDocs(estadoVentaRef);
+
+                const data = snapshot.docs.map(doc => doc.data().estado);
+                setEstadoVentas(data);
+            } catch (error) {
+                console.error("Error al mostrar los estados de venta");
+            }
+        }
+
+        const obtenerMetodoPago = async () => {
+            try {
+                const metodoPagoRef = collection(db, "MetodoPagoProveedores");
+                const snapshot = await getDocs(metodoPagoRef);
+
+                const data = snapshot.docs.map(doc => doc.data().tipo);
+                setMetodoPago(data);
+            } catch (error) {
+                console.error("Error al mostrar los metodos de pago");
+            }
+        }
+
+        obtenerMetodoPago();
+        obtenerEstadoVenta();
         obtenerClientes();
         obtenerVentas();
         obtenerProductos();
@@ -69,7 +97,10 @@ const TablaVentas = () => {
 
         setNewSale({
             nombreCliente: "",
-            productos: []
+            productos: [], 
+            estadoVenta: "",
+            metodoPago: "",
+            descuentoVenta: ""
         });
         setIsAddModalOpen(false);
     };
@@ -186,6 +217,8 @@ const TablaVentas = () => {
                 productos={productos}
                 clientes={clientes}
                 ventas={ventas}
+                estadoVentas={estadoVentas}
+                metodoPago={metodoPago}
             />
 
             {/* Modal para editar Venta existente */}
@@ -198,6 +231,8 @@ const TablaVentas = () => {
                 productos={productos}
                 clientes={clientes}
                 ventas={ventas}
+                estadoVentas={estadoVentas}
+                metodoPago={metodoPago}
             />
         </div>
     );
