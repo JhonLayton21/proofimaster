@@ -9,13 +9,14 @@ import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-i
 const TablaVentas = () => {
 
     /* Inicialización de estados */
-    const [newSale, setNewSale] = useState({ nombreCliente: "", productos: [], estadoVenta: "", metodoPago: "", descuentoVenta: "" });
+    const [newSale, setNewSale] = useState({ nombreCliente: "", productos: [], estadoVenta: "", metodoPago: "", descuentoVenta: "", metodoEnvio: "", subTotal: "", total: "" });
     const [editingSale, setEditingSale] = useState(null);
     const [ventas, setVentas] = useState([]);
     const [productos, setProductos] = useState([]);
     const [clientes, setClientes] = useState([]);
     const [estadoVentas, setEstadoVentas] = useState([]);
     const [metodoPago, setMetodoPago] = useState([]);
+    const [metodoEnvio, setMetodoEnvio] = useState([]);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [expandedSaleId, setExpandedSaleId] = useState(null);
@@ -83,6 +84,19 @@ const TablaVentas = () => {
             }
         }
 
+        const obtenerMetodoEnvio = async () => {
+            try {
+                const metodoEnvioRef = collection(db, "metodoEnvioVenta");
+                const snapshot = await getDocs(metodoEnvioRef);
+
+                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setMetodoEnvio(data);
+            } catch (error) {
+                console.error("Error al mostrar los metodos de envio");
+            }
+        }
+
+        obtenerMetodoEnvio();
         obtenerMetodoPago();
         obtenerEstadoVenta();
         obtenerClientes();
@@ -92,18 +106,26 @@ const TablaVentas = () => {
 
     const agregarVenta = async (venta) => {
         const ventasRef = collection(db, 'ventas');
-
-        await addDoc(ventasRef, venta);
-
+    
+        await addDoc(ventasRef, {
+            ...venta,
+            subTotal: venta.subTotal,
+            total: venta.total
+        });
+    
         setNewSale({
             nombreCliente: "",
             productos: [], 
             estadoVenta: "",
             metodoPago: "",
-            descuentoVenta: ""
+            descuentoVenta: "", 
+            metodoEnvio: "", 
+            subTotal: "", 
+            total: ""
         });
         setIsAddModalOpen(false);
     };
+    
 
     const editarVenta = async (e) => {
         e.preventDefault();
@@ -219,6 +241,7 @@ const TablaVentas = () => {
                 ventas={ventas}
                 estadoVentas={estadoVentas}
                 metodoPago={metodoPago}
+                metodoEnvio={metodoEnvio}
             />
 
             {/* Modal para editar Venta existente */}
@@ -233,6 +256,7 @@ const TablaVentas = () => {
                 ventas={ventas}
                 estadoVentas={estadoVentas}
                 metodoPago={metodoPago}
+                metodoEnvio={metodoEnvio}
             />
         </div>
     );
