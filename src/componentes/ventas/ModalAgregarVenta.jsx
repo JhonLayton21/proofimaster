@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { faCircleUser, faFileLines, faBell, faEnvelope, faGear, faImagePortrait } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChange, productos, clientes, estadoVentas, metodoPago, metodoEnvio }) => {
     const [productosSeleccionados, setProductosSeleccionados] = useState({});
@@ -6,6 +8,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
     const [subtotal, setSubtotal] = useState(0);
     const [total, setTotal] = useState(0);
 
+    /* CALCULO TOTAL VENTA */
     useEffect(() => {
         const calcularSubtotal = () => {
             let total = 0;
@@ -26,6 +29,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
         calcularSubtotal();
     }, [productosSeleccionados, newSale.metodoEnvio, metodoEnvio]);
 
+    /* CALCULO TO */
     useEffect(() => {
         const calcularTotal = () => {
             const descuento = (newSale.descuentoVenta / 100) * subtotal;
@@ -71,7 +75,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
             <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none min-h-screen">
                 <div className="relative w-auto my-6 mx-auto max-w-3xl max-h-screen">
                     <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none overflow-y-auto">
-                        <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t dark:bg-[#242424]">
+                        <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t dark:bg-[#242424] bg-[#eeeeee]">
                             <h3 className="text-3xl font-semibold text-[#f97316]">
                                 Agregar Venta
                             </h3>
@@ -84,7 +88,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                 </span>
                             </button>
                         </div>
-                        <div className="relative p-6 flex-auto dark:bg-[#242424]">
+                        <div className="relative p-6 flex-auto dark:bg-[#242424] bg-[#eeeeee]">
                             <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
 
                                 {/* DATOS PRODUCTOS */}
@@ -125,7 +129,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                         ))}
                                     </select>
                                     <div className="flex items-center justify-center mb-4">
-                                        <div className="w-16 h-16 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                                        <FontAwesomeIcon icon={faCircleUser} className="text-slate-800 dark:text-slate-50 fa-2xl" />
                                     </div>
                                     {clienteSeleccionado && (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -135,7 +139,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                                     placeholder="Nombre"
                                                     value={clienteSeleccionado.nombreCliente}
                                                     disabled
-                                                    className="w-full md:w-1/2 p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                                    className="w-full md:w-1/2 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                                 />
                                             </div>
                                             <input
@@ -143,28 +147,28 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                                 placeholder="Correo"
                                                 value={clienteSeleccionado.emailCliente}
                                                 disabled
-                                                className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                                className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
                                             <input
                                                 type="text"
                                                 placeholder="Teléfono"
                                                 value={clienteSeleccionado.telefonoCliente}
                                                 disabled
-                                                className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                                className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
                                             <input
                                                 type="text"
                                                 placeholder="Dirección"
                                                 value={clienteSeleccionado.direccionCliente}
                                                 disabled
-                                                className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                                className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
                                             <input
                                                 type="text"
                                                 placeholder="Método de pago"
                                                 value={clienteSeleccionado.tipoCliente}
                                                 disabled
-                                                className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600"
+                                                className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
                                         </div>
                                     )}
@@ -177,6 +181,9 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                         <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Fecha venta</label>
                                             <input
+                                                name="fechaVenta"
+                                                value={newSale.fechaVenta}
+                                                onChange={handleInputChange}
                                                 type="date"
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
@@ -239,7 +246,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                                 placeholder="Nota Venta"
                                                 value={newSale.notaVenta}
                                                 onChange={handleInputChange}
-                                                className="input-class m-4 text-[#757575]"
+                                                className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
                                         </div>
                                         <div className="flex items-center">

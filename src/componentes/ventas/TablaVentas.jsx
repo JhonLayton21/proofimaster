@@ -9,7 +9,7 @@ import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-i
 const TablaVentas = () => {
 
     /* Inicialización de estados */
-    const [newSale, setNewSale] = useState({ nombreCliente: "", productos: [], estadoVenta: "", metodoPago: "", descuentoVenta: "", metodoEnvio: "", subTotal: "", total: "" });
+    const [newSale, setNewSale] = useState({ nombreCliente: "", productos: [], fechaVenta: "", estadoVenta: "", metodoPago: "", descuentoVenta: "", metodoEnvio: "", subTotal: "", total: "" });
     const [editingSale, setEditingSale] = useState(null);
     const [ventas, setVentas] = useState([]);
     const [productos, setProductos] = useState([]);
@@ -116,6 +116,7 @@ const TablaVentas = () => {
         setNewSale({
             nombreCliente: "",
             productos: [], 
+            fechaVenta: "",
             estadoVenta: "",
             metodoPago: "",
             descuentoVenta: "", 
