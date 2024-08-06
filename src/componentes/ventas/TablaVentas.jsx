@@ -4,7 +4,7 @@ import { db } from "../../credenciales";
 import ModalAgregarVenta from "./ModalAgregarVenta";
 import ModalEditarVenta from "./ModalEditarVenta";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faPlus, faTrashCan, faChevronDown, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 const TablaVentas = () => {
 
@@ -106,27 +106,27 @@ const TablaVentas = () => {
 
     const agregarVenta = async (venta) => {
         const ventasRef = collection(db, 'ventas');
-    
+
         await addDoc(ventasRef, {
             ...venta,
             subTotal: venta.subTotal,
             total: venta.total
         });
-    
+
         setNewSale({
             nombreCliente: "",
-            productos: [], 
+            productos: [],
             fechaVenta: "",
             estadoVenta: "",
             metodoPago: "",
-            descuentoVenta: "", 
-            metodoEnvio: "", 
-            subTotal: "", 
+            descuentoVenta: "",
+            metodoEnvio: "",
+            subTotal: "",
             total: ""
         });
         setIsAddModalOpen(false);
     };
-    
+
 
     const editarVenta = async (e) => {
         e.preventDefault();
@@ -192,10 +192,30 @@ const TablaVentas = () => {
                                     </button>
                                     {venta.productos.map(p => `${p.id} (${p.cantidad})`).join(", ")}
                                 </th>
-                                <td className="px-6 py-4"></td>
-                                <td className="px-6 py-4"></td>
-                                <td className="px-6 py-4"></td>
-                                <td className="px-6 py-4"></td>
+                                <td className="px-6 py-4">
+                                    {venta.productos.map(p => p.nombreProducto).join(", ")}
+                                </td>
+                                <td className="px-6 py-4">
+                                    <span
+                                        className={
+                                            venta.estadoVenta === "Completado"
+                                                ? "text-green-500"
+                                                : venta.estadoVenta === "En progreso"
+                                                    ? "text-blue-500"
+                                                    : venta.estadoVenta === "Cancelado"
+                                                        ? "text-red-500"
+                                                        : "text-gray-500"
+                                        }
+                                    >
+                                        {estadoVentas.find((estado) => estado === venta.estadoVenta) || "Desconocido"}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                    {venta.cliente ? venta.cliente.nombreCliente : "Desconocido"}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {venta.total}
+                                </td>
                                 <td className="px-6 py-4 text-right">
                                     <a
                                         href="#"
@@ -205,22 +225,34 @@ const TablaVentas = () => {
                                             setIsEditModalOpen(true);
                                         }}>
                                         Editar
-                                        <FontAwesomeIcon icon={faPenToSquare} className=" ml-1" />
+                                        <FontAwesomeIcon icon={faPenToSquare} className="ml-1" />
                                     </a>
                                     <a
                                         href="#"
                                         className="font-medium text-red-600 dark:text-red-500 hover:underline"
                                         onClick={() => eliminarVenta(venta.id)}>
                                         Eliminar
-                                        <FontAwesomeIcon icon={faTrashCan} className=" ml-1" />
+                                        <FontAwesomeIcon icon={faTrashCan} className="ml-1" />
                                     </a>
                                 </td>
                             </tr>
                             {expandedSaleId === venta.id && (
                                 <tr className="bg-gray-50 dark:bg-[#202020]">
                                     <td colSpan="10" className="px-6 py-4">
-                                        <div className="p-4">
-                                            <p><strong>Productos: </strong>{venta.productos.map(p => `${p.nombreProducto} (${p.cantidad})`).join(", ")}</p>
+                                        <div>
+                                            <strong>Fecha de Venta:</strong> {venta.fechaVenta}
+                                        </div>
+                                        <div>
+                                            <strong>Estado de Venta:</strong> {venta.estadoVenta}
+                                        </div>
+                                        <div>
+                                            <strong>Método de Pago:</strong> {venta.metodoPago}
+                                        </div>
+                                        <div>
+                                            <strong>Descuento:</strong> {venta.descuentoVenta}
+                                        </div>
+                                        <div>
+                                            <strong>Método de Envío:</strong> {venta.metodoEnvio}
                                         </div>
                                     </td>
                                 </tr>
@@ -230,38 +262,38 @@ const TablaVentas = () => {
                 </tbody>
             </table>
 
-            {/* Modal para agregar nueva Venta */}
+            {/* Modal para agregar Venta */}
             <ModalAgregarVenta
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 onSubmit={agregarVenta}
                 newSale={newSale}
-                handleInputChange={handleInputChange}
+                onInputChange={handleInputChange}
                 productos={productos}
                 clientes={clientes}
-                ventas={ventas}
                 estadoVentas={estadoVentas}
                 metodoPago={metodoPago}
                 metodoEnvio={metodoEnvio}
             />
 
-            {/* Modal para editar Venta existente */}
-            <ModalEditarVenta
-                isOpen={isEditModalOpen}
-                onClose={() => setIsEditModalOpen(false)}
-                onSubmit={editarVenta}
-                editingSale={editingSale}
-                handleEditInputChange={handleEditInputChange}
-                productos={productos}
-                clientes={clientes}
-                ventas={ventas}
-                estadoVentas={estadoVentas}
-                metodoPago={metodoPago}
-                metodoEnvio={metodoEnvio}
-            />
+            {/* Modal para editar Venta */}
+            {editingSale && (
+                <ModalEditarVenta
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    onSubmit={editarVenta}
+                    editingSale={editingSale}
+                    onInputChange={handleEditInputChange}
+                    productos={productos}
+                    clientes={clientes}
+                    estadoVentas={estadoVentas}
+                    metodoPago={metodoPago}
+                    metodoEnvio={metodoEnvio}
+                />
+            )}
         </div>
     );
-
-}
+};
 
 export default TablaVentas;
+
