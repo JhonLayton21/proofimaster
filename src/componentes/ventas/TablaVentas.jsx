@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, getDoc, getDocs } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../credenciales";
 import ModalAgregarVenta from "./ModalAgregarVenta";
 import ModalEditarVenta from "./ModalEditarVenta";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faPlus, faTrashCan, faChevronDown, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 const TablaVentas = () => {
 
@@ -21,87 +21,54 @@ const TablaVentas = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [expandedSaleId, setExpandedSaleId] = useState(null);
 
-    /* Efecto para recuperar los datos */
+    /* Efecto para suscribirse a las actualizaciones en tiempo real */
     useEffect(() => {
+        const ventasRef = collection(db, "ventas");
+        const productosRef = collection(db, "productos");
+        const clientesRef = collection(db, "clientes");
+        const estadoVentaRef = collection(db, "estadoVenta");
+        const metodoPagoRef = collection(db, "MetodoPagoProveedores");
+        const metodoEnvioRef = collection(db, "metodoEnvioVenta");
 
-        const obtenerVentas = async () => {
-            try {
-                const ventasRef = collection(db, "ventas");
-                const snapshot = await getDocs(ventasRef);
+        const unsubscribeVentas = onSnapshot(ventasRef, (snapshot) => {
+            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setVentas(data);
+        });
 
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setVentas(data); // Asignar los datos obtenidos al estado
-            } catch (error) {
-                console.error("Error al mostrar ventas: ", error);
-            }
-        }
+        const unsubscribeProductos = onSnapshot(productosRef, (snapshot) => {
+            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setProductos(data);
+        });
 
-        const obtenerProductos = async () => {
-            try {
-                const productosRef = collection(db, "productos");
-                const snapshot = await getDocs(productosRef);
+        const unsubscribeClientes = onSnapshot(clientesRef, (snapshot) => {
+            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setClientes(data);
+        });
 
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setProductos(data); // Asignar los datos obtenidos al estado
-            } catch (error) {
-                console.error("Error al mostrar productos: ", error);
-            }
-        }
+        const unsubscribeEstadoVenta = onSnapshot(estadoVentaRef, (snapshot) => {
+            const data = snapshot.docs.map(doc => doc.data().estado);
+            setEstadoVentas(data);
+        });
 
-        const obtenerClientes = async () => {
-            try {
-                const clientesRef = collection(db, "clientes");
-                const snapshot = await getDocs(clientesRef);
+        const unsubscribeMetodoPago = onSnapshot(metodoPagoRef, (snapshot) => {
+            const data = snapshot.docs.map(doc => doc.data().tipo);
+            setMetodoPago(data);
+        });
 
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setClientes(data); // Asignar los datos obtenidos al estado
-            } catch (error) {
-                console.error("Error al mostrar los clientes");
-            }
-        }
+        const unsubscribeMetodoEnvio = onSnapshot(metodoEnvioRef, (snapshot) => {
+            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setMetodoEnvio(data);
+        });
 
-        const obtenerEstadoVenta = async () => {
-            try {
-                const estadoVentaRef = collection(db, "estadoVenta");
-                const snapshot = await getDocs(estadoVentaRef);
-
-                const data = snapshot.docs.map(doc => doc.data().estado);
-                setEstadoVentas(data);
-            } catch (error) {
-                console.error("Error al mostrar los estados de venta");
-            }
-        }
-
-        const obtenerMetodoPago = async () => {
-            try {
-                const metodoPagoRef = collection(db, "MetodoPagoProveedores");
-                const snapshot = await getDocs(metodoPagoRef);
-
-                const data = snapshot.docs.map(doc => doc.data().tipo);
-                setMetodoPago(data);
-            } catch (error) {
-                console.error("Error al mostrar los metodos de pago");
-            }
-        }
-
-        const obtenerMetodoEnvio = async () => {
-            try {
-                const metodoEnvioRef = collection(db, "metodoEnvioVenta");
-                const snapshot = await getDocs(metodoEnvioRef);
-
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setMetodoEnvio(data);
-            } catch (error) {
-                console.error("Error al mostrar los metodos de envio");
-            }
-        }
-
-        obtenerMetodoEnvio();
-        obtenerMetodoPago();
-        obtenerEstadoVenta();
-        obtenerClientes();
-        obtenerVentas();
-        obtenerProductos();
+        // Limpiar suscripciones al desmontar el componente
+        return () => {
+            unsubscribeVentas();
+            unsubscribeProductos();
+            unsubscribeClientes();
+            unsubscribeEstadoVenta();
+            unsubscribeMetodoPago();
+            unsubscribeMetodoEnvio();
+        };
     }, []);
 
     const agregarVenta = async (venta) => {
@@ -132,22 +99,17 @@ const TablaVentas = () => {
         e.preventDefault();
         const VentaDoc = doc(db, 'ventas', editingSale.id);
 
-        /* Actualizar documento existente en ventas */
         await updateDoc(VentaDoc, editingSale);
 
-        /* Limpiar estado de Venta en edición y cerrar modal de edición */
         setEditingSale(null);
         setIsEditModalOpen(false);
     };
 
     const eliminarVenta = async (id) => {
         const VentaDoc = doc(db, 'ventas', id);
-
-        /* Eliminar documento de la colección ventas */
         await deleteDoc(VentaDoc);
     };
 
-    /* Manejar cambios en el formulario de agregar Venta */
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setNewSale({ ...newSale, [name]: value });
@@ -158,7 +120,6 @@ const TablaVentas = () => {
         setEditingSale({ ...editingSale, [name]: value });
     };
 
-    // Renderizado de la tabla de ventas y modales de agregar/editar
     return (
         <div className="relative overflow-x-auto rounded-lg pt-8">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -296,4 +257,5 @@ const TablaVentas = () => {
 };
 
 export default TablaVentas;
+
 

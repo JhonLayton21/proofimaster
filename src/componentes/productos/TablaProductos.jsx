@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, getDocs, Timestamp } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore";
 import { db } from "../../credenciales";
 import ModalAgregarProducto from "./ModalAgregarProducto";
 import ModalEditarProducto from "./ModalEditarProducto";
@@ -35,61 +35,46 @@ const TablaProductos = () => {
     const [expandedProductId, setExpandedProductId] = useState(null);
 
     useEffect(() => {
-        /* Referencia y obtención productos */
-        const fetchProductos = async () => {
-            try {
-                const productosRef = collection(db, "productos");
-                const snapshot = await getDocs(productosRef);
+        /* Referencia y obtención productos en tiempo real */
+        const unsubscribeProductos = onSnapshot(collection(db, "productos"), (snapshot) => {
+            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setProductos(data);
+        }, (error) => {
+            console.error("Error al mostrar productos: ", error);
+        });
 
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setProductos(data); // Asignar los datos obtenidos al estado
-            } catch (error) {
-                console.error("Error al mostrar productos: ", error);
-            }
-        }
+        /* Referencia y obtención marcas en tiempo real */
+        const unsubscribeMarcas = onSnapshot(collection(db, "marcaProductos"), (snapshot) => {
+            const tiposData = snapshot.docs.map(doc => doc.data().nombreProducto);
+            setMarcas(tiposData);
+        }, (error) => {
+            console.error("Error al mostrar marca de productos: ", error);
+        });
 
-        /* Referencia y obtención marcas */
-        const fetchMarcaProductos = async () => {
-            try {
-                const marcaProductosRef = collection(db, "marcaProductos");
-                const snapshot = await getDocs(marcaProductosRef);
-                const tiposData = snapshot.docs.map(doc => doc.data().nombreProducto);
-                setMarcas(tiposData);
-            } catch (error) {
-                console.error("Error al mostrar marca de productos: ", error);
-            }
+        /* Referencia y obtención referencias en tiempo real */
+        const unsubscribeReferencias = onSnapshot(collection(db, "referenciaProductos"), (snapshot) => {
+            const tiposData = snapshot.docs.map(doc => doc.data().nombreReferencia);
+            setReferencias(tiposData);
+        }, (error) => {
+            console.error("Error al mostrar referencia de productos: ", error);
+        });
+
+        /* Referencia y obtención proveedores en tiempo real */
+        const unsubscribeProveedores = onSnapshot(collection(db, "proveedores"), (snapshot) => {
+            const tiposData = snapshot.docs.map(doc => doc.data().nombreProveedor);
+            setProveedores(tiposData);
+        }, (error) => {
+            console.error("Error al mostrar proveedor de productos: ", error);
+        });
+
+        // Cleanup subscriptions on unmount
+        return () => {
+            unsubscribeProductos();
+            unsubscribeMarcas();
+            unsubscribeReferencias();
+            unsubscribeProveedores();
         };
-
-        /* Referencia y obtención referencias */
-        const fetchReferenciaProductos = async () => {
-            try {
-                const referenciaProductosRef = collection(db, "referenciaProductos");
-                const snapshot = await getDocs(referenciaProductosRef);
-                const tiposData = snapshot.docs.map(doc => doc.data().nombreReferencia);
-                setReferencias(tiposData);
-            } catch (error) {
-                console.error("Error al mostrar referencia de productos: ", error);
-            }
-        };
-
-        /* Referencia y obtención proveedores */
-        const fetchProveedorProductos = async () => {
-            try {
-                const proveedorProductosRef = collection(db, "proveedores");
-                const snapshot = await getDocs(proveedorProductosRef);
-                const tiposData = snapshot.docs.map(doc => doc.data().nombreProveedor);
-                setProveedores(tiposData);
-            } catch (error) {
-                console.error("Error al mostrar proveedor de productos: ", error);
-            }
-        };
-
-        fetchProductos();
-        fetchMarcaProductos();
-        fetchReferenciaProductos();
-        fetchProveedorProductos();
     }, []);
-    
 
     const agregarProducto = async (e) => {
         e.preventDefault();
@@ -134,7 +119,7 @@ const TablaProductos = () => {
             fechaEntradaProducto: Timestamp.fromDate(fechaUTC)
         };
 
-        await updateDoc( productDoc, productoActualizado);
+        await updateDoc(productDoc, productoActualizado);
 
         setEditingProduct(null);
         setIsEditModalOpen(false);
@@ -148,7 +133,6 @@ const TablaProductos = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
-        //convertir la fecha a Timestamp si el campo es fechaEntradaProducto
         if (name === 'fechaEntradaProducto') {
             setNewProduct({ ...newProduct, [name]: value });
         } else {

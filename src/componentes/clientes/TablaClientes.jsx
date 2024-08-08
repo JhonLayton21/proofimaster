@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, getDoc, getDocs } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../credenciales";
 import ModalAgregarCliente from "./ModalAgregarCliente";
 import ModalEditarCliente from "./ModalEditarCliente";
@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 const TablaClientes = () => {
-    // Inicialización de estados
     const [newClient, setNewClient] = useState({ nombreCliente: "", emailCliente: "", telefonoCliente: "", direccionCliente: "", tipoCliente: '' });
     const [editingClient, setEditingClient] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -16,82 +15,62 @@ const TablaClientes = () => {
     const [clientes, setClientes] = useState([]);
     const [tipoClientes, setTipoClientes] = useState([]);
 
-    // Efecto recuperar los datos
     useEffect(() => {
-        const fetchClientes = async () => {
-            try {
-                const clientesRef = collection(db, "clientes");
-                const snapshot = await getDocs(clientesRef);
+        const clientesRef = collection(db, "clientes");
+        const unsubscribeClientes = onSnapshot(clientesRef, (snapshot) => {
+            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setClientes(data);
+        });
 
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setClientes(data); // Asignar los datos obtenidos al estado
-            } catch (error) {
-                console.error("Error al mostrar clientes: ", error);
-            }
-        }
+        const tipoClientesRef = collection(db, "tipoClientes");
+        const unsubscribeTipoClientes = onSnapshot(tipoClientesRef, (snapshot) => {
+            const tiposData = snapshot.docs.map(doc => doc.data().tipo);
+            setTipoClientes(tiposData);
+        });
 
-        const fetchTipoClientes = async () => {
-            try {
-                const tipoClientesRef = collection(db, "tipoClientes");
-                const snapshot = await getDocs(tipoClientesRef);
-                const tiposData = snapshot.docs.map(doc => doc.data().tipo);
-                setTipoClientes(tiposData);
-            } catch (error) {
-                console.error("Error al mostrar tipo de clientes: ", error);
-            }
+        // Limpieza del efecto al desmontar el componente
+        return () => {
+            unsubscribeClientes();
+            unsubscribeTipoClientes();
         };
-
-        fetchClientes();
-        fetchTipoClientes();
     }, []);
 
-    // Función para agregar un nuevo Cliente
     const agregarCliente = async (e) => {
         e.preventDefault();
         const ClientsRef = collection(db, 'clientes');
 
-        // Agregar nuevo documento a la colección de clientes
         await addDoc(ClientsRef, newClient);
 
-        // Limpiar formulario y cerrar modal de agregar
         setNewClient({ nombreCliente: "", emailCliente: "", telefonoCliente: "", direccionCliente: "", tipoCliente: '' });
         setIsAddModalOpen(false);
     };
 
-    // Función para editar un Cliente existente
     const editarCliente = async (e) => {
         e.preventDefault();
         const ClientDoc = doc(db, 'clientes', editingClient.id);
 
-        // Actualizar documento existente en la colección de clientes
         await updateDoc(ClientDoc, editingClient);
 
-        // Limpiar estado de Cliente en edición y cerrar modal de edición
         setEditingClient(null);
         setIsEditModalOpen(false);
     };
 
-    // Función para eliminar un Cliente por su ID
     const eliminarCliente = async (id) => {
         const ClientDoc = doc(db, 'clientes', id);
 
-        // Eliminar documento de la colección de clientes
         await deleteDoc(ClientDoc);
     };
 
-    // Manejar cambios en el formulario de agregar Cliente
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setNewClient({ ...newClient, [name]: value });
     };
 
-    // Manejar cambios en el formulario de editar Cliente
     const handleEditInputChange = (e) => {
         const { name, value } = e.target;
         setEditingClient({ ...editingClient, [name]: value });
     };
 
-    // Renderizado de la tabla de clientes y modales de agregar/editar
     return (
         <div className="relative overflow-x-auto rounded-lg pt-8">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -191,4 +170,5 @@ const TablaClientes = () => {
 };
 
 export default TablaClientes;
+
 

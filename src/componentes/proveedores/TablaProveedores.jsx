@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, getDoc, getDocs } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../credenciales";
 import ModalAgregarProveedor from "./ModalAgregarProveedor";
 import ModalEditarProveedor from "./ModalEditarProveedor";
@@ -16,33 +16,26 @@ const TablaProveedores = () => {
     const [Proveedores, setProveedores] = useState([]);
     const [MetodoPagoProveedores, setMetodoPagoProveedores] = useState([]);
 
-    // Efecto para cargar Proveedores desde Firestore al montar el componente
+    // Efecto para cargar Proveedores y métodos de pago desde Firestore en tiempo real
     useEffect(() => {
-        const fetchProveedores = async () => {
-            try {
-                const ProveedoresRef = collection(db, "proveedores");
-                const snapshot = await getDocs(ProveedoresRef);
+        const ProveedoresRef = collection(db, "proveedores");
+        const MetodoPagoProveedoresRef = collection(db, "MetodoPagoProveedores");
 
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setProveedores(data); // Asignar los datos obtenidos al estado
-            } catch (error) {
-                console.error("Error al mostrar datos: ", error);
-            }
-        }
+        const unsubscribeProveedores = onSnapshot(ProveedoresRef, (snapshot) => {
+            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setProveedores(data); // Asignar los datos obtenidos al estado
+        });
 
-        const fetchMetodoPagoProveedores = async () => {
-            try {
-                const MetodoPagoProveedoresRef = collection(db, "MetodoPagoProveedores");
-                const snapshot = await getDocs(MetodoPagoProveedoresRef);
-                const tiposData = snapshot.docs.map(doc => doc.data().tipo);
-                setMetodoPagoProveedores(tiposData);
-            } catch (error) {
-                console.error("Error al mostrar metodos de pago: ", error);
-            }
+        const unsubscribeMetodoPagoProveedores = onSnapshot(MetodoPagoProveedoresRef, (snapshot) => {
+            const tiposData = snapshot.docs.map(doc => doc.data().tipo);
+            setMetodoPagoProveedores(tiposData);
+        });
+
+        // Limpiar suscripciones al desmontar el componente
+        return () => {
+            unsubscribeProveedores();
+            unsubscribeMetodoPagoProveedores();
         };
-
-        fetchProveedores();
-        fetchMetodoPagoProveedores();
     }, []);
 
     // Función para agregar un nuevo Proveedor
