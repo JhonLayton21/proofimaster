@@ -9,11 +9,22 @@ const auth = getAuth(appFirebase);
 
 export default function MenuCuenta() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
 
   const trigger = useRef(null);
   const dropdown = useRef(null);
 
-  // close on click outside
+  // Obtener información del usuario al montar el componente
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (user) {
+      setUserName(user.displayName || "Usuario"); // Usa el nombre del usuario o "Usuario" si no está disponible
+      setUserEmail(user.email || "No disponible"); // Usa el correo del usuario o "No disponible" si no está disponible
+    }
+  }, []);
+
+  // Cerrar el menú desplegable al hacer clic fuera de él
   useEffect(() => {
     const clickHandler = ({ target }) => {
       if (!dropdown.current) return;
@@ -29,7 +40,7 @@ export default function MenuCuenta() {
     return () => document.removeEventListener("click", clickHandler);
   });
 
-  // close if the esc key is pressed
+  // Cerrar el menú desplegable si se presiona la tecla Esc
   useEffect(() => {
     const keyHandler = ({ keyCode }) => {
       if (!dropdownOpen || keyCode !== 27) return;
@@ -80,10 +91,10 @@ export default function MenuCuenta() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-slate-800 text-dark dark:text-white">
-                    Jhon Layton
+                    {userName}
                   </p>
                   <p className="text-sm text-body-color text-[#757575] dark:text-dark-6">
-                    jhonlayton@outlook.com
+                    {userEmail}
                   </p>
                 </div>
               </div>
@@ -134,3 +145,4 @@ export default function MenuCuenta() {
     </section>
   );
 }
+
