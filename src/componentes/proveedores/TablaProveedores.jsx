@@ -1,92 +1,85 @@
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { db } from "../../credenciales";
 import ModalAgregarProveedor from "./ModalAgregarProveedor";
 import ModalEditarProveedor from "./ModalEditarProveedor";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 const TablaProveedores = () => {
-    // Estados para almacenar datos y controlar la interfaz
     const [newProvider, setNewProvider] = useState({ nombreProveedor: "", contactoProveedor: "", emailProveedor: "", telefonoProveedor: "", direccionProveedor: "", metodoPago: '' });
     const [editingProvider, setEditingProvider] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [expandedProviderId, setExpandedProviderId] = useState(null);
-    const [Proveedores, setProveedores] = useState([]);
-    const [MetodoPagoProveedores, setMetodoPagoProveedores] = useState([]);
+    const [proveedores, setProveedores] = useState([]);
+    const [metodoPagoProveedores, setMetodoPagoProveedores] = useState([]);
+    const [alertMessage, setAlertMessage] = useState('');
 
-    // Efecto para cargar Proveedores y métodos de pago desde Firestore en tiempo real
+    // Fetch proveedores y métodos de pago desde el servidor
     useEffect(() => {
-        const ProveedoresRef = collection(db, "proveedores");
-        const MetodoPagoProveedoresRef = collection(db, "MetodoPagoProveedores");
-
-        const unsubscribeProveedores = onSnapshot(ProveedoresRef, (snapshot) => {
-            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setProveedores(data); // Asignar los datos obtenidos al estado
-        });
-
-        const unsubscribeMetodoPagoProveedores = onSnapshot(MetodoPagoProveedoresRef, (snapshot) => {
-            const tiposData = snapshot.docs.map(doc => doc.data().tipo);
-            setMetodoPagoProveedores(tiposData);
-        });
-
-        // Limpiar suscripciones al desmontar el componente
-        return () => {
-            unsubscribeProveedores();
-            unsubscribeMetodoPagoProveedores();
+        const fetchProveedores = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/proveedores');
+                const data = await response.json();
+                setProveedores(data);
+            } catch (err) {
+                console.error('Error al obtener los proveedores:', err.message);
+            }
         };
+
+        const fetchMetodosPago = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/metodo_pago');
+                const data = await response.json();
+                setMetodoPagoProveedores(data);
+            } catch (error) {
+                console.error('Error al obtener los métodos de pago:', error);
+            }
+        };
+
+        fetchProveedores();
+        fetchMetodosPago();
     }, []);
 
-    // Función para agregar un nuevo Proveedor
-    const agregarProveedor = async (e) => {
-        e.preventDefault();
-        const ProvidersRef = collection(db, 'proveedores');
-
-        // Agregar nuevo documento a la colección de Proveedores
-        await addDoc(ProvidersRef, newProvider);
-
-        // Limpiar formulario y cerrar modal de agregar
-        setNewProvider({ nombreProveedor: "", contactoProveedor: "", emailProveedor: "", telefonoProveedor: "", direccionProveedor: "", metodoPago: "" });
-        setIsAddModalOpen(false);
+    // Función para mostrar la alerta
+    const showAlert = (message, type = 'info') => {
+        setAlertMessage( {message, type} );
+        setTimeout(() => setAlertMessage(''), 3000); 
     };
 
-    // Función para editar un Proveedor existente
-    const editarProveedor = async (e) => {
-        e.preventDefault();
-        const ProviderDoc = doc(db, 'proveedores', editingProvider.id);
-
-        // Actualizar documento existente en la colección de Proveedores
-        await updateDoc(ProviderDoc, editingProvider);
-
-        // Limpiar estado de Proveedor en edición y cerrar modal de edición
-        setEditingProvider(null);
-        setIsEditModalOpen(false);
-    };
-
-    // Función para eliminar un Proveedor por su ID
+    // Función eliminación proveedor
     const eliminarProveedor = async (id) => {
-        const ProviderDoc = doc(db, 'proveedores', id);
-
-        // Eliminar documento de la colección de Proveedores
-        await deleteDoc(ProviderDoc);
+        try {
+            await fetch(`http://localhost:5000/proveedores/${id}`, { method: 'DELETE' });
+            setProveedores(proveedores.filter(proveedor => proveedor.id !== id));
+            showAlert('Proveedor eliminado exitosamente', 'delete');
+        } catch (error) {
+            console.error('Error al eliminar el proveedor:', error);
+        }
     };
 
-    // Manejar cambios en el formulario de agregar Proveedor
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewProvider({ ...newProvider, [name]: value });
+    // Función para refrescar lista de proveedores
+    const refreshProveedores = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/proveedores');
+            const data = await response.json();
+            setProveedores(data);
+        } catch (err) {
+            console.error('Error al refrescar los proveedores:', err.message);
+        }
     };
 
-    // Manejar cambios en el formulario de editar Proveedor
-    const handleEditInputChange = (e) => {
-        const { name, value } = e.target;
-        setEditingProvider({ ...editingProvider, [name]: value });
-    };
-
-    // Renderizado de la tabla de Proveedores y modales de agregar/editar
     return (
         <div className="relative overflow-x-auto rounded-lg pt-8">
+            {alertMessage && (
+                <div className={`mb-4 px-4 py-3 rounded relative border ${
+                    alertMessage.type === 'add' ? 'text-green-600 bg-green-100 border-green-400' :
+                    alertMessage.type === 'edit' ? 'text-blue-600 bg-blue-100 border-blue-400' :
+                    alertMessage.type === 'delete' ? 'text-red-600 bg-red-100 border-red-400' :
+                    'text-yellow-600 bg-yellow-100 border-yellow-400'
+                }`}>
+                    {alertMessage.message}
+                </div>                
+            )}
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-slate-50 dark:text-sl uppercase bg-[#f97316]">
                     <tr>
@@ -107,7 +100,7 @@ const TablaProveedores = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {Proveedores.map((Proveedor) => (
+                    {proveedores.map((Proveedor) => (
                         <React.Fragment key={Proveedor.id}>
                             <tr className="bg-white border-b dark:bg-[#292929] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#202020]">
                                 <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white ">
@@ -117,13 +110,13 @@ const TablaProveedores = () => {
                                     >
                                         {expandedProviderId === Proveedor.id ? '↓' : '→'}
                                     </button>
-                                    {Proveedor.nombreProveedor}
+                                    {Proveedor.nombre_proveedor}
                                 </th>
-                                <td className="px-6 py-4">{Proveedor.contactoProveedor}</td>
-                                <td className="px-6 py-4">{Proveedor.emailProveedor}</td>
-                                <td className="px-6 py-4">{Proveedor.telefonoProveedor}</td>
-                                <td className="px-6 py-4">{Proveedor.direccionProveedor}</td>
-                                <td className="px-6 py-4">{Proveedor.metodoPago}</td>
+                                <td className="px-6 py-4">{Proveedor.contacto_proveedor}</td>
+                                <td className="px-6 py-4">{Proveedor.email_proveedor}</td>
+                                <td className="px-6 py-4">{Proveedor.telefono_proveedor}</td>
+                                <td className="px-6 py-4">{Proveedor.direccion_proveedor}</td>
+                                <td className="px-6 py-4">{Proveedor.metodo_pago_id}</td>
                                 <td className="px-6 py-4 text-right">
                                     <a
                                         href="#"
@@ -148,12 +141,12 @@ const TablaProveedores = () => {
                                 <tr className="bg-gray-50 dark:bg-[#202020]">
                                     <td colSpan="10" className="px-6 py-4">
                                         <div className="p-4">
-                                            <p><strong>Nombre: </strong>{Proveedor.nombreProveedor}</p>
-                                            <p><strong>Contacto: </strong>{Proveedor.contactoProveedor}</p>
-                                            <p><strong>Email: </strong>{Proveedor.emailProveedor}</p>
-                                            <p><strong>Telefono: </strong>{Proveedor.telefonoProveedor}</p>
-                                            <p><strong>Dirección: </strong>{Proveedor.direccionProveedor}</p>
-                                            <p><strong>Método de pago: </strong>{Proveedor.metodoPago}</p>
+                                            <p><strong>Nombre: </strong>{Proveedor.nombre_proveedor}</p>
+                                            <p><strong>Contacto: </strong>{Proveedor.contacto_proveedor}</p>
+                                            <p><strong>Email: </strong>{Proveedor.email_proveedor}</p>
+                                            <p><strong>Telefono: </strong>{Proveedor.telefono_proveedor}</p>
+                                            <p><strong>Dirección: </strong>{Proveedor.direccion_proveedor}</p>
+                                            <p><strong>Método de pago: </strong>{Proveedor.metodo_pago_id}</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -167,23 +160,25 @@ const TablaProveedores = () => {
             <ModalAgregarProveedor
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
-                onSubmit={agregarProveedor}
                 newProvider={newProvider}
-                handleInputChange={handleInputChange}
-                MetodoPagoProveedores={MetodoPagoProveedores}
+                metodoPagoProveedores={metodoPagoProveedores}
+                refreshProveedores={refreshProveedores}
+                onSuccess={() => showAlert('Proveedor agregado exitosamente', 'add')}
             />
 
             {/* Modal para editar Proveedor existente */}
             <ModalEditarProveedor
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
-                onSubmit={editarProveedor}
                 editingProvider={editingProvider}
-                handleEditInputChange={handleEditInputChange}
-                MetodoPagoProveedores={MetodoPagoProveedores}
+                setEditingProvider={setEditingProvider} 
+                refreshProveedores={refreshProveedores} 
+                onSuccess={() => showAlert('Proveedor editado exitosamente', 'edit')}
             />
         </div>
     );
 };
 
 export default TablaProveedores;
+
+

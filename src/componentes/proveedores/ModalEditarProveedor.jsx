@@ -1,15 +1,88 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-const ModalEditarProveedor = ({ isOpen, onClose, onSubmit, editingProvider, handleEditInputChange, MetodoPagoProveedores }) => {
+const ModalEditarProveedor = ({ isOpen, onClose, refreshProveedores, editingProvider, setEditingProvider, onSuccess }) => {
+    const [metodosPago, setMetodosPago] = useState([]);
+    const [formData, setFormData] = useState({});
+
+    useEffect(() => {
+        // Fetch para obtener los métodos de pago
+        const fetchMetodosPago = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/metodo_pago");
+                const data = await response.json();
+                setMetodosPago(data);
+            } catch (error) {
+                console.error("Error al obtener los métodos de pago:", error);
+            }
+        };
+
+        fetchMetodosPago();
+    }, []);
+
+    useEffect(() => {
+        if (isOpen && editingProvider) {
+            // Establecer los datos del proveedor en el estado del formulario
+            setFormData({
+                nombreProveedor: editingProvider.nombre_proveedor || "",
+                contactoProveedor: editingProvider.contacto_proveedor || "",
+                emailProveedor: editingProvider.email_proveedor || "",
+                telefonoProveedor: editingProvider.telefono_proveedor || "",
+                direccionProveedor: editingProvider.direccion_proveedor || "",
+                metodoPago: editingProvider.metodo_pago_id || "",
+            });
+        }
+    }, [isOpen, editingProvider]);
+
+    const handleEditInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const { nombreProveedor, contactoProveedor, emailProveedor, telefonoProveedor, direccionProveedor, metodoPago } = formData;
+
+        try {
+            const response = await fetch(`http://localhost:5000/proveedores/${editingProvider.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    nombre_proveedor: nombreProveedor,
+                    contacto_proveedor: contactoProveedor,
+                    email_proveedor: emailProveedor,
+                    telefono_proveedor: telefonoProveedor,
+                    direccion_proveedor: direccionProveedor,
+                    metodo_pago_id: metodoPago,
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Proveedor actualizado:", data);
+                refreshProveedores();
+                onClose();
+                onSuccess();
+            } else {
+                console.error("Error al actualizar el proveedor");
+            }
+        } catch (err) {
+            console.error("Error en la solicitud:", err);
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
         <>
             <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
                 <div className="relative w-auto my-6 mx-auto max-w-3xl">
-                    {/*content*/}
                     <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                        {/*header*/}
                         <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t dark:bg-[#242424]">
                             <h3 className="text-3xl font-semibold text-[#f97316]">
                                 Editar Proveedor
@@ -23,15 +96,14 @@ const ModalEditarProveedor = ({ isOpen, onClose, onSubmit, editingProvider, hand
                                 </span>
                             </button>
                         </div>
-                        {/*body*/}
                         <div className="relative p-6 flex-auto dark:bg-[#242424]">
-                            <form onSubmit={onSubmit}>
+                            <form onSubmit={handleSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <input
                                         type="text"
                                         name="nombreProveedor"
                                         placeholder="Nombre Proveedor"
-                                        value={editingProvider.nombreProveedor}
+                                        value={formData.nombreProveedor || ""}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
@@ -39,23 +111,24 @@ const ModalEditarProveedor = ({ isOpen, onClose, onSubmit, editingProvider, hand
                                         type="text"
                                         name="contactoProveedor"
                                         placeholder="Contacto Proveedor"
-                                        value={editingProvider.contactoProveedor}
+                                        value={formData.contactoProveedor || ""}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <input
-                                        type="text"
+                                        type="email"
                                         name="emailProveedor"
                                         placeholder="Email Proveedor"
-                                        value={editingProvider.emailProveedor}
+                                        value={formData.emailProveedor || ""}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <input
-                                        type="text"
+                                        type="tel"
+                                        pattern="[0-9]{10}"
                                         name="telefonoProveedor"
                                         placeholder="Telefono Proveedor"
-                                        value={editingProvider.telefonoProveedor}
+                                        value={formData.telefonoProveedor || ""}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
@@ -63,19 +136,19 @@ const ModalEditarProveedor = ({ isOpen, onClose, onSubmit, editingProvider, hand
                                         type="text"
                                         name="direccionProveedor"
                                         placeholder="Direccion Proveedor"
-                                        value={editingProvider.direccionProveedor}
+                                        value={formData.direccionProveedor || ""}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <select
                                         name="metodoPago"
-                                        value={editingProvider.metodoPago}
+                                        value={formData.metodoPago || ""}
                                         onChange={handleEditInputChange}
                                     >
-                                        <option value="" disabled>Seleccione método de pago Proveedor</option>
-                                        {MetodoPagoProveedores.map((metodo, index) => (
-                                            <option key={index} value={metodo}>
-                                                {metodo}
+                                        <option value="" disabled>Seleccione un método de pago</option>
+                                        {metodosPago.map((metodo) => (
+                                            <option key={metodo.id} value={metodo.id}>
+                                                {metodo.metodo}
                                             </option>
                                         ))}
                                     </select>
@@ -92,7 +165,6 @@ const ModalEditarProveedor = ({ isOpen, onClose, onSubmit, editingProvider, hand
                                 </button>
                             </form>
                         </div>
-                        {/*footer*/}
                     </div>
                 </div>
             </div>
@@ -102,3 +174,6 @@ const ModalEditarProveedor = ({ isOpen, onClose, onSubmit, editingProvider, hand
 };
 
 export default ModalEditarProveedor;
+
+
+
