@@ -1,6 +1,87 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-const ModalAgregarCliente = ({ isOpen, onClose, onSubmit, newClient, handleInputChange, tipoClientes }) => {
+const ModalAgregarCliente = ({ isOpen, onClose, refreshClientes, onSuccess }) => {
+    const [newClient, setNewClient] = useState({
+        nombreCliente: "",
+        direccionCliente: "",
+        emailCliente: "",
+        telefonoCliente: "",
+        tipoCliente: ""
+    });
+
+    const [tiposCliente, setTiposCliente] = useState([]);
+
+    useEffect(() => {
+        // Fetch para obtener los tipos de cliente
+        const fetchTiposCliente = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/tipo_clientes");
+
+                if (!response.ok) {
+                    throw new Error("Error en la respuesta del servidor");
+                }
+
+                const data = await response.json();
+                setTiposCliente(data);
+            } catch (error) {
+                console.error("Error al obtener los tipos de cliente", error);
+            }
+        };
+
+        fetchTiposCliente();
+    }, []);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewClient({
+            ...newClient,
+            [name]: value,
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const { nombreCliente, direccionCliente, emailCliente, telefonoCliente, tipoCliente } = newClient;
+
+        try {
+            const response = await fetch("http://localhost:5000/clientes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    nombre_cliente: nombreCliente,
+                    direccion_cliente: direccionCliente,
+                    email_cliente: emailCliente,
+                    telefono_cliente: telefonoCliente,
+                    tipo_cliente_id: tipoCliente,
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Cliente agregado:", data);
+                refreshClientes();
+                onClose();
+                setNewClient({
+                    nombreCliente: "",
+                    direccionCliente: "",
+                    emailCliente: "",
+                    telefonoCliente: "",
+                    tipoCliente: ""
+                });
+                onSuccess();
+            } else{
+                console.error("Error al agregar el cliente:", await response.text());
+            }
+        } catch (err) {
+            console.error("Error en la solicitud:", err);
+
+        }
+    }
+
+
     if (!isOpen) return null;
 
     return (
@@ -25,7 +106,7 @@ const ModalAgregarCliente = ({ isOpen, onClose, onSubmit, newClient, handleInput
                         </div>
                         {/*body*/}
                         <div className="relative p-6 flex-auto dark:bg-[#242424]">
-                            <form onSubmit={onSubmit}>
+                            <form onSubmit={handleSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <input
                                         type="text"
@@ -36,7 +117,7 @@ const ModalAgregarCliente = ({ isOpen, onClose, onSubmit, newClient, handleInput
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <input
-                                        type="text"
+                                        type="email"
                                         name="emailCliente"
                                         placeholder="Email Cliente"
                                         value={newClient.emailCliente}
@@ -44,7 +125,8 @@ const ModalAgregarCliente = ({ isOpen, onClose, onSubmit, newClient, handleInput
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <input
-                                        type="text"
+                                        type="tel"
+                                        pattern="[0-9]{10}"
                                         name="telefonoCliente"
                                         placeholder="Telefono Cliente"
                                         value={newClient.telefonoCliente}
@@ -61,13 +143,13 @@ const ModalAgregarCliente = ({ isOpen, onClose, onSubmit, newClient, handleInput
                                     />
                                     <select
                                         name="tipoCliente"
-                                        value={newClient.tiposCliente}
+                                        value={newClient.tipoCliente}
                                         onChange={handleInputChange}
                                     >
                                         <option value="" disabled>Seleccione tipo cliente</option>
-                                        {tipoClientes.map((tipo, index) => (
-                                            <option key={index} value={tipo}>
-                                                {tipo}
+                                        {tiposCliente.map((tipo) => (
+                                            <option key={tipo.id} value={tipo.id}>
+                                                {tipo.tipo}
                                             </option>
                                         ))}
                                     </select>

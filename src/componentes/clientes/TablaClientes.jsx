@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { db } from "../../credenciales";
 import ModalAgregarCliente from "./ModalAgregarCliente";
 import ModalEditarCliente from "./ModalEditarCliente";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,65 +12,74 @@ const TablaClientes = () => {
     const [expandedClientId, setExpandedClientId] = useState(null);
     const [clientes, setClientes] = useState([]);
     const [tipoClientes, setTipoClientes] = useState([]);
+    const [alertMessage, setAlertMessage] = useState('');
 
+    // Fetch clientes y tipos de clientes desde el servidor
     useEffect(() => {
-        const clientesRef = collection(db, "clientes");
-        const unsubscribeClientes = onSnapshot(clientesRef, (snapshot) => {
-            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setClientes(data);
-        });
-
-        const tipoClientesRef = collection(db, "tipoClientes");
-        const unsubscribeTipoClientes = onSnapshot(tipoClientesRef, (snapshot) => {
-            const tiposData = snapshot.docs.map(doc => doc.data().tipo);
-            setTipoClientes(tiposData);
-        });
-
-        // Limpieza del efecto al desmontar el componente
-        return () => {
-            unsubscribeClientes();
-            unsubscribeTipoClientes();
+        const fetchClientes = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/clientes');
+                const data = await response.json();
+                setClientes(data);
+            } catch (err) {
+                console.error('Error al obtener los clientes:', err.message);
+            }
         };
+
+        const fetchTipoClientes = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/tipo_clientes');
+                const data = await response.json();
+                setTipoClientes(data);
+            } catch (error) {
+                console.error('Error al obtener los tipos de clientes:', error);
+            }
+        };
+
+        fetchClientes();
+        fetchTipoClientes();
     }, []);
 
-    const agregarCliente = async (e) => {
-        e.preventDefault();
-        const ClientsRef = collection(db, 'clientes');
-
-        await addDoc(ClientsRef, newClient);
-
-        setNewClient({ nombreCliente: "", emailCliente: "", telefonoCliente: "", direccionCliente: "", tipoCliente: '' });
-        setIsAddModalOpen(false);
+    // Función para mostrar la alerta
+    const showAlert = (message, type = 'info') => {
+        setAlertMessage( {message, type} );
+        setTimeout(() => setAlertMessage(''), 3000); 
     };
 
-    const editarCliente = async (e) => {
-        e.preventDefault();
-        const ClientDoc = doc(db, 'clientes', editingClient.id);
-
-        await updateDoc(ClientDoc, editingClient);
-
-        setEditingClient(null);
-        setIsEditModalOpen(false);
-    };
-
+    // Función eliminación cliente
     const eliminarCliente = async (id) => {
-        const ClientDoc = doc(db, 'clientes', id);
-
-        await deleteDoc(ClientDoc);
+        try {
+            await fetch(`http://localhost:5000/clientes/${id}`, { method: 'DELETE' });
+            setClientes(clientes.filter(clientes => clientes.id !== id));
+            showAlert('Cliente eliminado exitosamente', 'delete');
+        } catch (error) {
+            console.error('Error al eliminar el cliente:', error);
+        }
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewClient({ ...newClient, [name]: value });
-    };
-
-    const handleEditInputChange = (e) => {
-        const { name, value } = e.target;
-        setEditingClient({ ...editingClient, [name]: value });
+    // Función para refrescar lista de clientes
+    const refreshClientes = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/clientes');
+            const data = await response.json();
+            setClientes(data);
+        } catch (err) {
+            console.error('Error al refrescar los clientes:', err.message);
+        }
     };
 
     return (
         <div className="relative overflow-x-auto rounded-lg pt-8">
+            {alertMessage && (
+                <div className={`mb-4 px-4 py-3 rounded relative border ${
+                    alertMessage.type === 'add' ? 'text-green-600 bg-green-100 border-green-400' :
+                    alertMessage.type === 'edit' ? 'text-blue-600 bg-blue-100 border-blue-400' :
+                    alertMessage.type === 'delete' ? 'text-red-600 bg-red-100 border-red-400' :
+                    'text-yellow-600 bg-yellow-100 border-yellow-400'
+                }`}>
+                    {alertMessage.message}
+                </div>                
+            )}
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-slate-50 dark:text-sl uppercase bg-[#f97316]">
                     <tr>
@@ -102,12 +109,12 @@ const TablaClientes = () => {
                                     >
                                         {expandedClientId === cliente.id ? '↓' : '→'}
                                     </button>
-                                    {cliente.nombreCliente}
+                                    {cliente.nombre_cliente}
                                 </th>
-                                <td className="px-6 py-4">{cliente.emailCliente}</td>
-                                <td className="px-6 py-4">{cliente.telefonoCliente}</td>
-                                <td className="px-6 py-4">{cliente.direccionCliente}</td>
-                                <td className="px-6 py-4">{cliente.tipoCliente}</td>
+                                <td className="px-6 py-4">{cliente.email_cliente}</td>
+                                <td className="px-6 py-4">{cliente.telefono_cliente}</td>
+                                <td className="px-6 py-4">{cliente.direccion_cliente}</td>
+                                <td className="px-6 py-4">{cliente.tipo_cliente_id}</td>
                                 <td className="px-6 py-4 text-right">
                                     <a
                                         href="#"
@@ -132,11 +139,11 @@ const TablaClientes = () => {
                                 <tr className="bg-gray-50 dark:bg-[#202020]">
                                     <td colSpan="10" className="px-6 py-4">
                                         <div className="p-4">
-                                            <p><strong>Nombre: </strong>{cliente.nombreCliente}</p>
-                                            <p><strong>Email: </strong>{cliente.emailCliente}</p>
-                                            <p><strong>Telefono: </strong>{cliente.telefonoCliente}</p>
-                                            <p><strong>Dirección: </strong>{cliente.direccionCliente}</p>
-                                            <p><strong>Tipo cliente: </strong>{cliente.tipoCliente}</p>
+                                            <p><strong>Nombre: </strong>{cliente.nombre_cliente}</p>
+                                            <p><strong>Email: </strong>{cliente.email_cliente}</p>
+                                            <p><strong>Telefono: </strong>{cliente.telefono_cliente}</p>
+                                            <p><strong>Dirección: </strong>{cliente.direccion_cliente}</p>
+                                            <p><strong>Tipo cliente: </strong>{cliente.tipo_cliente_id}</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -150,25 +157,26 @@ const TablaClientes = () => {
             <ModalAgregarCliente
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
-                onSubmit={agregarCliente}
                 newClient={newClient}
-                handleInputChange={handleInputChange}
                 tipoClientes={tipoClientes}
+                refreshClientes={refreshClientes}
+                onSuccess={() => showAlert('Cliente agregado exitosamente', 'add')}
             />
 
             {/* Modal para editar Cliente existente */}
             <ModalEditarCliente
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
-                onSubmit={editarCliente}
                 editingClient={editingClient}
-                handleEditInputChange={handleEditInputChange}
                 tipoClientes={tipoClientes}
+                refreshClientes={refreshClientes}
+                onSuccess={() => showAlert('Cliente editado exitosamente', 'edit')}
             />
         </div>
     );
 };
 
 export default TablaClientes;
+
 
 
