@@ -1,22 +1,121 @@
-import React from "react";
-import { Timestamp } from 'firebase/firestore';
+import React, { useState, useEffect } from "react";
 
-const convertirTimestamp = (timestamp) => {
-    if (timestamp instanceof Timestamp) {
-        const fecha = timestamp.toDate();
-        const year = fecha.getFullYear();
-        const month = String(fecha.getMonth() + 1).padStart(2, '0');
-        const day = String(fecha.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    } else if (timestamp instanceof Date) {
-        const year = timestamp.getFullYear();
-        const month = String(timestamp.getMonth() + 1).padStart(2, '0');
-        const day = String(timestamp.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-};
+const ModalEditarProducto = ({ isOpen, onClose, refreshProductos, editingProduct, onSuccess }) => {
+    const [marcaProducto, setMarcaProducto] = useState([]);
+    const [referenciaProducto, setReferenciaProducto] = useState([]);
+    const [proveedorProducto, setProveedorProducto] = useState([]);
+    const [formData, setFormData] = useState({});
 
-const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handleEditInputChange, referencias, marcas, proveedores }) => {
+    useEffect(() => {
+        // Fetch para obtener referencias, marcas, proveedores del producto
+        const fetchReferenciasProducto = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/referencias_productos');
+                const data = await response.json();
+                setReferenciaProducto(data);
+            } catch (error) {
+                console.error('Error al obtener las referencias del productos:', error);
+            }
+        };
+
+        const fetchMarcasProducto = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/marcas_productos');
+                const data = await response.json();
+                setMarcaProducto(data);
+            } catch (error) {
+                console.error('Error al obtener las marcas del productos:', error);
+            }
+        };
+
+        const fetchProveedorProducto = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/proveedores');
+                const data = await response.json();
+                setProveedorProducto(data);
+            } catch (error) {
+                console.error('Error al obtener el proveedor del producto:', error);
+            }
+        };
+
+        fetchReferenciasProducto();
+        fetchMarcasProducto();
+        fetchProveedorProducto();
+    }, []);
+
+    useEffect(() => {
+        if (isOpen && editingProduct) {
+            // Establecer los datos del producto en el estado del formulario
+            setFormData({
+                nombreProducto: editingProduct.nombre || "",
+                descripcionProducto: editingProduct.descripcion || "",
+                fechaEntradaProducto: editingProduct.fecha_entrada || "",
+                marcaProductoId: editingProduct.marca_id || "",
+                nivelMinimoStock: editingProduct.nivel_minimo_stock || "",
+                precioCompraProducto: editingProduct.precio_compra || "",
+                precioVentaProducto: editingProduct.precio_venta || "",
+                proveedorProductoId: editingProduct.proveedor_id || "",
+                referenciaProductoId: editingProduct.referencia_id || "",
+                Stock: editingProduct.stock || "",
+            });
+        }
+    }, [isOpen, editingProduct]);
+
+    const handleEditInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const { nombreProducto,
+            descripcionProducto,
+            fechaEntradaProducto,
+            marcaProductoId,
+            nivelMinimoStock,
+            precioCompraProducto,
+            precioVentaProducto,
+            proveedorId,
+            referenciaProductoId,
+            Stock } = formData;
+
+        try {
+            const response = await fetch(`http://localhost:5000/productos/${editingProduct.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    nombre: nombreProducto,
+                    descripcion: descripcionProducto,
+                    fecha_entrada: fechaEntradaProducto,
+                    marca_id: marcaProductoId,
+                    nivel_minimo_stock: nivelMinimoStock,
+                    precio_compra: precioCompraProducto,
+                    precio_venta: precioVentaProducto,
+                    proveedor_id: proveedorId,
+                    referencia_id: referenciaProductoId,
+                    stock: Stock,
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Producto actualizado:", data);
+                refreshProductos();
+                onClose();
+                onSuccess();
+            } else {
+                console.error("Error al actualizar el producto");
+            }
+        } catch (err) {
+            console.error("Error en la solicitud:", err);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -39,46 +138,46 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                             </button>
                         </div>
                         <div className="relative p-6 flex-auto dark:bg-[#242424]">
-                            <form onSubmit={onSubmit}>
+                            <form onSubmit={handleSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <input
                                         type="text"
                                         name="nombreProducto"
                                         placeholder="Nombre Producto"
-                                        value={editingProduct.nombreProducto}
+                                        value={formData.nombreProducto}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <textarea
                                         name="descripcionProducto"
                                         placeholder="Descripción Producto"
-                                        value={editingProduct.descripcionProducto}
+                                        value={formData.descripcionProducto}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <select
                                         name="referenciaProducto"
-                                        value={editingProduct.referenciaProducto}
+                                        value={formData.referenciaProducto}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     >
                                         <option value="" disabled>Seleccione Referencia</option>
-                                        {referencias.map((nombreReferencia, index) => (  
-                                            <option key={index} value={nombreReferencia}>
-                                                {nombreReferencia}
+                                        {referenciaProducto.map((referencia) => (  
+                                            <option key={referencia.id} value={referencia.id}>
+                                                {referencia.codigo}
                                             </option>
                                         ))}
                                     </select>
                                     <select
                                         name="marcaProducto"
-                                        value={editingProduct.marcaProducto}
+                                        value={formData.marcaProducto}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     >
                                         <option value="" disabled>Seleccionar Marca</option>
-                                        {marcas.map((nombreProducto, index) => (
-                                            <option key={index} value={nombreProducto}>
-                                                {nombreProducto}
+                                        {marcaProducto.map((marca) => (
+                                            <option key={marca.id} value={marca.id}>
+                                                {marca.nombre}
                                             </option>
                                         ))}
                                     </select>
@@ -86,7 +185,7 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                         type="text"
                                         name="precioCompraProducto"
                                         placeholder="Precio Compra"
-                                        value={editingProduct.precioCompraProducto}
+                                        value={formData.precioCompraProducto}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
@@ -94,15 +193,15 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                         type="text"
                                         name="precioVentaProducto"
                                         placeholder="Precio Venta"
-                                        value={editingProduct.precioVentaProducto}
+                                        value={formData.precioVentaProducto}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <input
                                         type="number"
-                                        name="stock"
+                                        name="Stock"
                                         placeholder="Stock"
-                                        value={editingProduct.stock}
+                                        value={formData.Stock}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
@@ -110,33 +209,27 @@ const ModalEditarProducto = ({ isOpen, onClose, onSubmit, editingProduct, handle
                                         type="number"
                                         name="nivelMinimoStock"
                                         placeholder="Nivel Mínimo Stock"
-                                        value={editingProduct.nivelMinimoStock}
+                                        value={formData.nivelMinimoStock}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <select
                                         name="proveedorId"
-                                        value={editingProduct.proveedorId}
+                                        value={formData.proveedorId}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     >
                                         <option value="" disabled>Seleccione Proveedor</option>
-                                        {proveedores.map((nombreProveedor, index) => (
-                                            <option key={index} value={nombreProveedor}>
-                                                {nombreProveedor}
+                                        {proveedorProducto.map((proveedor) => (
+                                            <option key={proveedor.id} value={proveedor.id}>
+                                                {proveedor.nombre_proveedor}
                                             </option>
                                         ))}
                                     </select>
                                     <input
                                         type="date"
                                         name="fechaEntradaProducto"
-                                        value={editingProduct.fechaEntradaProducto ? convertirTimestamp(editingProduct.fechaEntradaProducto) : ""}
-                                        onChange={handleEditInputChange}
-                                        className="input-class m-4 text-[#757575]"
-                                    />
-                                    <input
-                                        type="file"
-                                        name="imagenProducto"
+                                        value={formData.fechaEntradaProducto}
                                         onChange={handleEditInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />

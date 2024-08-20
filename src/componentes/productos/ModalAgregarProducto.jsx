@@ -1,23 +1,152 @@
-import React from 'react';
-import { Timestamp } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
 
-const convertirTimestamp = (timestamp) => {
-    if (timestamp instanceof Timestamp) {
-        const fecha = timestamp.toDate();
-        const year = fecha.getFullYear();
-        const month = String(fecha.getMonth() + 1).padStart(2, '0');
-        const day = String(fecha.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    } else if (timestamp instanceof Date) {
-        const year = timestamp.getFullYear();
-        const month = String(timestamp.getMonth() + 1).padStart(2, '0');
-        const day = String(timestamp.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+const ModalAgregarProducto = ({ isOpen, onClose, refreshProductos, onSuccess }) => {
+    const [newProduct, setNewProduct] = useState({
+        nombreProducto: "",
+        descripcionProducto: "",
+        fechaEntradaProducto: "",
+        marcaProductoId: "",
+        nivelMinimoStock: "",
+        precioCompraProducto: "",
+        precioVentaProducto: "",
+        proveedorId: "",
+        referenciaProductoId: "",
+        Stock: ""
+    });
+
+    const [marcaProducto, setMarcaProducto] = useState([]);
+    const [referenciaProducto, setReferenciaProducto] = useState([]);
+    const [proveedorProducto, setProveedorProducto] = useState([]);
+
+    useEffect(() => {
+        // Fetch para obtener marcas del producto
+        const fetchMarcasProducto = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/marcas_productos");
+
+                if (!response.ok) {
+                    throw new Error("Error en la respuesta del servidor");
+                }
+
+                const data = await response.json();
+                setMarcaProducto(data);
+            } catch (error) {
+                console.error("Error al obtener las marcas del producto", error);
+            }
+        };
+
+        fetchMarcasProducto();
+    }, []);
+
+    useEffect(() => {
+        // Fetch para obtener referencias del producto
+        const fetchReferenciasProducto = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/referencias_productos");
+
+                if (!response.ok) {
+                    throw new Error("Error en la respuesta del servidor");
+                }
+
+                const data = await response.json();
+                setReferenciaProducto(data);
+            } catch (error) {
+                console.error("Error al obtener las referencias del producto", error);
+            }
+        };
+
+        fetchReferenciasProducto();
+    }, []);
+
+    useEffect(() => {
+        // Fetch para obtener proveedores del producto
+        const fetchProveedorProducto = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/proveedores");
+
+                if (!response.ok) {
+                    throw new Error("Error en la respuesta del servidor");
+                }
+
+                const data = await response.json();
+                setProveedorProducto(data);
+            } catch (error) {
+                console.error("Error al obtener el proveedor del producto", error);
+            }
+        };
+
+        fetchProveedorProducto();
+    }, []);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewProduct({
+            ...newProduct,
+            [name]: value,
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const { nombreProducto,
+            descripcionProducto,
+            fechaEntradaProducto,
+            marcaProductoId,
+            nivelMinimoStock,
+            precioCompraProducto,
+            precioVentaProducto,
+            proveedorId,
+            referenciaProductoId,
+            Stock
+        } = newProduct;
+
+        try {
+            const response = await fetch("http://localhost:5000/productos", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    nombre: nombreProducto,
+                    descripcion: descripcionProducto,
+                    fecha_entrada: fechaEntradaProducto,
+                    marca_id: marcaProductoId,
+                    nivel_minimo_stock: nivelMinimoStock,
+                    precio_compra: precioCompraProducto,
+                    precio_venta: precioVentaProducto,
+                    proveedor_id: proveedorId,
+                    referencia_id: referenciaProductoId,
+                    stock: Stock,
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Producto agregado:", data);
+                refreshProductos();
+                onClose();
+                setNewProduct({
+                    nombreProducto: "",
+                    descripcionProducto: "",
+                    fechaEntradaProducto: "",
+                    marcaProductoId: "",
+                    nivelMinimoStock: "",
+                    precioCompraProducto: "",
+                    precioVentaProducto: "",
+                    proveedorId: "",
+                    referenciaProductoId: "",
+                    Stock: ""
+                });
+                onSuccess();
+            } else {
+                console.error("Error al agregar el producto:", await response.text());
+            }
+        } catch (err) {
+            console.error("Error en la solicitud:", err);
+
+        }
     }
-};
-
-
-const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInputChange, referencias, marcas, proveedores }) => {
 
     if (!isOpen) return null;
 
@@ -43,7 +172,7 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                         </div>
                         {/*body*/}
                         <div className="relative p-6 flex-auto dark:bg-[#242424]">
-                            <form onSubmit={onSubmit}>
+                            <form onSubmit={handleSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <input
                                         type="text"
@@ -61,28 +190,28 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <select
-                                        name="referenciaProducto"
-                                        value={newProduct.referenciaProducto}
+                                        name="referenciaProductoId"
+                                        value={newProduct.referenciaProductoId}
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     >
                                         <option value="" disabled>Seleccione Referencia</option>
-                                        {referencias.map((nombreReferencia, index) => (
-                                            <option key={index} value={nombreReferencia}>
-                                                {nombreReferencia}
+                                        {referenciaProducto.map((referencia) => (
+                                            <option key={referencia.id} value={referencia.id}>
+                                                {referencia.codigo}
                                             </option>
                                         ))}
                                     </select>
                                     <select
-                                        name="marcaProducto"
-                                        value={newProduct.marcaProducto}
+                                        name="marcaProductoId"
+                                        value={newProduct.marcaProductoId}
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     >
                                         <option value="">Seleccionar Marca</option>
-                                        {marcas.map((nombreProducto, index) => (
-                                            <option key={index} value={nombreProducto}>
-                                                {nombreProducto}
+                                        {marcaProducto.map((marca) => (
+                                            <option key={marca.id} value={marca.id}>
+                                                {marca.nombre}
                                             </option>
                                         ))}
                                     </select>
@@ -104,15 +233,17 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                     />
                                     <input
                                         type="number"
-                                        name="stock"
+                                        name="Stock"
+                                        min={0}
                                         placeholder="Stock"
-                                        value={newProduct.stock}
+                                        value={newProduct.Stock}
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
                                     <input
                                         type="number"
                                         name="nivelMinimoStock"
+                                        min={0}
                                         placeholder="Nivel Mínimo Stock"
                                         value={newProduct.nivelMinimoStock}
                                         onChange={handleInputChange}
@@ -125,22 +256,16 @@ const ModalAgregarProducto = ({ isOpen, onClose, onSubmit, newProduct, handleInp
                                         className="input-class m-4 text-[#757575]"
                                     >
                                         <option value="" disabled>Seleccione Proveedor</option>
-                                        {proveedores.map((nombreProveedor, index) => (
-                                            <option key={index} value={nombreProveedor}>
-                                                {nombreProveedor}
+                                        {proveedorProducto.map((proveedor) => (
+                                            <option key={proveedor.id} value={proveedor.id}>
+                                                {proveedor.nombre_proveedor}
                                             </option>
                                         ))}
                                     </select>
                                     <input
                                         type="date"
                                         name="fechaEntradaProducto"
-                                        value={newProduct.fechaEntradaProducto ? convertirTimestamp(newProduct.fechaEntradaProducto) : ""}
-                                        onChange={handleInputChange}
-                                        className="input-class m-4 text-[#757575]"
-                                    />
-                                    <input
-                                        type="file"
-                                        name="imagenProducto"
+                                        value={newProduct.fechaEntradaProducto}
                                         onChange={handleInputChange}
                                         className="input-class m-4 text-[#757575]"
                                     />
