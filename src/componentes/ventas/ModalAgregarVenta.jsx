@@ -2,34 +2,152 @@ import React, { useState, useEffect } from "react";
 import { faCircleUser, faFileLines, faBell, faEnvelope, faGear, faImagePortrait } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChange, productos, clientes, estadoVentas, metodoPago, metodoEnvio }) => {
+const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
+    const [newSale, setNewSale] = useState({
+        productoId: 0,
+        precioVenta: 0,
+        clienteId: 0,
+        fechaVenta: '',
+        estadoVentaId: 0,
+        metodoPagoId: 0,
+        descuentoVenta: '',
+        notaVenta: '',
+        metodoEnvioVentaId: 0,
+        subtotal: 0,
+        total: 0
+    });
+    const [productos, setProductos] = useState([]);
+    const [clientes, setClientes] = useState([]);
+    const [estadoVentas, setEstadoVentas] = useState([]);
+    const [metodoPago, setMetodoPago] = useState([]);
+    const [metodoEnvio, setMetodoEnvio] = useState([]);
     const [productosSeleccionados, setProductosSeleccionados] = useState({});
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
     const [subtotal, setSubtotal] = useState(0);
     const [total, setTotal] = useState(0);
 
-    /* CALCULO TOTAL VENTA */
-    useEffect(() => {
-        const calcularSubtotal = () => {
-            let total = 0;
-            Object.values(productosSeleccionados).forEach(producto => {
-                if (producto) {
-                    total += producto.precioVentaProducto * producto.cantidad;
-                }
-            });
 
-            const envioSeleccionado = metodoEnvio.find(envio => envio.id === newSale.metodoEnvio);
-            if (envioSeleccionado) {
-                total += envioSeleccionado.precio;
+    // FETCH TABLAS NECESARIAS
+    // Función reutilizable para obtener datos de una API
+    const fetchDataFromAPI = async (endpoint, setStateFunction) => {
+        try {
+            const response = await fetch(`http://localhost:5000/${endpoint}`);
+            const data = await response.json();
+            setStateFunction(data);
+            console.log(data);
+        } catch (error) {
+            console.error(`Error al obtener los datos de ${endpoint}`, error);
+        }
+    };
+
+    // FECTCH TABLAS NECESARIAS
+    useEffect(() => {
+        fetchDataFromAPI("productos", setProductos);
+        fetchDataFromAPI("clientes", setClientes);
+        fetchDataFromAPI("estado_venta", setEstadoVentas);
+        fetchDataFromAPI("metodo_pago", setMetodoPago);
+        fetchDataFromAPI("metodo_envio_venta", setMetodoEnvio);
+    }, []);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        const updatedValue = name === 'productoId' || name === 'clienteId' || name === 'estadoVentaId' || name === 'metodoPagoId' || name === 'metodoEnvioVentaId'
+            ? parseInt(value) || 0
+            : value;
+
+        console.log(`Campo: ${name}, Valor: ${updatedValue}`);
+        setNewSale({
+            ...newSale,
+            [name]: updatedValue,
+        });
+    };
+
+
+    const calcularTotal = (subtotal, descuentoVenta) => {
+        const descuento = (descuentoVenta / 100) * subtotal;
+        const total = subtotal - descuento;
+        return total ? total : 0;
+    };
+
+    useEffect(() => {
+        const nuevoSubtotal = calcularSubtotal();
+        setSubtotal(nuevoSubtotal);
+        const nuevoTotal = calcularTotal(nuevoSubtotal, newSale.descuento_venta);
+        setTotal(nuevoTotal);
+    }, [productosSeleccionados, newSale.metodo_envio_venta_id, newSale.descuento_venta]);
+
+    // Manejar cambios en checboxes productos
+    const manejarCambioCheckbox = (producto) => {
+        setProductosSeleccionados(prevState => {
+            const isSelected = !!prevState[producto.id];
+
+            if (isSelected) {
+                const newState = { ...prevState };
+                delete newState[producto.id];
+                return newState;
+            } else {
+                return {
+                    ...prevState,
+                    [producto.id]: {
+                        cantidad: 1,
+                        precio: producto.precio_venta,
+                    },
+                };
             }
 
-            setSubtotal(total);
-        };
+        });
+        console.log("Productos seleccionados después del cambio:");
+        Object.entries(productosSeleccionados).forEach(([productId, producto]) => {
+            console.log(`- ID Producto ${productId}: cantidad ${producto.cantidad}`);
+        });
+    };
 
-        calcularSubtotal();
-    }, [productosSeleccionados, newSale.metodoEnvio, metodoEnvio]);
+    // Manejar cambios de cantidad productos
+    const manejarCambioCantidad = (productoId, cantidad) => {
+        setProductosSeleccionados(prevState => ({
+            ...prevState,
+            [productoId]: {
+                ...prevState[productoId],
+                cantidad: cantidad < 1 ? 1 : cantidad,
+            },
+        }));
+    };
 
-    /* CALCULO TO */
+    // Manejar cambio información cliente
+    const manejarCambioCliente = (e) => {
+        const clienteId = e.target.value;
+        const cliente = clientes.find(cliente => cliente.id === clienteId);
+
+        setClienteSeleccionado(cliente);
+
+        setNewSale(prevState => ({
+            ...prevState,
+            clienteId: clienteId
+        }));
+    };
+
+
+    // Calcular subtotal
+    const calcularSubtotal = () => {
+        // Calcular subtotal de productos seleccionados
+        const subtotalProductos = Object.values(productosSeleccionados).reduce(
+            (acc, producto) => acc + producto.cantidad * producto.precio, 0
+        );
+
+        console.log("Subtotal actual:", subtotalProductos);
+
+        // Obtener el precio del método de envío seleccionado
+        const metodoEnvioSeleccionado = metodoEnvio.find(envio => envio.id === newSale.metodoEnvioVentaId);
+        const precioEnvio = metodoEnvioSeleccionado ? metodoEnvioSeleccionado.precio : 0;
+        console.log("Precio del método de envío seleccionado:", parseFloat(precioEnvio));
+
+        // Retornar la suma del subtotal de productos y el precio de envío
+        const subtotal = subtotalProductos + parseFloat(precioEnvio);
+        return subtotal;
+    };
+
+
+    // Calcular Total
     useEffect(() => {
         const calcularTotal = () => {
             const descuento = (newSale.descuentoVenta / 100) * subtotal;
@@ -40,33 +158,79 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
         calcularTotal();
     }, [subtotal, newSale.descuentoVenta]);
 
-    const manejarCambioCheckbox = (producto) => {
-        setProductosSeleccionados(prev => ({
-            ...prev,
-            [producto.id]: prev[producto.id] ? null : { ...producto, cantidad: 1 }
-        }));
-    };
 
-    const manejarCambioCantidad = (productoId, cantidad) => {
-        setProductosSeleccionados(prev => ({
-            ...prev,
-            [productoId]: { ...prev[productoId], cantidad: cantidad }
-        }));
-    };
-
-    const manejarCambioCliente = (e) => {
-        const clienteId = e.target.value;
-        const cliente = clientes.find(cliente => cliente.id === clienteId);
-        setClienteSeleccionado(cliente);
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const productosFiltrados = Object.values(productosSeleccionados).filter(Boolean);
+        const { productoId, precioVenta, clienteId, fechaVenta, estadoVentaId, metodoPagoId, descuentoVenta, notaVenta, metodoEnvioVentaId, subtotal, total } = newSale;
 
-        onSubmit({ ...newSale, productos: productosFiltrados, cliente: clienteSeleccionado, subTotal: subtotal.toFixed(3), total: total.toFixed(3) });
+        try {
+            const response = await fetch("http://localhost:5000/ventas", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    producto_id: productoId,
+                    precio_venta: precioVenta,
+                    cliente_id: clienteId,
+                    fecha_venta: fechaVenta,
+                    estado_venta_id: estadoVentaId,
+                    metodo_pago_id: metodoPagoId,
+                    descuento_venta: descuentoVenta,
+                    nota_venta: notaVenta,
+                    metodo_envio_venta_id: metodoEnvioVentaId,
+                    subtotal: subtotal,
+                    total: total,
+                    productos: productosFiltrados.map(prod => ({
+                        producto_id: prod.id,
+                        cantidad: prod.cantidad,
+                        precio: prod.precio
+                    })),
+                    cliente: {
+                        id: clienteSeleccionado.id,
+                        nombre_cliente: clienteSeleccionado.nombre_cliente,
+                        email_cliente: clienteSeleccionado.email_cliente,
+                        telefono_cliente: clienteSeleccionado.telefono_cliente,
+                        direccion_cliente: clienteSeleccionado.direccion_cliente,
+                        tipo_cliente_id: clienteSeleccionado.tipo_cliente_id
+                    },
+                }),
+            });
+
+            console.log(JSON.stringify({
+                producto_id: productoId,
+                precio_venta: parseFloat(precioVenta),
+                cliente_id: clienteId,
+                fecha_venta: fechaVenta,
+                estado_venta_id: estadoVentaId,
+                metodo_pago_id: metodoPagoId,
+                descuento_venta: parseFloat(descuentoVenta),
+                nota_venta: notaVenta,
+                metodo_envio_venta_id: metodoEnvioVentaId,
+                subtotal: parseFloat(subtotal),
+                total: parseFloat(total),
+                productos: productosFiltrados,
+                cliente: clienteSeleccionado,
+            }));
+
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Venta agregada:", data);
+                refreshVentas();
+                onSuccess();
+                onClose();
+            } else {
+                console.error("Error al agregar la venta:", await response.text());
+            }
+        } catch (err) {
+            console.error("Error en la solicitud:", err);
+        }
     };
+
+
 
     if (!isOpen) return null;
 
@@ -100,11 +264,15 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                                 <input
                                                     type="checkbox"
                                                     id={producto.id}
+                                                    name="productoId"
+                                                    value={newSale.producto_id}
                                                     checked={!!productosSeleccionados[producto.id]}
                                                     onChange={() => manejarCambioCheckbox(producto)}
                                                     className="m-2"
                                                 />
-                                                <label htmlFor={producto.id} className="text-left flex-grow text-[#757575] dark:text-[#757575]">{producto.nombreProducto} - {producto.precioVentaProducto} COP</label>
+                                                <label htmlFor={producto.id} className="text-left flex-grow text-[#757575] dark:text-[#757575]">
+                                                    {producto.nombre} - {parseFloat(producto.precio_venta).toFixed(0)} COP
+                                                </label>
                                                 {productosSeleccionados[producto.id] && (
                                                     <input
                                                         type="number"
@@ -119,13 +287,14 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                     </div>
                                 </div>
 
+
                                 {/* DATOS CLIENTE */}
                                 <div className="bg-white rounded-lg p-4 dark:bg-[#292929]">
                                     <h3 className="text-xl font-semibold text-[#f97316] mb-2">Datos Cliente</h3>
-                                    <select className="w-full p-2 my-4 border rounded-md text-[#757575]" onChange={manejarCambioCliente}>
+                                    <select className="w-full p-2 my-4 border rounded-md text-[#757575]" onChange={manejarCambioCliente} name="clienteId" value={newSale.cliente_id}>
                                         <option value="">Seleccione un cliente</option>
                                         {clientes.map(cliente => (
-                                            <option key={cliente.id} value={cliente.id}>{cliente.nombreCliente}</option>
+                                            <option key={cliente.id} value={cliente.id}>{cliente.nombre_cliente}</option>
                                         ))}
                                     </select>
                                     <div className="flex items-center justify-center mb-4">
@@ -137,7 +306,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                                 <input
                                                     type="text"
                                                     placeholder="Nombre"
-                                                    value={clienteSeleccionado.nombreCliente}
+                                                    value={clienteSeleccionado.nombre_cliente}
                                                     disabled
                                                     className="w-full md:w-1/2 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                                 />
@@ -145,28 +314,28 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                             <input
                                                 type="text"
                                                 placeholder="Correo"
-                                                value={clienteSeleccionado.emailCliente}
+                                                value={clienteSeleccionado.email_cliente}
                                                 disabled
                                                 className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
                                             <input
                                                 type="text"
                                                 placeholder="Teléfono"
-                                                value={clienteSeleccionado.telefonoCliente}
+                                                value={clienteSeleccionado.telefono_cliente}
                                                 disabled
                                                 className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
                                             <input
                                                 type="text"
                                                 placeholder="Dirección"
-                                                value={clienteSeleccionado.direccionCliente}
+                                                value={clienteSeleccionado.direccion_cliente}
                                                 disabled
                                                 className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
                                             <input
                                                 type="text"
                                                 placeholder="Método de pago"
-                                                value={clienteSeleccionado.tipoCliente}
+                                                value={clienteSeleccionado.tipo_cliente_id}
                                                 disabled
                                                 className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
@@ -182,7 +351,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Fecha venta</label>
                                             <input
                                                 name="fechaVenta"
-                                                value={newSale.fechaVenta}
+                                                value={newSale.fecha_venta}
                                                 onChange={handleInputChange}
                                                 type="date"
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
@@ -191,15 +360,16 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                         <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Estado de venta</label>
                                             <select
-                                                name="estadoVenta"
-                                                value={newSale.estadoVenta}
+                                                name="estadoVentaId"
+                                                value={newSale.estadoVentaId}
                                                 onChange={handleInputChange}
+                                                required
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             >
-                                                <option value="" disabled>Seleccione estado venta</option>
-                                                {estadoVentas.map((estado, index) => (
-                                                    <option key={index} value={estado}>
-                                                        {estado}
+                                                <option value="">Seleccione estado venta</option>
+                                                {estadoVentas.map((estado) => (
+                                                    <option key={estado.id} value={estado.id}>
+                                                        {estado.estado}
                                                     </option>
                                                 ))}
                                             </select>
@@ -207,15 +377,16 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                         <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Método de pago</label>
                                             <select
-                                                name="metodoPago"
-                                                value={newSale.metodoPago}
+                                                name="metodoPagoId"
                                                 onChange={handleInputChange}
+                                                value={newSale.metodoPagoId}
+                                                required
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             >
-                                                <option value="" disabled>Seleccione metodo de pago</option>
-                                                {metodoPago.map((metodo, index) => (
-                                                    <option key={index} value={metodo}>
-                                                        {metodo}
+                                                <option value="" >Seleccione metodo de pago</option>
+                                                {metodoPago.map(pago => (
+                                                    <option key={pago.id} value={pago.id}>
+                                                        {pago.metodo}
                                                     </option>
                                                 ))}
                                             </select>
@@ -225,7 +396,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                             <input
                                                 type="number"
                                                 name="descuentoVenta"
-                                                value={newSale.descuentoVenta}
+                                                value={newSale.descuento_venta}
                                                 onChange={handleInputChange}
                                                 min={0}
                                                 max={100}
@@ -244,7 +415,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                             <textarea
                                                 name="notaVenta"
                                                 placeholder="Nota Venta"
-                                                value={newSale.notaVenta}
+                                                value={newSale.nota_venta}
                                                 onChange={handleInputChange}
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
@@ -252,24 +423,27 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                         <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Método de envío</label>
                                             <select
-                                                name="metodoEnvio"
-                                                value={newSale.metodoEnvio}
+                                                name="metodoEnvioVentaId"
+                                                value={newSale.metodo_envio_venta_id}
                                                 onChange={handleInputChange}
+                                                required
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             >
-                                                <option value="" disabled>Seleccione metodo de envío</option>
-                                                {metodoEnvio.map((metodo, index) => (
-                                                    <option key={index} value={metodo.id}>
-                                                        {metodo.nombre} ({metodo.precio.toFixed(3)} COP)
+                                                <option value={0}>Seleccione un método de envío</option>
+                                                {metodoEnvio.map(envio => (
+                                                    <option key={envio.id} value={envio.id}>
+                                                        {envio.metodo} - {envio.precio} COP
                                                     </option>
                                                 ))}
                                             </select>
+
                                         </div>
                                         <div className="flex items-center">
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Subtotal</label>
                                             <input
                                                 type="text"
-                                                value={subtotal.toFixed(3)}
+                                                name="subtotal"
+                                                value={subtotal}
                                                 disabled
                                                 className="w-2/3 p-2 border rounded-md text-[#757575] bg-gray-200 dark:bg-gray-600"
                                             />
@@ -277,10 +451,11 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit, newSale, handleInputChan
                                     </div>
                                     <hr className="my-4 border-t-2 border-orange-500" />
                                     <div className="flex items-center">
-                                        <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">TOTAL</label>
+                                        <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Total</label>
                                         <input
                                             type="text"
-                                            value={total.toFixed(3)}
+                                            name="total"
+                                            value={total}
                                             disabled
                                             className="w-2/3 p-2 border rounded-md text-[#757575] bg-gray-200 dark:bg-gray-600"
                                         />

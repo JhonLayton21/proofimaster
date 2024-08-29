@@ -52,7 +52,7 @@ h1 {
   transition: background-color .10s linear .1s;
 }
 
-.menu-item:hover {
+.menu-item:hover, .sub-item:hover {
   background-color: #ffffff; 
   color: #ff6f00;
 }
@@ -112,10 +112,27 @@ textarea {
 }
 
 .bentoItem:hover {
-  --tw-shadow: 0 25px 50px -12px rgba(255, 106, 0, 0.582);
-    --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color);
-    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  --tw-shadow: 0 25px 50px -12px rgb(255, 106, 0) !important; 
+    --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color) !important;
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important; 
 }
+
+.alerta-stock {
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transición suave */
+  border-radius: 8px; /* Bordes redondeados */
+}
+
+.alerta-stock:hover {
+  transform: scale(1.1); /* Escala el div al 110% de su tamaño */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Sombra para dar más énfasis */
+  z-index: 5;
+}
+
+.blurred-background {
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.3); /* Tono negro semitransparente */
+}
+
 
 
 @media (prefers-color-scheme: light) {

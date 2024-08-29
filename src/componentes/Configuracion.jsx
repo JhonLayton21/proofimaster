@@ -55,12 +55,9 @@ export default function Configuracion() {
   return (
     <div className="grid grid-cols-12 gap-0 h-screen overflow-hidden">
       {/* MENU LATERAL */}
-      <div className="md:col-span-2 h-full overflow-y-auto">
-        <MenuLateral />
-      </div>
 
       {/* MENU PRINCIPAL */}
-      <div className="col-span-12 md:col-span-10 h-full overflow-y-auto">
+      <div className="col-span-12 h-full overflow-y-auto">
         <MenuPrincipal titulo="CONFIGURACION" subtitulo="Ajusta las configuraciones de tu cuenta">
           <div className="p-4">
             <div className="mt-6 border-t border-gray-300">

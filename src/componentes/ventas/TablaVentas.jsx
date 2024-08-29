@@ -20,108 +20,84 @@ const TablaVentas = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [expandedSaleId, setExpandedSaleId] = useState(null);
+    const [alertMessage, setAlertMessage] = useState('');
 
-    /* Efecto para suscribirse a las actualizaciones en tiempo real */
+    // FECTCH TABLAS NECESARIAS
     useEffect(() => {
-        const ventasRef = collection(db, "ventas");
-        const productosRef = collection(db, "productos");
-        const clientesRef = collection(db, "clientes");
-        const estadoVentaRef = collection(db, "estadoVenta");
-        const metodoPagoRef = collection(db, "MetodoPagoProveedores");
-        const metodoEnvioRef = collection(db, "metodoEnvioVenta");
+        const fetchData = async () => {
+            try {
+                // Fetch productos
+                const productosRes = await fetch("http://localhost:5000/productos");
+                const productosData = await productosRes.json();
+                setProductos(productosData);
 
-        const unsubscribeVentas = onSnapshot(ventasRef, (snapshot) => {
-            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setVentas(data);
-        });
+                // Fetch clientes
+                const clientesRes = await fetch("http://localhost:5000/clientes");
+                const clientesData = await clientesRes.json();
+                setClientes(clientesData);
 
-        const unsubscribeProductos = onSnapshot(productosRef, (snapshot) => {
-            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setProductos(data);
-        });
+                // Fetch estados de venta
+                const estadoVentasRes = await fetch("http://localhost:5000/estado_venta");
+                const estadoVentasData = await estadoVentasRes.json();
+                setEstadoVentas(estadoVentasData);
 
-        const unsubscribeClientes = onSnapshot(clientesRef, (snapshot) => {
-            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setClientes(data);
-        });
+                // Fetch métodos de pago
+                const metodoPagoRes = await fetch("http://localhost:5000/metodo_pago");
+                const metodoPagoData = await metodoPagoRes.json();
+                setMetodoPago(metodoPagoData);
 
-        const unsubscribeEstadoVenta = onSnapshot(estadoVentaRef, (snapshot) => {
-            const data = snapshot.docs.map(doc => doc.data().estado);
-            setEstadoVentas(data);
-        });
-
-        const unsubscribeMetodoPago = onSnapshot(metodoPagoRef, (snapshot) => {
-            const data = snapshot.docs.map(doc => doc.data().tipo);
-            setMetodoPago(data);
-        });
-
-        const unsubscribeMetodoEnvio = onSnapshot(metodoEnvioRef, (snapshot) => {
-            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setMetodoEnvio(data);
-        });
-
-        // Limpiar suscripciones al desmontar el componente
-        return () => {
-            unsubscribeVentas();
-            unsubscribeProductos();
-            unsubscribeClientes();
-            unsubscribeEstadoVenta();
-            unsubscribeMetodoPago();
-            unsubscribeMetodoEnvio();
+                // Fetch métodos de envío
+                const metodoEnvioRes = await fetch("http://localhost:5000/metodo_envio_venta");
+                const metodoEnvioData = await metodoEnvioRes.json();
+                setMetodoEnvio(metodoEnvioData);
+            } catch (error) {
+                console.error("Error al obtener los datos", error);
+            }
         };
+
+        fetchData();
     }, []);
 
-    const agregarVenta = async (venta) => {
-        const ventasRef = collection(db, 'ventas');
-
-        await addDoc(ventasRef, {
-            ...venta,
-            subTotal: venta.subTotal,
-            total: venta.total
-        });
-
-        setNewSale({
-            nombreCliente: "",
-            productos: [],
-            fechaVenta: "",
-            estadoVenta: "",
-            metodoPago: "",
-            descuentoVenta: "",
-            metodoEnvio: "",
-            subTotal: "",
-            total: ""
-        });
-        setIsAddModalOpen(false);
+    // Función para mostrar la alerta
+    const showAlert = (message, type = 'info') => {
+        setAlertMessage( {message, type} );
+        setTimeout(() => setAlertMessage(''), 3000); 
     };
 
-
-    const editarVenta = async (e) => {
-        e.preventDefault();
-        const VentaDoc = doc(db, 'ventas', editingSale.id);
-
-        await updateDoc(VentaDoc, editingSale);
-
-        setEditingSale(null);
-        setIsEditModalOpen(false);
-    };
-
+    // Función eliminación venta
     const eliminarVenta = async (id) => {
-        const VentaDoc = doc(db, 'ventas', id);
-        await deleteDoc(VentaDoc);
-    };
+        try {
+            await fetch(`http://localhost:5000/ventas/${id}`, { method: 'DELETE' });
+            setVentas(ventas.filter(ventas => ventas.id !== id));
+            showAlert('Venta eliminada exitosamente', 'delete');
+        } catch (error) {
+            console.error('Error al eliminar la venta:', error);
+        }
+    }
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewSale({ ...newSale, [name]: value });
-    };
-
-    const handleEditInputChange = (e) => {
-        const { name, value } = e.target;
-        setEditingSale({ ...editingSale, [name]: value });
+    // Función para refrescar lista de ventas
+    const refreshVentas = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/ventas');
+            const data = await response.json();
+            setVentas(data);
+        } catch (err) {
+            console.error('Error al refrescar las ventas:', err.message);
+        }
     };
 
     return (
         <div className="relative overflow-x-auto rounded-lg pt-8">
+            {alertMessage && (
+                <div className={`mb-4 px-4 py-3 rounded relative border ${
+                    alertMessage.type === 'add' ? 'text-green-600 bg-green-100 border-green-400' :
+                    alertMessage.type === 'edit' ? 'text-blue-600 bg-blue-100 border-blue-400' :
+                    alertMessage.type === 'delete' ? 'text-red-600 bg-red-100 border-red-400' :
+                    'text-yellow-600 bg-yellow-100 border-yellow-400'
+                }`}>
+                    {alertMessage.message}
+                </div>                
+            )}
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-slate-50 dark:text-sl uppercase bg-[#f97316]">
                     <tr>
@@ -154,25 +130,25 @@ const TablaVentas = () => {
                                     {venta.productos.map(p => `${p.id} (${p.cantidad})`).join(", ")}
                                 </th>
                                 <td className="px-6 py-4">
-                                    {venta.productos.map(p => p.nombreProducto).join(", ")}
+                                    {venta.productos.map(p => p.nombre).join(", ")}
                                 </td>
                                 <td className="px-6 py-4">
                                     <span
                                         className={
-                                            venta.estadoVenta === "Completado"
+                                            venta.estado_venta === "Completado"
                                                 ? "text-green-500"
-                                                : venta.estadoVenta === "En progreso"
+                                                : venta.estado_venta === "En progreso"
                                                     ? "text-blue-500"
-                                                    : venta.estadoVenta === "Cancelado"
+                                                    : venta.estado_venta === "Cancelado"
                                                         ? "text-red-500"
                                                         : "text-gray-500"
                                         }
                                     >
-                                        {estadoVentas.find((estado) => estado === venta.estadoVenta) || "Desconocido"}
+                                        {estadoVentas.find((estado) => estado === venta.estado_venta) || "Desconocido"}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4">
-                                    {venta.cliente ? venta.cliente.nombreCliente : "Desconocido"}
+                                    {venta.cliente_id}
                                 </td>
                                 <td className="px-6 py-4">
                                     {venta.total}
@@ -201,19 +177,19 @@ const TablaVentas = () => {
                                 <tr className="bg-gray-50 dark:bg-[#202020]">
                                     <td colSpan="10" className="px-6 py-4">
                                         <div>
-                                            <strong>Fecha de Venta:</strong> {venta.fechaVenta}
+                                            <strong>Fecha de Venta:</strong> {venta.fecha_venta}
                                         </div>
                                         <div>
-                                            <strong>Estado de Venta:</strong> {venta.estadoVenta}
+                                            <strong>Estado de Venta:</strong> {venta.estado_venta_id}
                                         </div>
                                         <div>
-                                            <strong>Método de Pago:</strong> {venta.metodoPago}
+                                            <strong>Método de Pago:</strong> {venta.metodo_pago_id}
                                         </div>
                                         <div>
-                                            <strong>Descuento:</strong> {venta.descuentoVenta}
+                                            <strong>Descuento:</strong> {venta.descuento_venta}
                                         </div>
                                         <div>
-                                            <strong>Método de Envío:</strong> {venta.metodoEnvio}
+                                            <strong>Método de Envío:</strong> {venta.metodo_envio_venta_id}
                                         </div>
                                     </td>
                                 </tr>
@@ -227,14 +203,9 @@ const TablaVentas = () => {
             <ModalAgregarVenta
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
-                onSubmit={agregarVenta}
                 newSale={newSale}
-                onInputChange={handleInputChange}
-                productos={productos}
-                clientes={clientes}
-                estadoVentas={estadoVentas}
-                metodoPago={metodoPago}
-                metodoEnvio={metodoEnvio}
+                refreshVentas={refreshVentas}
+                onSuccess={() => showAlert('Venta agregada exitosamente', 'add')}
             />
 
             {/* Modal para editar Venta */}
@@ -242,14 +213,9 @@ const TablaVentas = () => {
                 <ModalEditarVenta
                     isOpen={isEditModalOpen}
                     onClose={() => setIsEditModalOpen(false)}
-                    onSubmit={editarVenta}
                     editingSale={editingSale}
-                    onInputChange={handleEditInputChange}
-                    productos={productos}
-                    clientes={clientes}
-                    estadoVentas={estadoVentas}
-                    metodoPago={metodoPago}
-                    metodoEnvio={metodoEnvio}
+                    refreshVentas={refreshVentas}
+                    onSuccess={() => showAlert('Venta editada exitosamente', 'edit')}
                 />
             )}
         </div>

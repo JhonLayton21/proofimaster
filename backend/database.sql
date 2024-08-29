@@ -70,7 +70,11 @@ CREATE TABLE estado_venta (
 CREATE TABLE metodo_envio_venta (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   metodo TEXT NOT NULL
+  precio NUMERIC (10,3) NOT NULL
 );
+
+ALTER TABLE IF EXISTS public.metodo_envio_venta
+    ADD COLUMN precio numeric(10) NOT NULL;
 
 CREATE TABLE ventas (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -89,6 +93,9 @@ CREATE TABLE ventas (
   subtotal NUMERIC(10, 3) NOT NULL,
   total NUMERIC(10, 3) NOT NULL
 );
+
+ALTER TABLE IF EXISTS public.ventas
+    ADD COLUMN productos jsonb NOT NULL;
 
 CREATE TABLE informes (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,

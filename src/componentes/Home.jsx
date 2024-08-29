@@ -5,14 +5,10 @@ import BentoGrid from './BentoGrid';
 
 const Home = ({ correoUsuario }) => {
     return (
-        <div className="h-screen md:grid md:grid-cols-12 gap-0 overflow-y-auto">
-            {/* MENU LATERAL */}
-            <div className="hidden md:block md:col-span-2">
-                <MenuLateral />
-            </div>
+        <div className="h-screen grid-cols-12 gap-0 overflow-y-auto">
 
             {/* MENU PRINCIPAL */}
-            <div className="w-full h-full md:col-span-10 overflow-y-auto">
+            <div className="w-full h-full col-span-12 overflow-y-auto">
                 <BentoGrid correoUsuario={correoUsuario} />
             </div>
         </div>

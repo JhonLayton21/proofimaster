@@ -11,13 +11,9 @@ const Proveedores = () => {
 
   return (
     <div className="grid grid-cols-12 gap-0 h-full">
-      {/* MENU LATERAL */}
-      <div className="md:col-span-2">
-        <MenuLateral />
-      </div>
 
       {/* MENU PRINCIPAL */}
-      <div className="col-span-12 md:col-span-10">
+      <div className="col-span-12">
         <MenuPrincipal 
           correoUsuario={userEmail} 
           showTablaProveedores={true} 

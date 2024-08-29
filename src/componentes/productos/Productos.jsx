@@ -11,13 +11,9 @@ const Productos = () => {
 
   return (
     <div className="grid grid-cols-12 gap-0 h-full">
-      {/* MENU LATERAL */}
-      <div className="md:col-span-2">
-        <MenuLateral />
-      </div>
 
       {/* PAGINA PRODUCTOS (incluye MenuPrincipal y TablaProductos) */}
-      <div className="col-span-12 md:col-span-10">
+      <div className="col-span-12">
         <MenuPrincipal 
           correoUsuario={userEmail} 
           showTablaProductos={true} 

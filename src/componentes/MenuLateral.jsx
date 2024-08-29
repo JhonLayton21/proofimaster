@@ -61,7 +61,7 @@ const MenuLateral = () => {
                     </div>
 
                     {/* FOOTER */}
-                    <div className="flex justify-start border-t border-solid mt-auto">
+                    <div className="flex justify-center border-t border-solid mt-auto">
                         <button className="btn-primary my-4 font-semibold" onClick={() => signOut(auth)}>
                             <FontAwesomeIcon icon={faRightFromBracket} className="fa-1x mx-2" />
                             Cerrar sesión

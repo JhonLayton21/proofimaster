@@ -11,11 +11,16 @@ const BentoGrid = ({ correoUsuario }) => {
     const [clientes, setClientes] = useState([]);
     const [totalProductos, setTotalProductos] = useState(0);
     const [displayedTotal, setDisplayedTotal] = useState(0);
-    const [isAnimating, setIsAnimating] = useState(false);
+    const [isAnimatingTotal, setIsAnimatingTotal] = useState(false);
     const [totalVentas, setTotalVentas] = useState(0);
-    const [cantidadVentas, setCantidadVentas] = useState(0);
+    const [displayedTotalVentas, setDisplayedTotalVentas] = useState(0);
+    const [isAnimatingTotalVentas, setIsAnimatingTotalVentas] = useState(false);
     const [valorStock, setValorStock] = useState(0);
-
+    const [displayedStockValue, setDisplayedStockValue] = useState(0);
+    const [isAnimatingStock, setIsAnimatingStock] = useState(false);
+    const [cantidadVentas, setCantidadVentas] = useState(0);
+    const [displayedCantidadVentas, setDisplayedCantidadVentas] = useState(0);
+    const [isAnimatingCantidadVentas, setIsAnimatingCantidadVentas] = useState(false);
 
     useEffect(() => {
         const db = getFirestore();
@@ -116,13 +121,13 @@ const BentoGrid = ({ correoUsuario }) => {
     }, []);
 
     useEffect(() => {
-        if (totalProductos > 0 && !isAnimating) {
-            setIsAnimating(true);
+        if (totalProductos > 0 && !isAnimatingTotal) {
+            setIsAnimatingTotal(true);
         }
     }, [totalProductos]);
 
     useEffect(() => {
-        if (!isAnimating) return;
+        if (!isAnimatingTotal) return;
 
         let start = 0;
         const end = totalProductos;
@@ -136,13 +141,102 @@ const BentoGrid = ({ correoUsuario }) => {
             if (start >= end) {
                 clearInterval(timer);
                 start = end;
-                setIsAnimating(false); // Termina la animación
+                setIsAnimatingTotal(false); // Termina la animación
             }
             setDisplayedTotal(Math.floor(start));
         }, stepTime);
 
         return () => clearInterval(timer);
-    }, [isAnimating, totalProductos]);
+    }, [isAnimatingTotal, totalProductos]);
+
+    // Animación para Valor Stock
+    useEffect(() => {
+        if (valorStock > 0 && !isAnimatingStock) {
+            setIsAnimatingStock(true);
+        }
+    }, [valorStock]);
+
+    useEffect(() => {
+        if (!isAnimatingStock) return;
+
+        let start = 0;
+        const end = valorStock;
+        const duration = 1000; // Duración en milisegundos (1 segundo)
+        const stepTime = 100; // Intervalo entre actualizaciones en milisegundos (100 ms)
+        const steps = Math.ceil(duration / stepTime);
+        const stepValue = end / steps;
+
+        const timer = setInterval(() => {
+            start += stepValue;
+            if (start >= end) {
+                clearInterval(timer);
+                start = end;
+                setIsAnimatingStock(false); // Termina la animación
+            }
+            setDisplayedStockValue(start.toFixed(3));
+        }, stepTime);
+
+        return () => clearInterval(timer);
+    }, [isAnimatingStock, valorStock]);
+
+    useEffect(() => {
+        if (cantidadVentas > 0 && !isAnimatingCantidadVentas) {
+            setIsAnimatingCantidadVentas(true);
+        }
+    }, [cantidadVentas]);
+
+    useEffect(() => {
+        if (totalVentas > 0 && !isAnimatingTotalVentas) {
+            setIsAnimatingTotalVentas(true);
+        }
+    }, [totalVentas]);
+
+    useEffect(() => {
+        if (!isAnimatingTotalVentas) return;
+
+        let start = 0;
+        const end = totalVentas;
+        const duration = 1000; // Duración en milisegundos (1 segundo)
+        const stepTime = 100; // Intervalo entre actualizaciones en milisegundos (100 ms)
+        const steps = Math.ceil(duration / stepTime);
+        const stepValue = end / steps;
+
+        const timer = setInterval(() => {
+            start += stepValue;
+            if (start >= end) {
+                clearInterval(timer);
+                start = end;
+                setIsAnimatingTotalVentas(false); // Termina la animación
+            }
+            setDisplayedTotalVentas(start.toFixed(3));
+        }, stepTime);
+
+        return () => clearInterval(timer);
+    }, [isAnimatingTotalVentas, totalVentas]);
+
+    useEffect(() => {
+        if (!isAnimatingCantidadVentas) return;
+
+        let start = 0;
+        const end = cantidadVentas;
+        const duration = 1000; // Duración en milisegundos (1 segundo)
+        const stepTime = 100; // Intervalo entre actualizaciones en milisegundos (100 ms)
+        const steps = Math.ceil(duration / stepTime);
+        const stepValue = end / steps;
+
+        const timer = setInterval(() => {
+            start += stepValue;
+            if (start >= end) {
+                clearInterval(timer);
+                start = end;
+                setIsAnimatingCantidadVentas(false); // Termina la animación
+            }
+            setDisplayedCantidadVentas(Math.floor(start));
+        }, stepTime);
+
+        return () => clearInterval(timer);
+    }, [isAnimatingCantidadVentas, cantidadVentas]);
+
 
     return (
         <MenuPrincipal correoUsuario={correoUsuario} titulo={"MENÚ PRINCIPAL"} subtitulo={"Ingresa rápidamente al contenido en Proofimaster"}>
@@ -150,7 +244,7 @@ const BentoGrid = ({ correoUsuario }) => {
             <div className="grid grid-cols-12 grid-rows-6 gap-2 mt-8 px-2 md:px-0">
 
                 {/* PRODUCTOS DESTACADOS */}
-                <div className="bentoItem col-span-6 lg:col-span-3 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4">
+                <div className="bentoItem col-span-6 lg:col-span-3 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 alerta-stock">
                     {/* Contenedor flexible para los dos divs */}
                     <div className="flex flex-col h-full">
                         {/* Div superior */}
@@ -180,47 +274,55 @@ const BentoGrid = ({ correoUsuario }) => {
 
 
                 {/* DATOS DE PRODUCTOS */}
-                <div className="bentoItem col-span-6 lg:col-span-2 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4">
+                <div className="bentoItem col-span-6 lg:col-span-2 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 alerta-stock">
                     <h2 className="text-lg font-bold mb-6">Datos de productos</h2>
                     <div className="grid grid-cols-2 gap-2 mb-4">
                         <div className="col-span-2 border border-gray-400 p-2 rounded-lg mb-4">
                             <h3 className="text-md font-semibold mb-2 flex items-center gap-2">
                                 <FontAwesomeIcon icon={faDollarSign} /> Valor stock
                             </h3>
-                            <p className="text-4xl lg:text-2xl font-bold text-orange-500 text-right">{valorStock.toFixed(3)} cop</p>
+                            <p className="text-4xl lg:text-2xl font-bold text-orange-500 text-right">
+                                {displayedStockValue}cop
+                            </p>
                         </div>
                         <div className="col-span-2 border border-gray-400 p-2 rounded-lg">
                             <h3 className="text-md font-semibold mb-2 flex items-center gap-2">
                                 <FontAwesomeIcon icon={faShoppingCart} /> Total de productos
                             </h3>
-                            <p className="text-4xl font-bold text-orange-500 text-right">{displayedTotal}</p>
+                            <p className="text-4xl font-bold text-orange-500 text-right">
+                                {displayedTotal}
+                            </p>
                         </div>
                     </div>
-                    <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    <FontAwesomeIcon
+                        icon={faArrowRight}
+                        className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500"
+                    />
                 </div>
 
+
                 {/* DATOS DE VENTAS */}
-                <div className="bentoItem col-span-6 lg:col-span-3 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4">
+                <div className="bentoItem col-span-6 lg:col-span-3 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 alerta-stock">
                     <h2 className="text-lg font-bold mb-6">Datos de ventas</h2>
                     <div className="grid grid-cols-2 gap-2">
                         <div className="col-span-2 border border-gray-400 p-2 rounded-lg mb-2">
                             <h3 className="text-md font-semibold mb-2 flex items-center gap-2">
                                 <FontAwesomeIcon icon={faDollarSign} /> Total generado
                             </h3>
-                            <p className="text-4xl font-bold text-orange-500 text-right">{totalVentas.toFixed(3)} cop</p>
+                            <p className="text-4xl font-bold text-orange-500 text-right">{displayedTotalVentas} cop</p>
                         </div>
                         <div className="col-span-2 border border-gray-400 p-2 rounded-lg">
                             <h3 className="text-md font-semibold mb-2 flex items-center gap-2">
                                 <FontAwesomeIcon icon={faShoppingCart} /> Total de ventas
                             </h3>
-                            <p className="text-4xl font-bold text-orange-500 text-right">{cantidadVentas}</p>
+                            <p className="text-4xl font-bold text-orange-500 text-right">{displayedCantidadVentas}</p>
                         </div>
                     </div>
                     <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
                 </div>
 
                 {/* ALERTAS STOCK */}
-                <div className="bentoItem col-span-6 lg:col-span-4 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4">
+                <div className="bentoItem col-span-6 lg:col-span-4 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 alerta-stock">
                     {/* Contenedor flexible para los dos divs */}
                     <div className="flex flex-col h-full">
                         {/* Div superior */}
@@ -250,7 +352,7 @@ const BentoGrid = ({ correoUsuario }) => {
 
 
                 {/* PROVEEDORES */}
-                <div className="bentoItem col-span-6 lg:col-span-3 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 flex flex-col items-center justify-center">
+                <div className="bentoItem col-span-6 lg:col-span-3 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 flex flex-col items-center justify-center alerta-stock">
                     <h2 className="text-lg font-bold mb-2">Proveedores</h2>
                     {proveedores.length === 0 ? (
                         <p className="text-sm text-gray-500">No hay proveedores disponibles</p>
@@ -271,7 +373,7 @@ const BentoGrid = ({ correoUsuario }) => {
 
 
                 {/* INFORMES */}
-                <div className="bentoItem col-span-6 lg:col-span-6 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4">
+                <div className="bentoItem col-span-6 lg:col-span-6 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 alerta-stock">
                     <h2 className="text-lg font-bold">Informes generados</h2>
                     <div className="flex justify-center items-center h-full pb-12">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -303,11 +405,11 @@ const BentoGrid = ({ correoUsuario }) => {
                             </div>
                         </div>
                     </div>
-                    <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500 " />
                 </div>
 
                 {/* CLIENTES ACTIVOS */}
-                <div className="bentoItem col-span-6 lg:col-span-3 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 flex flex-col items-center justify-center min-h-[400px]">
+                <div className="bentoItem col-span-6 lg:col-span-3 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 flex flex-col items-center justify-center min-h-[400px] alerta-stock">
                     <h2 className="text-lg font-bold mb-2">Clientes activos</h2>
                     {clientes.length === 0 ? (
                         <p className="text-sm text-gray-500">No hay clientes disponibles</p>
@@ -328,7 +430,7 @@ const BentoGrid = ({ correoUsuario }) => {
 
 
                 {/* USUARIOS ACTIVOS */}
-                <div className="bentoItem col-span-6 lg:col-span-4 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4">
+                <div className="bentoItem col-span-6 lg:col-span-4 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 alerta-stock">
                     <h2 className="text-lg font-">Usuarios activos</h2>
                     <div className="flex flex-col justify-center h-full">
                         <div className="flex items-center gap-3 py-3 border-b border-gray-300">
@@ -365,10 +467,8 @@ const BentoGrid = ({ correoUsuario }) => {
                     <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
                 </div>
 
-
-
                 {/* DOCUMENTACIÓN */}
-                <div className="bentoItem col-span-6 lg:col-span-4 row-span-1 lg:row-span-2 flex items-center justify-center relative rounded-lg overflow-hidden border p-4">
+                <div className="bentoItem col-span-6 lg:col-span-4 row-span-1 lg:row-span-2 flex items-center justify-center relative rounded-lg overflow-hidden border p-4 alerta-stock">
                     <FontAwesomeIcon icon={faFileLines} className="text-slate-800 dark:text-slate-50 fa-3x mr-4 mt-4" />
                     <div>
                         <h2 className="text-lg font-semibold">Documentación</h2>
@@ -378,7 +478,7 @@ const BentoGrid = ({ correoUsuario }) => {
                 </div>
 
                 {/* CONFIGURACIÓN */}
-                <div className="bentoItem col-span-6 lg:col-span-4 row-span-1 lg:row-span-2 flex items-center justify-center relative rounded-lg overflow-hidden border p-4">
+                <div className="bentoItem col-span-6 lg:col-span-4 row-span-1 lg:row-span-2 flex items-center justify-center relative rounded-lg overflow-hidden border p-4 alerta-stock">
                     <FontAwesomeIcon icon={faCog} className="text-slate-800 dark:text-slate-50 fa-3x mr-4 mt-4" />
                     <div>
                         <h2 className="text-lg font-semibold">Configuración cuenta</h2>
@@ -390,6 +490,7 @@ const BentoGrid = ({ correoUsuario }) => {
         </MenuPrincipal>
     );
 }
+
 
 export default BentoGrid;
 

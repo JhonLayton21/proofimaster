@@ -11,13 +11,9 @@ const Ventas = () => {
 
   return (
     <div className="grid grid-cols-12 gap-0 h-screen">
-      {/* MENU LATERAL */}
-      <div className="md:col-span-2">
-        <MenuLateral />
-      </div>
 
       {/* MENU PRINCIPAL */}
-      <div className="col-span-12 md:col-span-10 overflow-y-auto">
+      <div className="col-span-12 overflow-y-auto">
         <MenuPrincipal 
           correoUsuario={userEmail} 
           showTablaVentas={true} 
