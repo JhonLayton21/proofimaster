@@ -37,10 +37,11 @@ import { IconButton,
     Input,
     Drawer,
     Card, } from "@material-tailwind/react";
+import MetodosPago from "./categorias/MetodosPago";
 
 const auth = getAuth(appFirebase);
 
-const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, showTablaProveedores, showTablaVentas, titulo, subtitulo, children }) => {
+const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, showTablaProveedores, showTablaVentas, showMetodosPago, titulo, subtitulo, children }) => {
     const [userName, setUserName] = useState("");
 
     useEffect(() => {
@@ -127,7 +128,7 @@ const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, s
                                 >
                                     <FontAwesomeIcon icon={faList} className="fa-xs mx-2 mr-3" />
                                     <Typography color="blue-gray" className="mr-auto font-normal">
-                                        Categorías
+                                    Categorías
                                     </Typography>
                                 </AccordionHeader>
                             </ListItem>
@@ -137,37 +138,37 @@ const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, s
                                         <ListItemPrefix>
                                             <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
                                         </ListItemPrefix>
-                                        Métodos de pago
+                                        <Link to="/metodos-pago">Métodos de pago</Link>
                                     </ListItem>
                                     <ListItem className="sub-item">
                                         <ListItemPrefix>
                                             <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
                                         </ListItemPrefix>
-                                        Marca productos
+                                        <Link to="/marca-productos">Marca productos</Link>
                                     </ListItem>
                                     <ListItem className="sub-item">
                                         <ListItemPrefix>
                                             <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
                                         </ListItemPrefix>
-                                        Referencia productos
+                                        <Link to="/referencia-productos">Referencia productos</Link>
                                     </ListItem>
                                     <ListItem className="sub-item">
                                         <ListItemPrefix>
                                             <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
                                         </ListItemPrefix>
-                                        Tipo clientes
-                                    </ListItem>
-                                    <ListItem v>
-                                        <ListItemPrefix>
-                                            <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                                        </ListItemPrefix>
-                                        Estados venta
+                                        <Link to="/tipo-clientes">Tipo clientes</Link>
                                     </ListItem>
                                     <ListItem className="sub-item">
                                         <ListItemPrefix>
                                             <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
                                         </ListItemPrefix>
-                                        Método envío venta
+                                        <Link to="/estados-venta">Estados venta</Link>
+                                    </ListItem>
+                                    <ListItem className="sub-item">
+                                        <ListItemPrefix>
+                                            <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                                        </ListItemPrefix>
+                                        <Link to="/metodo-envio-venta">Metodo envio venta</Link>
                                     </ListItem>
                                 </List>
                             </AccordionBody>
@@ -245,6 +246,7 @@ const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, s
                     {showTablaClientes && <TablaClientes />}
                     {showTablaProveedores && <TablaProveedores />}
                     {showTablaVentas && <TablaVentas />}
+                    {showMetodosPago && <MetodosPago />}
                 </div>
             </div>
         </>
