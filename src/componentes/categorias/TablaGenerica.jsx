@@ -1,7 +1,9 @@
 import React from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 
-const TablaGenerica = ({ columnas, datos }) => {
+const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete }) => {
     return (
         <div className="relative overflow-x-auto rounded-2xl pt-8">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -12,6 +14,7 @@ const TablaGenerica = ({ columnas, datos }) => {
                                 {columna}
                             </th>
                         ))}
+                        <th className="px-6 py-3 text-right">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -22,12 +25,37 @@ const TablaGenerica = ({ columnas, datos }) => {
                                     {fila[columna]}
                                 </td>
                             ))}
+                            <td className="px-6 py-4 text-right">
+                                <button
+                                    className="text-blue-600 hover:underline mr-4"
+                                    onClick={() => onEdit(fila)}
+                                >
+                                    Editar
+                                    <FontAwesomeIcon icon={faPenToSquare} className=" ml-1" />
+                                </button>
+                                <button
+                                    className="text-red-600 hover:underline"
+                                    onClick={() => onDelete(fila.id)}
+                                >
+                                    Eliminar
+                                    <FontAwesomeIcon icon={faTrashCan} className=" ml-1" />
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+            <div className="flex justify-end mt-4">
+                <button
+                    className="text-white font-bold bg-green-600 hover:bg-green-800 cursor-pointer px-4 py-2 rounded-lg"
+                    onClick={onAdd}
+                >
+                    <FontAwesomeIcon icon={faPlus} className="fa-xl mr-3" />
+                    Agregar
+                </button>
+            </div>
         </div>
-    )
+    );
 };
 
 export default TablaGenerica;
