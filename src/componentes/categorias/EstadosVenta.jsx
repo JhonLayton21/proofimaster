@@ -67,12 +67,14 @@ const EstadosVenta = () => {
                 <ModalAgregar
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
-                    onSubmit={(data) => agregarMetodoPago(data)}
+                    onSubmit={(nuevoEstadoVenta) => setDatos([...datos, nuevoEstadoVenta])}
                     titulo="Agregar Estado de Venta"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
                         { name: 'estado', label: 'estado', type: 'text', placeholder: 'Ingrese el estado' },
                     ]}
+                    endpoint="estado_venta"
+                    disabledFields={['id']}
                 />
             )}
             {isEditModalOpen && (
@@ -82,10 +84,11 @@ const EstadosVenta = () => {
                     editingItem={editingItem}
                     titulo="Editar Estado de Venta"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
                         { name: 'estado', label: 'estado', type: 'text', placeholder: 'Ingrese el estado' },
                     ]}
                     initialData={editingItem}
+                    disabledFields={['id']}
                 />
             )}
         </div>

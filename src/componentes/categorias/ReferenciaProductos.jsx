@@ -67,12 +67,14 @@ const ReferenciaProductos = () => {
                 <ModalAgregar
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
-                    onSubmit={(data) => agregarMetodoPago(data)}
+                    onSubmit={(nuevaReferenciaProductos) => setDatos([...datos, nuevaReferenciaProductos])}
                     titulo="Agregar Referencia de Producto"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
                         { name: 'codigo', label: 'codigo', type: 'text', placeholder: 'Ingrese el codigo' },
                     ]}
+                    endpoint="referencias_productos"
+                    disabledFields={['id']}
                 />
             )}
             {isEditModalOpen && (
@@ -82,10 +84,11 @@ const ReferenciaProductos = () => {
                     editingItem={editingItem}
                     titulo="Editar Referencia de Producto"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
                         { name: 'codigo', label: 'codigo', type: 'text', placeholder: 'Ingrese el codigo' },
                     ]}
                     initialData={editingItem}
+                    disabledFields={['id']}
                 />
             )}
         </div>

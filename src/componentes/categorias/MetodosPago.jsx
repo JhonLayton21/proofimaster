@@ -66,12 +66,14 @@ const MetodosPago = () => {
                 <ModalAgregar
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
-                    onSubmit={(data) => agregarMetodoPago(data)}
+                    onSubmit={(nuevoMetodoPago) => setDatos([...datos, nuevoMetodoPago])}
                     titulo="Agregar Método de Pago"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
                         { name: 'metodo', label: 'metodo', type: 'text', placeholder: 'Ingrese el método' },
                     ]}
+                    endpoint="metodo_pago"
+                    disabledFields={['id']}
                 />
             )}
             {isEditModalOpen && (
@@ -81,10 +83,11 @@ const MetodosPago = () => {
                     editingItem={editingItem}
                     titulo="Editar Método de Pago"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
                         { name: 'metodo', label: 'metodo', type: 'text', placeholder: 'Ingrese el método' },
                     ]}
                     initialData={editingItem}
+                    disabledFields={['id']}
                 />
             )}
         </div>

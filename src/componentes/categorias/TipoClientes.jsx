@@ -67,12 +67,14 @@ const TipoClientes = () => {
                 <ModalAgregar
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
-                    onSubmit={(data) => agregarMetodoPago(data)}
+                    onSubmit={(nuevoTipoClientes) => setDatos([...datos, nuevoTipoClientes])}
                     titulo="Agregar Tipo de Cliente"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
                         { name: 'tipo', label: 'tipo', type: 'text', placeholder: 'Ingrese el tipo' },
                     ]}
+                    endpoint="tipo_clientes"
+                    disabledFields={['id']}
                 />
             )}
             {isEditModalOpen && (
@@ -82,10 +84,11 @@ const TipoClientes = () => {
                     editingItem={editingItem}
                     titulo="Editar Tipo de Cliente"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
                         { name: 'tipo', label: 'tipo', type: 'text', placeholder: 'Ingrese el tipo' },
                     ]}
                     initialData={editingItem}
+                    disabledFields={['id']}
                 />
             )}
         </div>

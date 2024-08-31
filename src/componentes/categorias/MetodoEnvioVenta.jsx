@@ -67,13 +67,15 @@ const MetodoEnvioVenta = () => {
                 <ModalAgregar
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
-                    onSubmit={(data) => agregarMetodoPago(data)}
+                    onSubmit={(nuevoMetodoEnvioVenta) => setDatos([...datos, nuevoMetodoEnvioVenta])}
                     titulo="Agregar Método de Envío"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
                         { name: 'metodo', label: 'metodo', type: 'text', placeholder: 'Ingrese el método' },
                         { name: 'precio', label: 'precio', type: 'text', placeholder: 'Ingrese el precio' }
                     ]}
+                    endpoint="metodo_envio_venta"
+                    disabledFields={['id']}
                 />
             )}
             {isEditModalOpen && (
@@ -83,11 +85,12 @@ const MetodoEnvioVenta = () => {
                     editingItem={editingItem}
                     titulo="Editar Método de Envío"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
                         { name: 'metodo', label: 'metodo', type: 'text', placeholder: 'Ingrese el método' },
                         { name: 'precio', label: 'precio', type: 'text', placeholder: 'Ingrese el precio' }
                     ]}
                     initialData={editingItem}
+                    disabledFields={['id']}
                 />
             )}
         </div>

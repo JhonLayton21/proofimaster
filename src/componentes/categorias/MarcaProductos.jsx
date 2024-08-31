@@ -67,12 +67,14 @@ const MarcaProductos = () => {
                 <ModalAgregar
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
-                    onSubmit={(data) => agregarMetodoPago(data)}
+                    onSubmit={(nuevaMarcaProducto) => setDatos([...datos, nuevaMarcaProducto])}
                     titulo="Agregar Marca de Producto"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
                         { name: 'nombre', label: 'nombre', type: 'text', placeholder: 'Ingrese el nombre' },
                     ]}
+                    endpoint="marcas_productos"
+                    disabledFields={['id']}
                 />
             )}
             {isEditModalOpen && (
@@ -82,10 +84,11 @@ const MarcaProductos = () => {
                     editingItem={editingItem}
                     titulo="Editar Marca de Producto"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
                         { name: 'nombre', label: 'nombre', type: 'text', placeholder: 'Ingrese el nombre' },
                     ]}
                     initialData={editingItem}
+                    disabledFields={['id']}
                 />
             )}
         </div>

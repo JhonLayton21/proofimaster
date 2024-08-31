@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData }) => {
+const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, disabledFields }) => {
     const [formData, setFormData] = useState({});
 
     useEffect(() => {
@@ -51,6 +51,7 @@ const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData })
                                             placeholder={campo.placeholder}
                                             value={formData[campo.name] || ""}
                                             onChange={handleChange}
+                                            disabled={disabledFields.includes(campo.name)}
                                             className="input-class m-4 text-[#757575]"
                                         />
                                     ))}

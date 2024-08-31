@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const ModalAgregar = ({ isOpen, onClose, onSubmit, titulo, campos }) => {
+const ModalAgregar = ({ isOpen, onClose, onSubmit, titulo, campos, disabledFields, endpoint }) => {
     const [formData, setFormData] = useState({});
 
     const handleChange = (e) => {
@@ -11,10 +11,27 @@ const ModalAgregar = ({ isOpen, onClose, onSubmit, titulo, campos }) => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onSubmit(formData);
-        onClose();
+        try {
+            const response = await fetch (`http://localhost:5000/${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al agregar el nuevo item');
+            }
+
+            const nuevoItem = await response.json();
+            onSubmit(nuevoItem);
+            onClose();
+        } catch (error) {
+            console.error("Error: ", error);
+        }
     };
 
     return (
@@ -46,6 +63,7 @@ const ModalAgregar = ({ isOpen, onClose, onSubmit, titulo, campos }) => {
                                             placeholder={campo.placeholder}
                                             value={formData[campo.name] || ""}
                                             onChange={handleChange}
+                                            disabled={disabledFields.includes(campo.name)}
                                             className="input-class m-4 text-[#757575]"
                                         />
                                     ))}
