@@ -235,7 +235,7 @@ const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, s
 
                 <div className="pt-8 md:pt-16">
                     <h1 className="text-left text-slate-800 dark:text-slate-50 font-bold text-xl md:text-2xl px-2 md:px-0">{titulo}</h1>
-                    <h2 className="text-left text-[#757575] font-semibold text-lg md:text-xl px-2 md:px-0">{subtitulo}</h2>
+                    <h2 className="text-left text-[#757575] font-semibold text-lg md:text-xl px-2 md:px-0 mb-2">{subtitulo}</h2>
                 </div>
 
                 {/* CONTENIDO PRINCIPAL  */}

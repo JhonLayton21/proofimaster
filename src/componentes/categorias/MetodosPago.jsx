@@ -5,6 +5,7 @@ import { getAuth } from 'firebase/auth';
 import appFirebase from '../../credenciales';
 import ModalEditar from "./ModalEditar";
 import ModalAgregar from "./ModalAgregar";
+import Alert from "./Alert";
 
 const auth = getAuth(appFirebase);
 
@@ -15,8 +16,12 @@ const MetodosPago = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
+    const [alertMessage, setAlertMessage] = useState('');
 
-    // DATOS METODOS PAGO
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     const fetchData = async () => {
         const response = await fetch('http://localhost:5000/metodo_pago');
         const data = await response.json();
@@ -24,27 +29,29 @@ const MetodosPago = () => {
         setDatos(data);
     };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    // Funcion Agregar
-    const handleAdd = () => {
-        setIsAddModalOpen(true);
+    const showAlert = (message, type = 'info') => {
+        setAlertMessage({ message, type });
+        setTimeout(() => setAlertMessage(''), 3000);
     };
 
-    // Funcion editar
+    const handleAdd = () => setIsAddModalOpen(true);
+
     const handleEdit = (item) => {
         setEditingItem(item);
         setIsEditModalOpen(true);
     };
 
-    // Funcion Eliminar
+    // Funcion eliminar
     const handleDelete = async (id) => {
-        await fetch(`http://localhost:5000/metodo_pago/${id}`, { method: 'DELETE' });
-        fetchData();  
+        try {
+            await fetch(`http://localhost:5000/metodo_pago/${id}`, { method: 'DELETE' });
+            fetchData();
+            showAlert('Método de pago eliminado exitosamente', 'delete');
+        } catch (error) {
+            console.error('Error al eliminar el método de pago:', error);
+            showAlert('Error al eliminar el método de pago', 'error');
+        }
     };
-    
 
     return (
         <div className="grid grid-cols-12 gap-0 h-full overflow-auto">
@@ -54,16 +61,17 @@ const MetodosPago = () => {
                     titulo={"Métodos de Pago"}
                     subtitulo={"Gestiona los tipos y métodos de pago de la empresa"}
                 >
+                    <Alert message={alertMessage.message} type={alertMessage.type} />
                     <TablaGenerica 
                         columnas={columnas} 
                         datos={datos}
                         onAdd={handleAdd}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onAlert={showAlert}
                     />
                 </MenuPrincipal>
             </div>
-            {/* Modales agregar y editar items */}
             {isAddModalOpen && (
                 <ModalAgregar
                     isOpen={isAddModalOpen}
@@ -71,7 +79,10 @@ const MetodosPago = () => {
                         setIsAddModalOpen(false);
                         fetchData();
                     }}
-                    onSubmit={(nuevoMetodoPago) => setDatos([...datos, nuevoMetodoPago])}
+                    onSubmit={(nuevoMetodoPago) => {
+                        setDatos([...datos, nuevoMetodoPago]);
+                        showAlert('Método de pago agregado exitosamente', 'add');
+                    }}
                     titulo="Agregar Método de Pago"
                     campos={[
                         { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
@@ -99,6 +110,7 @@ const MetodosPago = () => {
                         setDatos((prevDatos) =>
                             prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
                         );
+                        showAlert('Método de pago editado exitosamente', 'edit');
                     }}
                     disabledFields={['id']}
                     endpoint={"metodo_pago"}

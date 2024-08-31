@@ -5,6 +5,7 @@ import { getAuth } from 'firebase/auth';
 import appFirebase from '../../credenciales';
 import ModalEditar from "./ModalEditar";
 import ModalAgregar from "./ModalAgregar";
+import Alert from "./Alert";
 
 const auth = getAuth(appFirebase);
 
@@ -15,6 +16,7 @@ const EstadosVenta = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
+    const [alertMessage, setAlertMessage] = useState('');
 
     // DATOS ESTADOS VENTA
     const fetchData = async () => {
@@ -28,10 +30,13 @@ const EstadosVenta = () => {
         fetchData();
     }, []);
 
-    // Funcion Agregar
-    const handleAdd = () => {
-        setIsAddModalOpen(true);
+    const showAlert = (message, type = 'info') => {
+        setAlertMessage({ message, type });
+        setTimeout(() => setAlertMessage(''), 3000);
     };
+
+    // Funcion agregar
+    const handleAdd = () => setIsAddModalOpen(true);
 
     // Funcion editar
     const handleEdit = (item) => {
@@ -39,10 +44,16 @@ const EstadosVenta = () => {
         setIsEditModalOpen(true);
     };
 
-    // Funcion Eliminar
+    // Funcion eliminar
     const handleDelete = async (id) => {
-        await fetch(`http://localhost:5000/estado_venta/${id}`, { method: 'DELETE' });
-        fetchData();  
+        try {
+            await fetch(`http://localhost:5000/estado_venta/${id}`, { method: 'DELETE' });
+            fetchData();
+            showAlert('Método de pago eliminado exitosamente', 'delete');
+        } catch (error) {
+            console.error('Error al eliminar el método de pago:', error);
+            showAlert('Error al eliminar el método de pago', 'error');
+        }
     };
 
 
@@ -55,12 +66,14 @@ const EstadosVenta = () => {
                     titulo={"Estados de venta"}
                     subtitulo={"Gestiona los estados de venta y sus acciones"}
                 >
+                    <Alert message={alertMessage.message} type={alertMessage.type} />
                     <TablaGenerica
                         columnas={columnas}
                         datos={datos}
                         onAdd={handleAdd}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onAlert={showAlert}
                     />
                 </MenuPrincipal>
             </div>
@@ -72,7 +85,10 @@ const EstadosVenta = () => {
                         setIsAddModalOpen(false);
                         fetchData();
                     }}
-                    onSubmit={(nuevoEstadoVenta) => setDatos([...datos, nuevoEstadoVenta])}
+                    onSubmit={(nuevoEstadoVenta) => {
+                        setDatos([...datos, nuevoEstadoVenta]);
+                        showAlert('Estado de venta agregado exitosamente', 'add');
+                    }}
                     titulo="Agregar Estado de Venta"
                     campos={[
                         { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
@@ -100,6 +116,7 @@ const EstadosVenta = () => {
                         setDatos((prevDatos) =>
                             prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
                         );
+                        showAlert('Estado de venta editado exitosamente', 'edit');
                     }}
                     disabledFields={['id']}
                     endpoint={"estado_venta"}

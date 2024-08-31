@@ -5,6 +5,7 @@ import { getAuth } from 'firebase/auth';
 import appFirebase from '../../credenciales';
 import ModalEditar from "./ModalEditar";
 import ModalAgregar from "./ModalAgregar";
+import Alert from "./Alert";
 
 const auth = getAuth(appFirebase);
 
@@ -15,6 +16,7 @@ const MetodoEnvioVenta = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
+    const [alertMessage, setAlertMessage] = useState('');
 
     // DATOS METODOS ENVIO VENTAS
     const fetchData = async () => {
@@ -28,10 +30,13 @@ const MetodoEnvioVenta = () => {
         fetchData();
     }, []);
 
-    // Funcion Agregar
-    const handleAdd = () => {
-        setIsAddModalOpen(true);
+    const showAlert = (message, type = 'info') => {
+        setAlertMessage({ message, type });
+        setTimeout(() => setAlertMessage(''), 3000);
     };
+
+    // Funcion agregar
+    const handleAdd = () => setIsAddModalOpen(true);
 
     // Funcion editar
     const handleEdit = (item) => {
@@ -39,10 +44,16 @@ const MetodoEnvioVenta = () => {
         setIsEditModalOpen(true);
     };
 
-    // Funcion Eliminar
+    // Funcion eliminar
     const handleDelete = async (id) => {
-        await fetch(`http://localhost:5000/metodo_envio_venta/${id}`, { method: 'DELETE' });
-        fetchData();  
+        try {
+            await fetch(`http://localhost:5000/metodo_envio_venta/${id}`, { method: 'DELETE' });
+            fetchData();
+            showAlert('Método de pago eliminado exitosamente', 'delete');
+        } catch (error) {
+            console.error('Error al eliminar el método de pago:', error);
+            showAlert('Error al eliminar el método de pago', 'error');
+        }
     };
     
 
@@ -55,12 +66,14 @@ const MetodoEnvioVenta = () => {
                     titulo={"Métodos de Envíos"}
                     subtitulo={"Gestiona los métodos de envío y sus precios"}
                 >
+                    <Alert message={alertMessage.message} type={alertMessage.type} />
                     <TablaGenerica 
                         columnas={columnas} 
                         datos={datos}
                         onAdd={handleAdd}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onAlert={showAlert}
                     />
                 </MenuPrincipal>
             </div>
@@ -72,7 +85,10 @@ const MetodoEnvioVenta = () => {
                         setIsAddModalOpen(false);
                         fetchData();
                     }}
-                    onSubmit={(nuevoMetodoEnvioVenta) => setDatos([...datos, nuevoMetodoEnvioVenta])}
+                    onSubmit={(nuevoMetodoEnvioVenta) => {
+                        setDatos([...datos, nuevoMetodoEnvioVenta]);
+                        showAlert('Metodo de envio de venta agregado exitosamente', 'add');
+                    }}
                     titulo="Agregar Método de Envío"
                     campos={[
                         { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
@@ -102,6 +118,7 @@ const MetodoEnvioVenta = () => {
                         setDatos((prevDatos) =>
                             prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
                         );
+                        showAlert('Método de envio de venta editado exitosamente', 'edit');
                     }}
                     disabledFields={['id']}
                     endpoint={"metodo_envio_venta"}

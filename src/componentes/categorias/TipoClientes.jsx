@@ -5,6 +5,7 @@ import { getAuth } from 'firebase/auth';
 import appFirebase from '../../credenciales';
 import ModalEditar from "./ModalEditar";
 import ModalAgregar from "./ModalAgregar";
+import Alert from "./Alert";
 
 const auth = getAuth(appFirebase);
 
@@ -15,6 +16,7 @@ const TipoClientes = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
+    const [alertMessage, setAlertMessage] = useState('');
 
     // DATOS TIPOS CLIENTES
     const fetchData = async () => {
@@ -28,10 +30,13 @@ const TipoClientes = () => {
         fetchData();
     }, []);
 
-    // Funcion Agregar
-    const handleAdd = () => {
-        setIsAddModalOpen(true);
+    const showAlert = (message, type = 'info') => {
+        setAlertMessage({ message, type });
+        setTimeout(() => setAlertMessage(''), 3000);
     };
+
+    // Funcion Agregar
+    const handleAdd = () => setIsAddModalOpen(true);
 
     // Funcion editar
     const handleEdit = (item) => {
@@ -41,8 +46,14 @@ const TipoClientes = () => {
 
     // Funcion Eliminar
     const handleDelete = async (id) => {
-        await fetch(`http://localhost:5000/tipo_clientes/${id}`, { method: 'DELETE' });
-        fetchData();  
+        try {
+            await fetch(`http://localhost:5000/tipo_clientes/${id}`, { method: 'DELETE' });
+            fetchData();
+            showAlert('Tipo de cliente eliminado exitosamente', 'delete');
+        } catch (error) {
+            console.error('Error al eliminar el tipo de cliente:', error);
+            showAlert('Error al eliminar el tipo de cliente', 'error');
+        }
     };
 
 
@@ -55,12 +66,14 @@ const TipoClientes = () => {
                     titulo={"Tipos de cliente"}
                     subtitulo={"Gestiona los tipos de clientes"}
                 >
+                    <Alert message={alertMessage.message} type={alertMessage.type} />
                     <TablaGenerica
                         columnas={columnas}
                         datos={datos}
                         onAdd={handleAdd}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onAlert={showAlert}
                     />
                 </MenuPrincipal>
             </div>
@@ -72,7 +85,10 @@ const TipoClientes = () => {
                         setIsAddModalOpen(false);
                         fetchData();
                     }}
-                    onSubmit={(nuevoTipoClientes) => setDatos([...datos, nuevoTipoClientes])}
+                    onSubmit={(nuevoTipoClientes) => {
+                        setDatos([...datos, nuevoTipoClientes]);
+                        showAlert('Tipo de cliente agregado exitosamente', 'add');
+                    }}
                     titulo="Agregar Tipo de Cliente"
                     campos={[
                         { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
@@ -100,6 +116,7 @@ const TipoClientes = () => {
                         setDatos((prevDatos) =>
                             prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
                         );
+                        showAlert('Método de pago editado exitosamente', 'edit');
                     }}
                     disabledFields={['id']}
                     endpoint={"tipo_clientes"}
