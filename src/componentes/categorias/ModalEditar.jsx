@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, disabledFields }) => {
+const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, disabledFields, endpoint }) => {
     const [formData, setFormData] = useState({});
 
     useEffect(() => {
@@ -17,10 +17,32 @@ const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, d
     };
 
     // Manejar envio
-    const handleSubmit = () => {
-        onSubmit(formData);
-        onClose();
-    }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const { id, ...dataToUpdate } = formData;
+
+        try {
+            const response = await fetch(`http://localhost:5000/${endpoint}/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dataToUpdate),
+            });
+    
+            if (!response.ok) {
+                throw new Error('Error al actualizar el item');
+            }
+    
+            const updatedItem = await response.json();
+            onSubmit(updatedItem); 
+            onClose(); 
+        } catch (error) {
+            console.error("Error: ", error);
+        }
+    };
+    
 
     return (
         <>

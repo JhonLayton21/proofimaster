@@ -17,13 +17,15 @@ const MetodosPago = () => {
     const [editingItem, setEditingItem] = useState(null);
 
     // DATOS METODOS PAGO
+    const fetchData = async () => {
+        const response = await fetch('http://localhost:5000/metodo_pago');
+        const data = await response.json();
+        setColumnas(Object.keys(data[0]));
+        setDatos(data);
+    };
+
     useEffect(() => {
-        fetch('http://localhost:5000/metodo_pago')
-            .then((response) => response.json())
-            .then((data) => {
-                setColumnas(Object.keys(data[0]));
-                setDatos(data);
-            });
+        fetchData();
     }, []);
 
     // Funcion Agregar
@@ -38,10 +40,10 @@ const MetodosPago = () => {
     };
 
     // Funcion Eliminar
-    const handleDelete = (id) => {
-        const newData = datos.filter(item => item.id !== id);
-        setDatos(newData);
-    }
+    const handleDelete = async (id) => {
+        await fetch(`http://localhost:5000/metodo_pago/${id}`, { method: 'DELETE' });
+        fetchData();  
+    };
     
 
     return (
@@ -65,7 +67,10 @@ const MetodosPago = () => {
             {isAddModalOpen && (
                 <ModalAgregar
                     isOpen={isAddModalOpen}
-                    onClose={() => setIsAddModalOpen(false)}
+                    onClose={() => {
+                        setIsAddModalOpen(false);
+                        fetchData();
+                    }}
                     onSubmit={(nuevoMetodoPago) => setDatos([...datos, nuevoMetodoPago])}
                     titulo="Agregar Método de Pago"
                     campos={[
@@ -79,7 +84,10 @@ const MetodosPago = () => {
             {isEditModalOpen && (
                 <ModalEditar
                     isOpen={isEditModalOpen}
-                    onClose={() => setIsEditModalOpen(false)}
+                    onClose={() => {
+                        setIsEditModalOpen(false);
+                        fetchData();
+                    }}
                     editingItem={editingItem}
                     titulo="Editar Método de Pago"
                     campos={[
@@ -87,7 +95,13 @@ const MetodosPago = () => {
                         { name: 'metodo', label: 'metodo', type: 'text', placeholder: 'Ingrese el método' },
                     ]}
                     initialData={editingItem}
+                    onSubmit={(updatedItem) => {
+                        setDatos((prevDatos) =>
+                            prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+                        );
+                    }}
                     disabledFields={['id']}
+                    endpoint={"metodo_pago"}
                 />
             )}
         </div>

@@ -16,14 +16,16 @@ const ReferenciaProductos = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
 
-    // DATOS METODOS PAGO
+    // DATOS REFERENCIAS PRODUCTOS
+    const fetchData = async () => {
+        const response = await fetch('http://localhost:5000/referencias_productos');
+        const data = await response.json();
+        setColumnas(Object.keys(data[0]));
+        setDatos(data);
+    };
+
     useEffect(() => {
-        fetch('http://localhost:5000/referencias_productos')
-            .then((response) => response.json())
-            .then((data) => {
-                setColumnas(Object.keys(data[0]));
-                setDatos(data);
-            });
+        fetchData();
     }, []);
 
     // Funcion Agregar
@@ -38,10 +40,10 @@ const ReferenciaProductos = () => {
     };
 
     // Funcion Eliminar
-    const handleDelete = (id) => {
-        const newData = datos.filter(item => item.id !== id);
-        setDatos(newData);
-    }
+    const handleDelete = async (id) => {
+        await fetch(`http://localhost:5000/referencias_productos/${id}`, { method: 'DELETE' });
+        fetchData();  
+    };
 
 
     return (
@@ -66,7 +68,10 @@ const ReferenciaProductos = () => {
             {isAddModalOpen && (
                 <ModalAgregar
                     isOpen={isAddModalOpen}
-                    onClose={() => setIsAddModalOpen(false)}
+                    onClose={() => {
+                        setIsAddModalOpen(false);
+                        fetchData();
+                    }}
                     onSubmit={(nuevaReferenciaProductos) => setDatos([...datos, nuevaReferenciaProductos])}
                     titulo="Agregar Referencia de Producto"
                     campos={[
@@ -80,7 +85,10 @@ const ReferenciaProductos = () => {
             {isEditModalOpen && (
                 <ModalEditar
                     isOpen={isEditModalOpen}
-                    onClose={() => setIsEditModalOpen(false)}
+                    onClose={() => {
+                        setIsEditModalOpen(false);
+                        fetchData();
+                    }}
                     editingItem={editingItem}
                     titulo="Editar Referencia de Producto"
                     campos={[
@@ -88,7 +96,13 @@ const ReferenciaProductos = () => {
                         { name: 'codigo', label: 'codigo', type: 'text', placeholder: 'Ingrese el codigo' },
                     ]}
                     initialData={editingItem}
+                    onSubmit={(updatedItem) => {
+                        setDatos((prevDatos) =>
+                            prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+                        );
+                    }}
                     disabledFields={['id']}
+                    endpoint={"referencias_productos"}
                 />
             )}
         </div>

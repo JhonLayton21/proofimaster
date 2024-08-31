@@ -16,14 +16,16 @@ const TipoClientes = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
 
-    // DATOS METODOS PAGO
+    // DATOS TIPOS CLIENTES
+    const fetchData = async () => {
+        const response = await fetch('http://localhost:5000/tipo_clientes');
+        const data = await response.json();
+        setColumnas(Object.keys(data[0]));
+        setDatos(data);
+    };
+
     useEffect(() => {
-        fetch('http://localhost:5000/tipo_clientes')
-            .then((response) => response.json())
-            .then((data) => {
-                setColumnas(Object.keys(data[0]));
-                setDatos(data);
-            });
+        fetchData();
     }, []);
 
     // Funcion Agregar
@@ -38,10 +40,10 @@ const TipoClientes = () => {
     };
 
     // Funcion Eliminar
-    const handleDelete = (id) => {
-        const newData = datos.filter(item => item.id !== id);
-        setDatos(newData);
-    }
+    const handleDelete = async (id) => {
+        await fetch(`http://localhost:5000/tipo_clientes/${id}`, { method: 'DELETE' });
+        fetchData();  
+    };
 
 
     return (
@@ -66,7 +68,10 @@ const TipoClientes = () => {
             {isAddModalOpen && (
                 <ModalAgregar
                     isOpen={isAddModalOpen}
-                    onClose={() => setIsAddModalOpen(false)}
+                    onClose={() => {
+                        setIsAddModalOpen(false);
+                        fetchData();
+                    }}
                     onSubmit={(nuevoTipoClientes) => setDatos([...datos, nuevoTipoClientes])}
                     titulo="Agregar Tipo de Cliente"
                     campos={[
@@ -80,7 +85,10 @@ const TipoClientes = () => {
             {isEditModalOpen && (
                 <ModalEditar
                     isOpen={isEditModalOpen}
-                    onClose={() => setIsEditModalOpen(false)}
+                    onClose={() => {
+                        setIsEditModalOpen(false);
+                        fetchData();
+                    }}
                     editingItem={editingItem}
                     titulo="Editar Tipo de Cliente"
                     campos={[
@@ -88,7 +96,13 @@ const TipoClientes = () => {
                         { name: 'tipo', label: 'tipo', type: 'text', placeholder: 'Ingrese el tipo' },
                     ]}
                     initialData={editingItem}
+                    onSubmit={(updatedItem) => {
+                        setDatos((prevDatos) =>
+                            prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+                        );
+                    }}
                     disabledFields={['id']}
+                    endpoint={"tipo_clientes"}
                 />
             )}
         </div>

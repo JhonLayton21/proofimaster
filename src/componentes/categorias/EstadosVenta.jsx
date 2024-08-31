@@ -16,14 +16,16 @@ const EstadosVenta = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
 
-    // DATOS METODOS PAGO
+    // DATOS ESTADOS VENTA
+    const fetchData = async () => {
+        const response = await fetch('http://localhost:5000/estado_venta');
+        const data = await response.json();
+        setColumnas(Object.keys(data[0]));
+        setDatos(data);
+    };
+
     useEffect(() => {
-        fetch('http://localhost:5000/estado_venta')
-            .then((response) => response.json())
-            .then((data) => {
-                setColumnas(Object.keys(data[0]));
-                setDatos(data);
-            });
+        fetchData();
     }, []);
 
     // Funcion Agregar
@@ -38,10 +40,10 @@ const EstadosVenta = () => {
     };
 
     // Funcion Eliminar
-    const handleDelete = (id) => {
-        const newData = datos.filter(item => item.id !== id);
-        setDatos(newData);
-    }
+    const handleDelete = async (id) => {
+        await fetch(`http://localhost:5000/estado_venta/${id}`, { method: 'DELETE' });
+        fetchData();  
+    };
 
 
     return (
@@ -66,7 +68,10 @@ const EstadosVenta = () => {
             {isAddModalOpen && (
                 <ModalAgregar
                     isOpen={isAddModalOpen}
-                    onClose={() => setIsAddModalOpen(false)}
+                    onClose={() => {
+                        setIsAddModalOpen(false);
+                        fetchData();
+                    }}
                     onSubmit={(nuevoEstadoVenta) => setDatos([...datos, nuevoEstadoVenta])}
                     titulo="Agregar Estado de Venta"
                     campos={[
@@ -80,7 +85,10 @@ const EstadosVenta = () => {
             {isEditModalOpen && (
                 <ModalEditar
                     isOpen={isEditModalOpen}
-                    onClose={() => setIsEditModalOpen(false)}
+                    onClose={() => {
+                        setIsEditModalOpen(false);
+                        fetchData();
+                    }}
                     editingItem={editingItem}
                     titulo="Editar Estado de Venta"
                     campos={[
@@ -88,7 +96,13 @@ const EstadosVenta = () => {
                         { name: 'estado', label: 'estado', type: 'text', placeholder: 'Ingrese el estado' },
                     ]}
                     initialData={editingItem}
+                    onSubmit={(updatedItem) => {
+                        setDatos((prevDatos) =>
+                            prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+                        );
+                    }}
                     disabledFields={['id']}
+                    endpoint={"estado_venta"}
                 />
             )}
         </div>

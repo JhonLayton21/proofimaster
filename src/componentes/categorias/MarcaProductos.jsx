@@ -16,14 +16,16 @@ const MarcaProductos = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
 
-    // DATOS METODOS PAGO
+    // DATOS MARCA PRODUCTOS
+    const fetchData = async () => {
+        const response = await fetch('http://localhost:5000/marcas_productos');
+        const data = await response.json();
+        setColumnas(Object.keys(data[0]));
+        setDatos(data);
+    };
+
     useEffect(() => {
-        fetch('http://localhost:5000/marcas_productos')
-            .then((response) => response.json())
-            .then((data) => {
-                setColumnas(Object.keys(data[0]));
-                setDatos(data);
-            });
+        fetchData();
     }, []);
 
     // Funcion Agregar
@@ -38,10 +40,10 @@ const MarcaProductos = () => {
     };
 
     // Funcion Eliminar
-    const handleDelete = (id) => {
-        const newData = datos.filter(item => item.id !== id);
-        setDatos(newData);
-    }
+    const handleDelete = async (id) => {
+        await fetch(`http://localhost:5000/marcas_productos/${id}`, { method: 'DELETE' });
+        fetchData();  
+    };
 
 
     return (
@@ -66,7 +68,10 @@ const MarcaProductos = () => {
             {isAddModalOpen && (
                 <ModalAgregar
                     isOpen={isAddModalOpen}
-                    onClose={() => setIsAddModalOpen(false)}
+                    onClose={() => {
+                        setIsAddModalOpen(false);
+                        fetchData();
+                    }}
                     onSubmit={(nuevaMarcaProducto) => setDatos([...datos, nuevaMarcaProducto])}
                     titulo="Agregar Marca de Producto"
                     campos={[
@@ -80,7 +85,10 @@ const MarcaProductos = () => {
             {isEditModalOpen && (
                 <ModalEditar
                     isOpen={isEditModalOpen}
-                    onClose={() => setIsEditModalOpen(false)}
+                    onClose={() => {
+                        setIsEditModalOpen(false);
+                        fetchData();
+                    }}
                     editingItem={editingItem}
                     titulo="Editar Marca de Producto"
                     campos={[
@@ -89,6 +97,12 @@ const MarcaProductos = () => {
                     ]}
                     initialData={editingItem}
                     disabledFields={['id']}
+                    onSubmit={(updatedItem) => {
+                        setDatos((prevDatos) =>
+                            prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+                        );
+                    }}
+                    endpoint={"marcas_productos"}
                 />
             )}
         </div>
