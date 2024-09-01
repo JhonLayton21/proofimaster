@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
+import { format } from 'date-fns';
 
 const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, disabledFields, endpoint }) => {
     const [formData, setFormData] = useState({});
 
     useEffect(() => {
-        setFormData(initialData || {});
+        if (initialData) {
+            // Asegúrate de que la fecha esté en el formato correcto para el campo de tipo 'date'
+            setFormData({
+                ...initialData,
+                fecha_entrada: format(new Date(initialData.fecha_entrada), 'yyyy-MM-dd')
+            });
+        }
     }, [initialData]);
 
-    // Manejar cambios
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -16,7 +22,6 @@ const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, d
         });
     };
 
-    // Manejar envio
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -87,7 +92,7 @@ const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, d
                                                 type={campo.type}
                                                 name={campo.name}
                                                 placeholder={campo.placeholder}
-                                                value={formData[campo.name] || ""}
+                                                value={campo.type === 'date' ? formData[campo.name] || '' : formData[campo.name] || ""}
                                                 onChange={handleChange}
                                                 disabled={disabledFields.includes(campo.name)}
                                                 className="input-class m-4 text-[#757575]"
@@ -119,3 +124,4 @@ const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, d
 };
 
 export default ModalEditar;
+

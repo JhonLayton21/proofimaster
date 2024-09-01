@@ -19,6 +19,37 @@ const executeQuery = async (query, params, res) => {
     }
 };
 
+// Ruta específica para obtener todos los productos con su referencia, marca, proveedor
+app.get("/productos", async (req, res) => {
+    const query = `
+        SELECT 
+            p.id,
+            p.nombre,
+            p.descripcion,
+            p.fecha_entrada,
+            p.nivel_minimo_stock,
+            p.precio_compra,
+            p.precio_venta,
+            p.stock,
+            p.marca_id,
+            m.nombre AS marca,
+            p.proveedor_id,
+            pr.nombre_proveedor AS proveedor,
+            p.referencia_id,
+            r.codigo AS referencia
+        FROM 
+            productos p
+        JOIN 
+            marcas_productos m ON p.marca_id = m.id
+        JOIN 
+            proveedores pr ON p.proveedor_id = pr.id
+        JOIN 
+            referencias_productos r ON p.referencia_id = r.id;
+    `;
+    await executeQuery(query, [], res);
+});
+
+
 // Ruta específica para obtener todos los clientes con su tipo de cliente
 app.get("/clientes", async (req, res) => {
     const query = `
@@ -36,6 +67,29 @@ JOIN
     tipo_clientes tc 
 ON 
     c.tipo_cliente_id = tc.id;
+
+    `;
+    await executeQuery(query, [], res);
+});
+
+// Ruta específica para obtener todos los proveedores con su metodo de pago
+app.get("/proveedores", async (req, res) => {
+    const query = `
+        SELECT 
+    p.id, 
+    p.nombre_proveedor, 
+    p.contacto_proveedor, 
+    p.direccion_proveedor, 
+    p.email_proveedor, 
+    p.telefono_proveedor, 
+    p.metodo_pago_id,
+    mp.metodo AS metodo_proveedor
+FROM 
+    proveedores p
+JOIN 
+    metodo_pago mp 
+ON 
+    p.metodo_pago_id = mp.id;
 
     `;
     await executeQuery(query, [], res);

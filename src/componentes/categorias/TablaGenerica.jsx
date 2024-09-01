@@ -1,7 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
-
+import { format } from 'date-fns';
 
 const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert }) => (
     <div className="relative overflow-x-auto rounded-2xl">
@@ -21,7 +21,11 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert }) =>
                     <tr key={index} className="bg-white border-b dark:bg-[#292929] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#202020]">
                         {columnas.map((columna) => (
                             <td key={columna} className="px-6 py-4">
-                                {fila[columna]}
+                                {columna === 'fecha_entrada'
+                                    ? format(new Date(fila[columna]), 'dd/MM/yyyy')
+                                    : columna === 'precio_compra' || columna === 'precio_venta'
+                                    ? `${parseFloat(fila[columna]).toLocaleString('es-CO')} COP`
+                                    : fila[columna]}
                             </td>
                         ))}
                         <td className="px-6 py-4 text-right">
@@ -61,5 +65,8 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert }) =>
     </div>
 );
 
-
 export default TablaGenerica;
+
+
+
+

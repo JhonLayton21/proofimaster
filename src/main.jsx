@@ -8,6 +8,8 @@ import Productos from './componentes/productos/Productos.jsx';
 import Ventas from './componentes//ventas/Ventas.jsx';
 import Proveedores from './componentes/proveedores/Proveedores.jsx';
 import Clientes2 from './componentes/clientes/Clientes2.jsx';
+import Proveedores2 from './componentes/proveedores/Proveedores2.jsx';
+import Productos2 from './componentes/productos/Productos2.jsx';
 import EstadosVenta from './componentes/categorias/EstadosVenta.jsx';
 import MarcaProductos from './componentes/categorias/MarcaProductos.jsx';
 import MetodoEnvioVenta from './componentes/categorias/MetodoEnvioVenta.jsx';
@@ -35,7 +37,7 @@ const router = createBrowserRouter([
   },
   {
     path: 'productos',
-    element: <Productos />,
+    element: <Productos2 />,
   },
   {
     path: 'ventas',
@@ -43,7 +45,7 @@ const router = createBrowserRouter([
   },
   {
     path: 'proveedores',
-    element: <Proveedores />,
+    element: <Proveedores2 />,
   },
   {
     path: 'clientes',
