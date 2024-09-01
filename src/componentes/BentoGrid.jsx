@@ -3,6 +3,7 @@ import { getFirestore, collection, query, orderBy, limit, onSnapshot } from "fir
 import { faFileLines, faArrowRight, faCog, faCircleUser, faAddressBook, faTruckFast, faDollarSign, faShoppingCart, faFileAlt, faWarning, faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MenuPrincipal from "./MenuPrincipal";
+import { Link, useLocation } from "react-router-dom";
 
 const BentoGrid = ({ correoUsuario }) => {
     const [productosConAlertas, setProductosConAlertas] = useState([]);
@@ -269,7 +270,9 @@ const BentoGrid = ({ correoUsuario }) => {
                             </ol>
                         </div>
                     </div>
-                    <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    <Link to="/productos">
+                        <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    </Link>
                 </div>
 
 
@@ -294,10 +297,9 @@ const BentoGrid = ({ correoUsuario }) => {
                             </p>
                         </div>
                     </div>
-                    <FontAwesomeIcon
-                        icon={faArrowRight}
-                        className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500"
-                    />
+                    <Link to="/productos">
+                        <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    </Link>
                 </div>
 
 
@@ -318,7 +320,9 @@ const BentoGrid = ({ correoUsuario }) => {
                             <p className="text-4xl font-bold text-orange-500 text-right">{displayedCantidadVentas}</p>
                         </div>
                     </div>
-                    <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    <Link to="/ventas">
+                        <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    </Link>
                 </div>
 
                 {/* ALERTAS STOCK */}
@@ -347,7 +351,9 @@ const BentoGrid = ({ correoUsuario }) => {
                             </ul>
                         </div>
                     </div>
-                    <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    <Link to="/productos">
+                        <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    </Link>
                 </div>
 
 
@@ -368,7 +374,9 @@ const BentoGrid = ({ correoUsuario }) => {
                             </div>
                         ))
                     )}
-                    <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    <Link to="/proveedores">
+                        <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    </Link>
                 </div>
 
 
@@ -405,7 +413,9 @@ const BentoGrid = ({ correoUsuario }) => {
                             </div>
                         </div>
                     </div>
-                    <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500 " />
+                    <Link to="/informes">
+                        <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    </Link>
                 </div>
 
                 {/* CLIENTES ACTIVOS */}
@@ -425,7 +435,9 @@ const BentoGrid = ({ correoUsuario }) => {
                             </div>
                         ))
                     )}
-                    <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    <Link to="/clientes">
+                        <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    </Link>
                 </div>
 
 
@@ -484,7 +496,9 @@ const BentoGrid = ({ correoUsuario }) => {
                         <h2 className="text-lg font-semibold">Configuración cuenta</h2>
                         <p className="text-sm text-gray-600 dark:text-gray-400">Ajusta las configuraciones de tu cuenta</p>
                     </div>
-                    <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    <Link to="/configuracion">
+                        <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
+                    </Link>
                 </div>
             </div>
         </MenuPrincipal>
