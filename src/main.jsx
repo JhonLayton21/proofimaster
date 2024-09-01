@@ -7,7 +7,7 @@ import Configuracion from './componentes/Configuracion.jsx';
 import Productos from './componentes/productos/Productos.jsx';
 import Ventas from './componentes//ventas/Ventas.jsx';
 import Proveedores from './componentes/proveedores/Proveedores.jsx';
-import Clientes from './componentes/clientes/Clientes.jsx';
+import Clientes2 from './componentes/clientes/Clientes2.jsx';
 import EstadosVenta from './componentes/categorias/EstadosVenta.jsx';
 import MarcaProductos from './componentes/categorias/MarcaProductos.jsx';
 import MetodoEnvioVenta from './componentes/categorias/MetodoEnvioVenta.jsx';
@@ -47,7 +47,7 @@ const router = createBrowserRouter([
   },
   {
     path: 'clientes',
-    element: <Clientes />,
+    element: <Clientes2 />,
   },
   {
     path: 'metodos-pago',

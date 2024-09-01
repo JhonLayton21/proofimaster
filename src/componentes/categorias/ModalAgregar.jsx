@@ -14,7 +14,7 @@ const ModalAgregar = ({ isOpen, onClose, onSubmit, titulo, campos, disabledField
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch (`http://localhost:5000/${endpoint}`, {
+            const response = await fetch(`http://localhost:5000/${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -56,16 +56,34 @@ const ModalAgregar = ({ isOpen, onClose, onSubmit, titulo, campos, disabledField
                             <form onSubmit={handleSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {campos.map((campo) => (
-                                        <input
-                                            key={campo.name}
-                                            type={campo.type}
-                                            name={campo.name}
-                                            placeholder={campo.placeholder}
-                                            value={formData[campo.name] || ""}
-                                            onChange={handleChange}
-                                            disabled={disabledFields.includes(campo.name)}
-                                            className="input-class m-4 text-[#757575]"
-                                        />
+                                        campo.type === 'select' ? (
+                                            <select
+                                                key={campo.name}
+                                                name={campo.name}
+                                                value={formData[campo.name] || ""}
+                                                onChange={handleChange}
+                                                disabled={disabledFields.includes(campo.name)}
+                                                className="select-class m-4 text-[#757575]"
+                                            >
+                                                <option value="" disabled>{campo.placeholder}</option>
+                                                {campo.options && campo.options.map((option) => (
+                                                    <option key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        ) : (
+                                            <input
+                                                key={campo.name}
+                                                type={campo.type}
+                                                name={campo.name}
+                                                placeholder={campo.placeholder}
+                                                value={formData[campo.name] || ""}
+                                                onChange={handleChange}
+                                                disabled={disabledFields.includes(campo.name)}
+                                                className="input-class m-4 text-[#757575]"
+                                            />
+                                        )
                                     ))}
                                 </div>
                                 <button
@@ -92,3 +110,4 @@ const ModalAgregar = ({ isOpen, onClose, onSubmit, titulo, campos, disabledField
 };
 
 export default ModalAgregar;
+

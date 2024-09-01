@@ -30,19 +30,18 @@ const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, d
                 },
                 body: JSON.stringify(dataToUpdate),
             });
-    
+
             if (!response.ok) {
                 throw new Error('Error al actualizar el item');
             }
-    
+
             const updatedItem = await response.json();
-            onSubmit(updatedItem); 
-            onClose(); 
+            onSubmit(updatedItem);
+            onClose();
         } catch (error) {
             console.error("Error: ", error);
         }
     };
-    
 
     return (
         <>
@@ -66,16 +65,34 @@ const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, d
                             <form onSubmit={handleSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {campos.map((campo) => (
-                                        <input
-                                            key={campo.name}
-                                            type={campo.type}
-                                            name={campo.name}
-                                            placeholder={campo.placeholder}
-                                            value={formData[campo.name] || ""}
-                                            onChange={handleChange}
-                                            disabled={disabledFields.includes(campo.name)}
-                                            className="input-class m-4 text-[#757575]"
-                                        />
+                                        campo.type === 'select' ? (
+                                            <select
+                                                key={campo.name}
+                                                name={campo.name}
+                                                value={formData[campo.name] || ""}
+                                                onChange={handleChange}
+                                                disabled={disabledFields.includes(campo.name)}
+                                                className="select-class m-4 text-[#757575]"
+                                            >
+                                                <option value="" disabled>{campo.placeholder}</option>
+                                                {campo.options && campo.options.map((option) => (
+                                                    <option key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        ) : (
+                                            <input
+                                                key={campo.name}
+                                                type={campo.type}
+                                                name={campo.name}
+                                                placeholder={campo.placeholder}
+                                                value={formData[campo.name] || ""}
+                                                onChange={handleChange}
+                                                disabled={disabledFields.includes(campo.name)}
+                                                className="input-class m-4 text-[#757575]"
+                                            />
+                                        )
                                     ))}
                                 </div>
                                 <button

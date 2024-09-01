@@ -19,6 +19,28 @@ const executeQuery = async (query, params, res) => {
     }
 };
 
+// Ruta específica para obtener todos los clientes con su tipo de cliente
+app.get("/clientes", async (req, res) => {
+    const query = `
+        SELECT 
+    c.id, 
+    c.nombre_cliente, 
+    c.direccion_cliente, 
+    c.email_cliente, 
+    c.telefono_cliente, 
+    c.tipo_cliente_id, 
+    tc.tipo AS tipo_cliente
+FROM 
+    clientes c
+JOIN 
+    tipo_clientes tc 
+ON 
+    c.tipo_cliente_id = tc.id;
+
+    `;
+    await executeQuery(query, [], res);
+});
+
 // Rutas genéricas para obtener todos los registros de cualquier tabla
 app.get("/:table", async (req, res) => {
     const { table } = req.params;
@@ -62,3 +84,4 @@ app.delete("/:table/:id", async (req, res) => {
 app.listen(5000, () => {
     console.log("Servidor corriendo en el puerto 5000");
 });
+
