@@ -6,13 +6,16 @@ const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, d
 
     useEffect(() => {
         if (initialData) {
-            // Asegúrate de que la fecha esté en el formato correcto para el campo de tipo 'date'
+            const fechaEntrada = initialData.fecha_entrada ? new Date(initialData.fecha_entrada) : null;
+            const fechaEntradaFormateada = fechaEntrada ? format(fechaEntrada, 'yyyy-MM-dd') : '';
+    
             setFormData({
                 ...initialData,
-                fecha_entrada: format(new Date(initialData.fecha_entrada), 'yyyy-MM-dd')
+                fecha_entrada: fechaEntradaFormateada
             });
         }
     }, [initialData]);
+    
 
     const handleChange = (e) => {
         const { name, value } = e.target;
