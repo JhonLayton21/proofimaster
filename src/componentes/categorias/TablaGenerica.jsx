@@ -31,11 +31,14 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert }) =>
                         <tr key={index} className="bg-white border-b dark:bg-[#292929] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#202020]">
                             {columnas.map((columna) => (
                                 <td key={columna} className="px-6 py-4">
-                                    {columna === 'fecha_entrada'
-                                        ? format(new Date(fila[columna]), 'dd/MM/yyyy')
-                                        : columna === 'precio_compra' || columna === 'precio_venta'
-                                            ? `${parseFloat(fila[columna]).toLocaleString('es-CO')} COP`
-                                            : fila[columna]}
+                                    {typeof fila[columna] === 'object' && fila[columna] !== null
+                                        ? JSON.stringify(fila[columna]) // Convierte el objeto a string
+                                        : columna === 'fecha_entrada'
+                                            ? format(new Date(fila[columna]), 'dd/MM/yyyy') // Formatea las fechas
+                                            : columna === 'precio_compra' || columna === 'precio_venta'
+                                                ? `${parseFloat(fila[columna]).toLocaleString('es-CO')} COP` // Formatea precios
+                                                : fila[columna] // Renderiza el valor normal si no es un objeto
+                                    }
                                 </td>
                             ))}
                             <td className="px-6 py-4 text-right">
@@ -63,13 +66,12 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert }) =>
                     ))}
                 </tbody>
             </table>
-
         </div>
     </div>
-
 );
 
 export default TablaGenerica;
+
 
 
 

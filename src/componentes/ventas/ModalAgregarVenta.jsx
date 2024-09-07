@@ -51,7 +51,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        const updatedValue = name === 'productoId' || name === 'clienteId' || name === 'estadoVentaId' || name === 'metodoPagoId' || name === 'metodoEnvioVentaId'
+        const updatedValue = name === 'clienteId' || name === 'estadoVentaId' || name === 'metodoPagoId' || name === 'metodoEnvioVentaId'
             ? parseInt(value) || 0
             : value;
 
@@ -80,12 +80,13 @@ const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
     const manejarCambioCheckbox = (producto) => {
         setProductosSeleccionados(prevState => {
             const isSelected = !!prevState[producto.id];
-
+            
             if (isSelected) {
-                const newState = { ...prevState };
-                delete newState[producto.id];
+                // Eliminar producto del estado si está seleccionado
+                const { [producto.id]: _, ...newState } = prevState;
                 return newState;
             } else {
+                // Añadir producto al estado si no está seleccionado
                 return {
                     ...prevState,
                     [producto.id]: {
@@ -94,13 +95,18 @@ const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
                     },
                 };
             }
-
-        });
-        console.log("Productos seleccionados después del cambio:");
-        Object.entries(productosSeleccionados).forEach(([productId, producto]) => {
-            console.log(`- ID Producto ${productId}: cantidad ${producto.cantidad}`);
         });
     };
+    
+
+    useEffect(() => {
+        console.log("Productos seleccionados actualizados:");
+        Object.entries(productosSeleccionados).forEach(([id, detalles]) => {
+            console.log(`ID: ${id}, Cantidad: ${detalles.cantidad}, Precio: ${detalles.precio}`);
+        });
+    }, [productosSeleccionados]);
+    
+    
 
     // Manejar cambios de cantidad productos
     const manejarCambioCantidad = (productoId, cantidad) => {
@@ -108,7 +114,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
             ...prevState,
             [productoId]: {
                 ...prevState[productoId],
-                cantidad: cantidad < 1 ? 1 : cantidad,
+                cantidad: Math.max(1, cantidad), // Asegúrate de que la cantidad sea al menos 1
             },
         }));
     };
@@ -161,76 +167,58 @@ const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        const productosFiltrados = Object.values(productosSeleccionados).filter(Boolean);
-        const { productoId, precioVenta, clienteId, fechaVenta, estadoVentaId, metodoPagoId, descuentoVenta, notaVenta, metodoEnvioVentaId, subtotal, total } = newSale;
-
+        
+        const productosFiltrados = Object.entries(productosSeleccionados)
+            .filter(([id, detalles]) => detalles) // Filtra si hay detalles
+            .map(([id, detalles]) => ({
+                producto_id: id, // Mantén el ID del producto
+                cantidad: detalles.cantidad,
+                precio: detalles.precio
+            }));
+        
+        const { precioVenta, clienteId, fechaVenta, estadoVentaId, metodoPagoId, descuentoVenta, notaVenta, metodoEnvioVentaId, subtotal, total } = newSale;
+    
+        console.log("Productos filtrados con ID:", productosFiltrados);
+    
         try {
-            const response = await fetch("http://localhost:5000/ventas", {
+            const response = await fetch("http://localhost:5000/crearVenta", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    producto_id: productoId,
-                    precio_venta: precioVenta,
-                    cliente_id: clienteId,
-                    fecha_venta: fechaVenta,
-                    estado_venta_id: estadoVentaId,
-                    metodo_pago_id: metodoPagoId,
-                    descuento_venta: descuentoVenta,
-                    nota_venta: notaVenta,
-                    metodo_envio_venta_id: metodoEnvioVentaId,
-                    subtotal: subtotal,
-                    total: total,
-                    productos: productosFiltrados.map(prod => ({
-                        producto_id: prod.id,
-                        cantidad: prod.cantidad,
-                        precio: prod.precio
-                    })),
-                    cliente: {
-                        id: clienteSeleccionado.id,
-                        nombre_cliente: clienteSeleccionado.nombre_cliente,
-                        email_cliente: clienteSeleccionado.email_cliente,
-                        telefono_cliente: clienteSeleccionado.telefono_cliente,
-                        direccion_cliente: clienteSeleccionado.direccion_cliente,
-                        tipo_cliente_id: clienteSeleccionado.tipo_cliente_id
+                    venta: {
+                        precio_venta: precioVenta,
+                        cliente_id: clienteId,
+                        fecha_venta: fechaVenta,
+                        estado_venta_id: estadoVentaId,
+                        metodo_pago_id: metodoPagoId,
+                        descuento_venta: descuentoVenta,
+                        nota_venta: notaVenta,
+                        metodo_envio_venta_id: metodoEnvioVentaId,
+                        subtotal: subtotal,
+                        total: total,
                     },
+                    productos: productosFiltrados
                 }),
             });
-
-            console.log(JSON.stringify({
-                producto_id: productoId,
-                precio_venta: parseFloat(precioVenta),
-                cliente_id: clienteId,
-                fecha_venta: fechaVenta,
-                estado_venta_id: estadoVentaId,
-                metodo_pago_id: metodoPagoId,
-                descuento_venta: parseFloat(descuentoVenta),
-                nota_venta: notaVenta,
-                metodo_envio_venta_id: metodoEnvioVentaId,
-                subtotal: parseFloat(subtotal),
-                total: parseFloat(total),
-                productos: productosFiltrados,
-                cliente: clienteSeleccionado,
-            }));
-
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log("Venta agregada:", data);
-                refreshVentas();
-                onSuccess();
-                onClose();
-            } else {
-                console.error("Error al agregar la venta:", await response.text());
+    
+            if (!response.ok) {
+                throw new Error("Error al agregar la venta");
             }
+    
+            const data = await response.json();
+            console.log("Venta agregada:", data);
+    
+            // Refresca las ventas y cierra el modal
+            refreshVentas();
+            onSuccess();
+            onClose();
+            
         } catch (err) {
             console.error("Error en la solicitud:", err);
         }
     };
-
-
 
     if (!isOpen) return null;
 
@@ -265,7 +253,6 @@ const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
                                                     type="checkbox"
                                                     id={producto.id}
                                                     name="productoId"
-                                                    value={newSale.producto_id}
                                                     checked={!!productosSeleccionados[producto.id]}
                                                     onChange={() => manejarCambioCheckbox(producto)}
                                                     className="m-2"

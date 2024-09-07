@@ -1,14 +1,14 @@
 CREATE DATABASE proofimaster
     WITH
-    OWNER = jhon
+    OWNER = postgres
     ENCODING = 'UTF8'
-    LC_COLLATE = 'es_ES.UTF-8'
-    LC_CTYPE = 'es_ES.UTF-8'
+    LC_COLLATE = 'Spanish_Spain.1252'
+    LC_CTYPE = 'Spanish_Spain.1252'
     LOCALE_PROVIDER = 'libc'
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1
     IS_TEMPLATE = False;
-
+	
 CREATE TABLE metodo_pago (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   metodo TEXT NOT NULL
@@ -70,15 +70,11 @@ CREATE TABLE estado_venta (
 CREATE TABLE metodo_envio_venta (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   metodo TEXT NOT NULL
-  precio NUMERIC (10,3) NOT NULL
 );
 
-ALTER TABLE IF EXISTS public.metodo_envio_venta
-    ADD COLUMN precio numeric(10) NOT NULL;
 
 CREATE TABLE ventas (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  producto_id BIGINT REFERENCES productos (id) ON DELETE CASCADE,
   precio_venta NUMERIC(10, 3) NOT NULL,
   cliente_id BIGINT REFERENCES clientes (id) ON DELETE CASCADE,
   fecha_venta DATE NOT NULL,
@@ -94,8 +90,14 @@ CREATE TABLE ventas (
   total NUMERIC(10, 3) NOT NULL
 );
 
-ALTER TABLE IF EXISTS public.ventas
-    ADD COLUMN productos jsonb NOT NULL;
+CREATE TABLE venta_productos (
+  venta_id BIGINT REFERENCES ventas(id) ON DELETE CASCADE,
+  producto_id BIGINT REFERENCES productos(id) ON DELETE CASCADE,
+  cantidad INT NOT NULL,
+  precio NUMERIC(10, 3) NOT NULL,
+  PRIMARY KEY (venta_id, producto_id)
+);
+
 
 CREATE TABLE informes (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,

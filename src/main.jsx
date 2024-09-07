@@ -5,7 +5,7 @@ import Login from './componentes/Login.jsx';
 import ErrorPage from './paginaError.jsx';
 import Configuracion from './componentes/Configuracion.jsx';
 import Productos from './componentes/productos/Productos.jsx';
-import Ventas from './componentes//ventas/Ventas.jsx';
+import Ventas2 from './componentes//ventas/Ventas2.jsx';
 import Proveedores from './componentes/proveedores/Proveedores.jsx';
 import Clientes2 from './componentes/clientes/Clientes2.jsx';
 import Proveedores2 from './componentes/proveedores/Proveedores2.jsx';
@@ -41,7 +41,7 @@ const router = createBrowserRouter([
   },
   {
     path: 'ventas',
-    element: <Ventas />,
+    element: <Ventas2 />,
   },
   {
     path: 'proveedores',

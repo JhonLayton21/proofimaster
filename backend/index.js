@@ -4,9 +4,9 @@ import cors from 'cors';
 
 const app = express();
 
-//middleware
+// Middleware
 app.use(cors());
-app.use(express.json()); //req.body
+app.use(express.json()); // Permite leer JSON en req.body
 
 // Función genérica para realizar consultas SQL
 const executeQuery = async (query, params, res) => {
@@ -49,51 +49,149 @@ app.get("/productos", async (req, res) => {
     await executeQuery(query, [], res);
 });
 
+// Ruta específica para obtener todos las ventas con sus datos relacionales
+app.get("/ventas", async (req, res) => {
+    const query = `
+        SELECT 
+            v.id, 
+            v.fecha_venta,  
+            v.descuento_venta, 
+            v.nota_venta, 
+            v.subtotal,
+            v.total,
+            c.nombre_cliente AS cliente,
+            ev.estado AS estado,
+            mp.metodo AS metodo_pago,
+            me.metodo AS metodo_envio,
+            json_agg(p.nombre) AS productos 
+        FROM 
+            ventas v
+        JOIN 
+            clientes c ON v.cliente_id = c.id
+        JOIN
+            estado_venta ev ON v.estado_venta_id = ev.id 
+        JOIN
+            metodo_pago mp ON v.metodo_pago_id = mp.id
+        JOIN
+            metodo_envio_venta me ON v.metodo_envio_venta_id = me.id
+        JOIN
+            venta_productos vp ON v.id = vp.venta_id
+        JOIN
+            productos p ON vp.producto_id = p.id 
+        GROUP BY
+            v.id, c.nombre_cliente, ev.estado, mp.metodo, me.metodo
+    `;
+    await executeQuery(query, [], res);
+});
+
+
 
 // Ruta específica para obtener todos los clientes con su tipo de cliente
 app.get("/clientes", async (req, res) => {
     const query = `
         SELECT 
-    c.id, 
-    c.nombre_cliente, 
-    c.direccion_cliente, 
-    c.email_cliente, 
-    c.telefono_cliente, 
-    c.tipo_cliente_id, 
-    tc.tipo AS tipo_cliente
-FROM 
-    clientes c
-JOIN 
-    tipo_clientes tc 
-ON 
-    c.tipo_cliente_id = tc.id;
-
+            c.id, 
+            c.nombre_cliente, 
+            c.direccion_cliente, 
+            c.email_cliente, 
+            c.telefono_cliente, 
+            c.tipo_cliente_id, 
+            tc.tipo AS tipo_cliente
+        FROM 
+            clientes c
+        JOIN 
+            tipo_clientes tc ON c.tipo_cliente_id = tc.id;
     `;
     await executeQuery(query, [], res);
 });
 
-// Ruta específica para obtener todos los proveedores con su metodo de pago
+
+// Ruta específica para obtener todos los proveedores con su método de pago
 app.get("/proveedores", async (req, res) => {
     const query = `
         SELECT 
-    p.id, 
-    p.nombre_proveedor, 
-    p.contacto_proveedor, 
-    p.direccion_proveedor, 
-    p.email_proveedor, 
-    p.telefono_proveedor, 
-    p.metodo_pago_id,
-    mp.metodo AS metodo_proveedor
-FROM 
-    proveedores p
-JOIN 
-    metodo_pago mp 
-ON 
-    p.metodo_pago_id = mp.id;
-
+            p.id, 
+            p.nombre_proveedor, 
+            p.contacto_proveedor, 
+            p.direccion_proveedor, 
+            p.email_proveedor, 
+            p.telefono_proveedor, 
+            p.metodo_pago_id,
+            mp.metodo AS metodo_proveedor
+        FROM 
+            proveedores p
+        JOIN 
+            metodo_pago mp ON p.metodo_pago_id = mp.id;
     `;
     await executeQuery(query, [], res);
 });
+
+
+// Ruta para insertar una venta y los productos asociados
+app.post("/crearVenta", async (req, res) => {
+    const client = await pool.connect(); // Conexión transaccional
+    try {
+        const { venta, productos } = req.body;
+        console.log("Datos recibidos:", productos);
+
+
+        // Inicia una transacción
+        await client.query('BEGIN');
+
+        // Inserta la venta
+        const ventaQuery = `
+            INSERT INTO ventas (precio_venta, cliente_id, fecha_venta, estado_venta_id, metodo_pago_id, descuento_venta, nota_venta, metodo_envio_venta_id, subtotal, total)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+            RETURNING id;
+        `;
+        const ventaValues = [
+            venta.precio_venta,
+            venta.cliente_id,
+            venta.fecha_venta,
+            venta.estado_venta_id,
+            venta.metodo_pago_id,
+            venta.descuento_venta,
+            venta.nota_venta,
+            venta.metodo_envio_venta_id,
+            venta.subtotal,
+            venta.total,
+        ];
+        
+        const ventaResult = await client.query(ventaQuery, ventaValues);
+        const ventaId = ventaResult.rows[0].id;
+
+        // Inserta los productos relacionados a la venta
+        const productoQuery = `
+            INSERT INTO venta_productos (venta_id, producto_id, cantidad, precio)
+            VALUES ($1, $2, $3, $4);
+        `;
+
+        for (const prod of productos) {
+            const productoValues = [
+                ventaId,          // Relación de venta
+                prod.producto_id, // ID del producto
+                prod.cantidad,    // Cantidad vendida
+                prod.precio       // Precio del producto
+            ];
+
+            console.log("Valores de producto:", productoValues);
+            await client.query(productoQuery, productoValues);
+        }
+
+        // Confirma la transacción
+        await client.query('COMMIT');
+        res.json({ message: "Venta y productos insertados correctamente", ventaId });
+
+    } catch (err) {
+        // Reversa la transacción si ocurre un error
+        await client.query('ROLLBACK');
+        console.error(err.message);
+        res.status(500).send('Error al crear la venta');
+    } finally {
+        client.release();
+    }
+});
+
 
 // Rutas genéricas para obtener todos los registros de cualquier tabla
 app.get("/:table", async (req, res) => {
@@ -135,7 +233,7 @@ app.delete("/:table/:id", async (req, res) => {
     await executeQuery(query, [id], res);
 });
 
+// Iniciar el servidor
 app.listen(5000, () => {
     console.log("Servidor corriendo en el puerto 5000");
 });
-

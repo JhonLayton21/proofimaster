@@ -92,6 +92,15 @@ const Productos2 = () => {
         }
     };
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        if (isNaN(date)) {
+            return ''; // Si no es una fecha válida, devolver una cadena vacía o manejarlo de otra manera
+        }
+        return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    };
+    
+
     return (
         <div className="grid grid-cols-12 gap-0 h-full overflow-auto">
             <div className="col-span-12">
@@ -127,7 +136,13 @@ const Productos2 = () => {
                         { name: 'id', label: 'Id', type: 'number', placeholder: 'Id automático' },
                         { name: 'nombre', label: 'Nombre producto', type: 'text', placeholder: 'Ingrese el nombre del producto' },
                         { name: 'descripcion', label: 'Descripción', type: 'text', placeholder: 'Ingrese la descripción del producto' },
-                        { name: 'fecha_entrada', label: 'Fecha de entrada', type: 'date', placeholder: 'Seleccione la fecha de entrada del producto' },
+                        {
+                            name: 'fecha_entrada',
+                            label: 'Fecha de entrada',
+                            type: 'date',
+                            placeholder: 'Seleccione la fecha de entrada del producto',
+                            value: formatDate(editingItem?.fecha_entrada)
+                        },                        
                         {
                             name: 'marca_id',
                             label: 'Marca',
@@ -171,7 +186,13 @@ const Productos2 = () => {
                         { name: 'id', label: 'Id', type: 'number', placeholder: 'Id automático' },
                         { name: 'nombre', label: 'Nombre producto', type: 'text', placeholder: 'Ingrese el nombre del producto' },
                         { name: 'descripcion', label: 'Descripción', type: 'text', placeholder: 'Ingrese la descripción del producto' },
-                        { name: 'fecha_entrada', label: 'Fecha de entrada', type: 'date', placeholder: 'Seleccione la fecha de entrada del producto' },
+                        {
+                            name: 'fecha_entrada',
+                            label: 'Fecha de entrada',
+                            type: 'date',
+                            placeholder: 'Seleccione la fecha de entrada del producto',
+                            value: formatDate(editingItem?.fecha_entrada)
+                        },                        
                         {
                             name: 'marca_id',
                             label: 'Marca',
