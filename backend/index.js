@@ -192,6 +192,24 @@ app.post("/crearVenta", async (req, res) => {
     }
 });
 
+// Ruta para obtener los productos de una venta
+app.get("/venta_productos/:ventaId", async (req, res) => {
+    const { ventaId } = req.params;
+    try {
+        const result = await pool.query(`
+            SELECT producto_id, cantidad, precio
+            FROM venta_productos
+            WHERE venta_id = $1
+        `, [ventaId]);
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al obtener los productos de la venta');
+    }
+});
+
+
 
 // Rutas genéricas para obtener todos los registros de cualquier tabla
 app.get("/:table", async (req, res) => {

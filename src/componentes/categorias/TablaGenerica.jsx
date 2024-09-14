@@ -33,7 +33,7 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert }) =>
                                 <td key={columna} className="px-6 py-4">
                                     {typeof fila[columna] === 'object' && fila[columna] !== null
                                         ? JSON.stringify(fila[columna]) // Convierte el objeto a string
-                                        : columna === 'fecha_entrada'
+                                        : columna === 'fecha_entrada' || columna === 'fecha_venta'
                                             ? format(new Date(fila[columna]), 'dd/MM/yyyy') // Formatea las fechas
                                             : columna === 'precio_compra' || columna === 'precio_venta'
                                                 ? `${parseFloat(fila[columna]).toLocaleString('es-CO')} COP` // Formatea precios
@@ -43,14 +43,14 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert }) =>
                             ))}
                             <td className="px-6 py-4 text-right">
                                 <button
-                                    className="text-blue-600 hover:underline m-1"
+                                    className="text-blue-600 dark:bg-[#242424] hover:underline m-1"
                                     onClick={() => onEdit(fila)}
                                 >
                                     Editar
                                     <FontAwesomeIcon icon={faPenToSquare} className="ml-1" />
                                 </button>
                                 <button
-                                    className="text-red-600 hover:underline m-1"
+                                    className="text-red-600 dark:bg-[#242424] hover:underline m-1"
                                     onClick={() => {
                                         if (window.confirm('¿Estás seguro de que deseas eliminar este elemento?')) {
                                             onDelete(fila.id);

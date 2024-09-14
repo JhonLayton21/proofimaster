@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { faCircleUser, faFileLines, faBell, faEnvelope, faGear, faImagePortrait } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
+const ModalAgregarVenta = ({ isOpen, onClose }) => {
     const [newSale, setNewSale] = useState({
         productoId: 0,
         precioVenta: 0,
@@ -51,36 +51,43 @@ const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        const updatedValue = name === 'clienteId' || name === 'estadoVentaId' || name === 'metodoPagoId' || name === 'metodoEnvioVentaId'
-            ? parseInt(value) || 0
-            : value;
 
-        console.log(`Campo: ${name}, Valor: ${updatedValue}`);
+        console.log(`Campo: ${name}, Valor: ${value}`);
         setNewSale({
             ...newSale,
-            [name]: updatedValue,
+            [name]: value,
         });
     };
 
 
+
     const calcularTotal = (subtotal, descuentoVenta) => {
-        const descuento = (descuentoVenta / 100) * subtotal;
+        const descuento = ((descuentoVenta || 0) / 100) * subtotal;
         const total = subtotal - descuento;
         return total ? total : 0;
     };
+
 
     useEffect(() => {
         const nuevoSubtotal = calcularSubtotal();
         setSubtotal(nuevoSubtotal);
         const nuevoTotal = calcularTotal(nuevoSubtotal, newSale.descuento_venta);
         setTotal(nuevoTotal);
-    }, [productosSeleccionados, newSale.metodo_envio_venta_id, newSale.descuento_venta]);
+
+        // Actualizar el estado de newSale con subtotal y total
+        setNewSale(prevState => ({
+            ...prevState,
+            subtotal: nuevoSubtotal,
+            total: nuevoTotal,
+        }));
+    }, [productosSeleccionados, newSale.metodoEnvioVentaId, newSale.descuento_venta]);
+
 
     // Manejar cambios en checboxes productos
     const manejarCambioCheckbox = (producto) => {
         setProductosSeleccionados(prevState => {
             const isSelected = !!prevState[producto.id];
-            
+
             if (isSelected) {
                 // Eliminar producto del estado si está seleccionado
                 const { [producto.id]: _, ...newState } = prevState;
@@ -97,7 +104,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
             }
         });
     };
-    
+
 
     useEffect(() => {
         console.log("Productos seleccionados actualizados:");
@@ -105,8 +112,8 @@ const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
             console.log(`ID: ${id}, Cantidad: ${detalles.cantidad}, Precio: ${detalles.precio}`);
         });
     }, [productosSeleccionados]);
-    
-    
+
+
 
     // Manejar cambios de cantidad productos
     const manejarCambioCantidad = (productoId, cantidad) => {
@@ -144,15 +151,16 @@ const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
 
         // Obtener el precio del método de envío seleccionado
         const metodoEnvioSeleccionado = metodoEnvio.find(envio => envio.id === newSale.metodoEnvioVentaId);
-        const precioEnvio = metodoEnvioSeleccionado ? metodoEnvioSeleccionado.precio : 0;
-        console.log("Precio del método de envío seleccionado:", parseFloat(precioEnvio));
+        const precioEnvio = metodoEnvioSeleccionado ? metodoEnvioSeleccionado.precio * 1000 : 0;
+        console.log("Precio del método de envío seleccionado:", precioEnvio);
+        console.log('Método de envío seleccionado:', newSale.metodoEnvioVentaId);
 
-        // Retornar la suma del subtotal de productos y el precio de envío
-        const subtotal = subtotalProductos + parseFloat(precioEnvio);
+
+        // Asegurarse de que subtotalProductos también sea un número (aunque debería serlo)
+        const subtotal = parseFloat(subtotalProductos) + parseFloat(precioEnvio);
         return subtotal;
     };
-
-
+    
     // Calcular Total
     useEffect(() => {
         const calcularTotal = () => {
@@ -167,19 +175,15 @@ const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         const productosFiltrados = Object.entries(productosSeleccionados)
-            .filter(([id, detalles]) => detalles) // Filtra si hay detalles
+            .filter(([id, detalles]) => detalles)
             .map(([id, detalles]) => ({
-                producto_id: id, // Mantén el ID del producto
+                producto_id: id,
                 cantidad: detalles.cantidad,
                 precio: detalles.precio
             }));
-        
-        const { precioVenta, clienteId, fechaVenta, estadoVentaId, metodoPagoId, descuentoVenta, notaVenta, metodoEnvioVentaId, subtotal, total } = newSale;
-    
-        console.log("Productos filtrados con ID:", productosFiltrados);
-    
+
         try {
             const response = await fetch("http://localhost:5000/crearVenta", {
                 method: "POST",
@@ -188,37 +192,35 @@ const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
                 },
                 body: JSON.stringify({
                     venta: {
-                        precio_venta: precioVenta,
-                        cliente_id: clienteId,
-                        fecha_venta: fechaVenta,
-                        estado_venta_id: estadoVentaId,
-                        metodo_pago_id: metodoPagoId,
-                        descuento_venta: descuentoVenta,
-                        nota_venta: notaVenta,
-                        metodo_envio_venta_id: metodoEnvioVentaId,
-                        subtotal: subtotal,
-                        total: total,
+                        precio_venta: newSale.precioVenta,
+                        cliente_id: newSale.clienteId,
+                        fecha_venta: newSale.fechaVenta,
+                        estado_venta_id: newSale.estadoVentaId,
+                        metodo_pago_id: newSale.metodoPagoId,
+                        descuento_venta: newSale.descuentoVenta,
+                        nota_venta: newSale.notaVenta,
+                        metodo_envio_venta_id: newSale.metodoEnvioVentaId,
+                        subtotal: subtotal,  // Usar los valores calculados actuales
+                        total: total,        // Usar los valores calculados actuales
                     },
                     productos: productosFiltrados
                 }),
             });
-    
+
             if (!response.ok) {
                 throw new Error("Error al agregar la venta");
             }
-    
+
             const data = await response.json();
             console.log("Venta agregada:", data);
-    
-            // Refresca las ventas y cierra el modal
-            refreshVentas();
-            onSuccess();
+
             onClose();
-            
+
         } catch (err) {
             console.error("Error en la solicitud:", err);
         }
     };
+
 
     if (!isOpen) return null;
 
@@ -411,8 +413,8 @@ const ModalAgregarVenta = ({ isOpen, onClose, refreshVentas, onSuccess }) => {
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Método de envío</label>
                                             <select
                                                 name="metodoEnvioVentaId"
-                                                value={newSale.metodo_envio_venta_id}
                                                 onChange={handleInputChange}
+                                                value={newSale.metodoEnvioVentaId}
                                                 required
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             >
