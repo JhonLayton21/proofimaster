@@ -1,5 +1,4 @@
 import React from 'react';
-import MenuLateral from '../MenuLateral';
 import MenuPrincipal from '../MenuPrincipal';
 import { getAuth } from 'firebase/auth';
 import appFirebase from '../../credenciales';

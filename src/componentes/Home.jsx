@@ -1,6 +1,4 @@
 import React from 'react';
-import MenuLateral from './MenuLateral';
-import MenuPrincipal from './MenuPrincipal';
 import BentoGrid from './BentoGrid';
 
 const Home = ({ correoUsuario }) => {

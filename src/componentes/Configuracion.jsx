@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { db } from '../credenciales';
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import MenuLateral from "./MenuLateral";
 import MenuPrincipal from "./MenuPrincipal";
 
 export default function Configuracion() {
