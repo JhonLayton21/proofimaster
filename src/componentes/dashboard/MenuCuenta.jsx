@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { faCircleUser, faFileLines, faBell, faEnvelope, faGear, faImagePortrait } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getAuth, signOut } from 'firebase/auth';
-import appFirebase from '../credenciales';
+import appFirebase from '../../credenciales';
 import { Link } from "react-router-dom";
 
 const auth = getAuth(appFirebase);

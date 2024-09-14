@@ -1,5 +1,5 @@
 import React from 'react';
-import BentoGrid from './BentoGrid';
+import BentoGrid from './dashboard/BentoGrid';
 
 const Home = ({ correoUsuario }) => {
     return (

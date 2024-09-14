@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { getAuth } from 'firebase/auth';
-import Sidebar from './Sidebar';
-import Header from './Header';
-import MainContent from "./MainContent";
+import Sidebar from './dashboard/Sidebar';
+import Header from './dashboard/Header';
+import MainContent from "./dashboard/MainContent";
 import appFirebase from '../credenciales';
 
 const auth = getAuth(appFirebase);

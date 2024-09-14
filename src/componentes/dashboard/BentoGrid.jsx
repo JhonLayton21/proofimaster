@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { getFirestore, collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
-import MenuPrincipal from "./MenuPrincipal";
-import ProductosDestacados from "./bentoComponentes/ProductosDestacados";
-import DatosProductos from "./bentoComponentes/DatosProductos";
-import DatosVentas from "./bentoComponentes/DatosVentas";
-import AlertasStock from "./bentoComponentes/AlertasStock";
-import Proveedores from "./bentoComponentes/Proveedores";
-import Informes from "./bentoComponentes/Informes";
-import Clientes from "./bentoComponentes/Clientes";
-import Usuarios from "./bentoComponentes/Usuarios";
-import Documentacion from "./bentoComponentes/Documentacion";
-import Configuracion from "./bentoComponentes/Configuracion";
+import MenuPrincipal from "../MenuPrincipal";
+import ProductosDestacados from "../bentoComponentes/ProductosDestacados";
+import DatosProductos from "../bentoComponentes/DatosProductos";
+import DatosVentas from "../bentoComponentes/DatosVentas";
+import AlertasStock from "../bentoComponentes/AlertasStock";
+import Proveedores from "../bentoComponentes/Proveedores";
+import Informes from "../bentoComponentes/Informes";
+import Clientes from "../bentoComponentes/Clientes";
+import Usuarios from "../bentoComponentes/Usuarios";
+import Documentacion from "../bentoComponentes/Documentacion";
+import Configuracion from "../bentoComponentes/Configuracion";
 
 const BentoGrid = ({ correoUsuario }) => {
     const [productosConAlertas, setProductosConAlertas] = useState([]);

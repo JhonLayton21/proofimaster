@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { Accordion, AccordionHeader, AccordionBody, List, ListItem, ListItemPrefix, Drawer, Card, Typography } from "@material-tailwind/react";
 import { getAuth, signOut } from 'firebase/auth';
-import appFirebase from '../credenciales';
+import appFirebase from '../../credenciales';
 
 
 const Sidebar = ({ isDrawerOpen, closeDrawer, open, handleOpen, isActive }) => {
