@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import TablaGenerica from "../categorias/TablaGenerica";
 import MenuPrincipal from "../MenuPrincipal";
 import ModalAgregarVenta from "./ModalAgregarVenta";
 import EditarVenta from "./EditarVenta";
-import Alert from "../categorias/Alert";
 import { getAuth } from 'firebase/auth';
 import appFirebase from '../../credenciales';
 import ModalEditarVenta from "./ModalEditarVenta";
+import TablaGenerica from "../componentesTablasDatos/TablaGenerica";
+import ModalEditar from "../componentesTablasDatos/ModalEditar";
+import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
+import Alert from "../componentesTablasDatos/Alert";
 
 const auth = getAuth(appFirebase);
 
