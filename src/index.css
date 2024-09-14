@@ -129,10 +129,11 @@ textarea {
 }
 
 .blurred-background {
-  backdrop-filter: blur(5px);
-  background-color: rgba(0, 0, 0, 0.3); /* Tono negro semitransparente */
+  backdrop-filter: blur(10px); /* Aumenta el valor para un mayor desenfoque */
+  -webkit-backdrop-filter: blur(10px); /* Prefijo para compatibilidad con navegadores WebKit */
+  background-color: rgba(255, 255, 255, 0.3); /* Un tono blanco semitransparente */
+  transition: background-color 0.3s ease; /* Transición suave al aplicar o remover la clase */
 }
-
 
 
 @media (prefers-color-scheme: light) {
