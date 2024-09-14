@@ -4,9 +4,6 @@ import appFirebase from '../credenciales';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileLines, faImagePortrait, faAddressBook, faList, faBars, faCar, faCartShopping, faChartSimple, faHouse, faMoneyCheckDollar, faRightFromBracket, faTruckFast, faUser, faUsers } from '@fortawesome/free-solid-svg-icons';
 import MenuCuenta from "./MenuCuenta";
-import TablaProductos from "../componentes/productos/TablaProductos";
-import TablaClientes from "../componentes/clientes/TablaClientes";
-import TablaProveedores from "../componentes/proveedores/TablaProveedores";
 import TablaVentas from "./ventas/TablaVentas";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -242,9 +239,6 @@ const MenuPrincipal = ({ correoUsuario, showTablaProductos, showTablaClientes, s
                 {children}
 
                 <div className="mt-8">
-                    {showTablaProductos && <TablaProductos />}
-                    {showTablaClientes && <TablaClientes />}
-                    {showTablaProveedores && <TablaProveedores />}
                     {showTablaVentas && <TablaVentas />}
                     {showMetodosPago && <MetodosPago />}
                 </div>

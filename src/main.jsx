@@ -4,9 +4,7 @@ import App from './rutas/App.jsx';
 import Login from './componentes/Login.jsx';
 import ErrorPage from './paginaError.jsx';
 import Configuracion from './componentes/Configuracion.jsx';
-import Productos from './componentes/productos/Productos.jsx';
 import Ventas2 from './componentes//ventas/Ventas2.jsx';
-import Proveedores from './componentes/proveedores/Proveedores.jsx';
 import Clientes2 from './componentes/clientes/Clientes2.jsx';
 import Proveedores2 from './componentes/proveedores/Proveedores2.jsx';
 import Productos2 from './componentes/productos/Productos2.jsx';
@@ -17,7 +15,6 @@ import MetodosPago from './componentes/categorias/MetodosPago.jsx';
 import ReferenciaProductos from './componentes/categorias/ReferenciaProductos.jsx';
 import TipoClientes from './componentes/categorias/TipoClientes.jsx';
 import Informes from './componentes/informes/Informes.jsx';
-import Root from './rutas/Root.jsx';
 import './index.css';
 import './credenciales.js';
 
