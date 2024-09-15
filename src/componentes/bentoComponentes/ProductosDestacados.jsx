@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const ProductosDestacados = ({ productosPrincipales }) => {
     return (
-        <div className="bentoItem col-span-6 lg:col-span-3 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 alerta-stock">
+        <div className="bentoItem shadow-lg col-span-6 lg:col-span-3 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 alerta-stock">
             <div className="flex flex-col h-full">
                 {/* Div superior */}
                 <div className="bg-[#ff6f00] text-white p-4 flex items-center justify-center rounded-lg h-1/2">

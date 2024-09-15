@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const Informes = ({ }) => {
     return (
-        <div className="bentoItem col-span-6 lg:col-span-6 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 alerta-stock">
+        <div className="bentoItem shadow-lg col-span-6 lg:col-span-6 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 alerta-stock">
             <h2 className="text-lg font-bold">Informes generados</h2>
             <div className="flex justify-center items-center h-full pb-12">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
