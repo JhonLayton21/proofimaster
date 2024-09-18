@@ -1,14 +1,102 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import MenuPrincipal from '../MenuPrincipal';
 import { getAuth } from 'firebase/auth';
 import appFirebase from '../../credenciales';
 import GenerarInformesBoton from './GenerarInformesBoton';
+import { jsPDF } from "jspdf";
+import autoTable from 'jspdf-autotable'
+import { generatePDFBase, generateTable, addFooter } from './PDFUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAddressBook, faList, faCartShopping, faChartSimple, faHouse, faMoneyCheckDollar, faRightFromBracket, faTruckFast } from '@fortawesome/free-solid-svg-icons';
 
 const auth = getAuth(appFirebase);
 
 const Informes = () => {
+  const [productos, setProductos] = useState([]);
+  const [ventas, setVentas] = useState([]);
+  const [clientes, setClientes] = useState([]);
+  const [proveedores, setProveedores] = useState([]);
+
+  useEffect(() => {
+    // Traer datos de los endpoints
+    const fetchData = async () => {
+      try {
+        const resProductos = await fetch('http://localhost:5000/productos');
+        const dataProductos = await resProductos.json();
+        setProductos(dataProductos);
+
+        const resVentas = await fetch('http://localhost:5000/ventas');
+        const dataVentas = await resVentas.json();
+        setVentas(dataVentas);
+
+        const resClientes = await fetch('http://localhost:5000/clientes');
+        const dataClientes = await resClientes.json();
+        setClientes(dataClientes);
+
+        const resProveedores = await fetch('http://localhost:5000/proveedores');
+        const dataProveedores = await resProveedores.json();
+        setProveedores(dataProveedores);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const generatePDF = () => {
+    const doc = new jsPDF();
+
+    // Informe de productos
+    generatePDFBase(doc, "INFORME DE PRODUCTOS", "17/09/2024");
+    generateTable(doc, ['ID', 'NOMBRE', 'DESCRIPCIÓN'], productos.map((producto, index) => [
+      producto.id,
+      producto.nombre,
+      producto.descripcion
+    ]));
+    addFooter(doc);
+
+    // Nueva página para informe de ventas
+    doc.addPage();
+    generatePDFBase(doc, "INFORME DE VENTAS", "17/09/2024");
+    ventas.forEach((venta, index) => {
+      doc.text(`${index + 1}. ${venta.id} - ${venta.cliente_id}`, 10, 20 + (index * 10));
+    });
+    addFooter(doc);
+
+    // Nueva página para informe de clientes
+    doc.addPage();
+    generatePDFBase(doc, "INFORME DE CLIENTES", "17/09/2024");
+    generateTable(doc, ['ID', 'NOMBRE', 'DIRECCIÓN', 'EMAIL', 'TELEFONO', 'TIPO'], clientes.map((cliente, index) => [
+      cliente.id,
+      cliente.nombre_cliente,
+      cliente.direccion_cliente,
+      cliente.email_cliente,
+      cliente.telefono_cliente,
+      cliente.tipo_cliente_id
+    ]));
+    addFooter(doc);
+
+    // Nueva página para informe de proveedores
+    doc.addPage();
+    generatePDFBase(doc, "INFORME DE PROVEEDORES", "17/09/2024");
+    generateTable(doc, ['ID', 'NOMBRE', 'CONTACTO', 'DIRECCIÓN', 'EMAIL', 'TELEFONO', 'METODO PAGO'], proveedores.map((proveedor, index) => [
+      proveedor.id,
+      proveedor.nombre_proveedor,
+      proveedor.contacto_proveedor,
+      proveedor.direccion_proveedor,
+      proveedor.email_proveedor,
+      proveedor.telefono_proveedor,
+      proveedor.metodo_pago_id
+    ]));
+    addFooter(doc);
+
+    // Guardar el PDF
+    doc.save("Informe.pdf");
+  };
+
+
+
   const userEmail = auth.currentUser ? auth.currentUser.email : '';
 
   const createdReports = [
@@ -46,10 +134,10 @@ const Informes = () => {
         <div className="col-span-12 max-w-4xl mx-auto">
           {/* BOTONES GENERAR INFORMES */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 cursor-pointer">
-            <GenerarInformesBoton titulo={"GENERAR INFORME PRODUCTOS"} Icon={ProductIcon} />
-            <GenerarInformesBoton titulo={"GENERAR INFORME VENTAS"} Icon={SaleIcon} />
-            <GenerarInformesBoton titulo={"GENERAR INFORME CLIENTES"} Icon={ClientIcon} />
-            <GenerarInformesBoton titulo={"GENERAR INFORME PROVEEDORES"} Icon={ProviderIcon} />
+            <GenerarInformesBoton titulo={"GENERAR INFORME PRODUCTOS"} Icon={ProductIcon} onClick={generatePDF} />
+            <GenerarInformesBoton titulo={"GENERAR INFORME VENTAS"} Icon={SaleIcon} onClick={generatePDF} />
+            <GenerarInformesBoton titulo={"GENERAR INFORME CLIENTES"} Icon={ClientIcon} onClick={generatePDF} />
+            <GenerarInformesBoton titulo={"GENERAR INFORME PROVEEDORES"} Icon={ProviderIcon} onClick={generatePDF} />
           </div>
 
           {/* TABLA INFORMES */}
