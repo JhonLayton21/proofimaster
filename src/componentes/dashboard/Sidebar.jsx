@@ -12,7 +12,7 @@ const Sidebar = ({ isDrawerOpen, closeDrawer, open, handleOpen, isActive }) => {
     const auth = getAuth(appFirebase);
 
     return (
-        <Drawer open={isDrawerOpen} onClose={closeDrawer} className="z-10 bg-[#ff6f00] drawer-open overflow-auto">
+        <Drawer open={isDrawerOpen} onClose={closeDrawer} className="z-10 bg-[#ff6f00] drawer-open overflow-auto rounded-xl">
             <Card
                 color="transparent"
                 shadow={false}

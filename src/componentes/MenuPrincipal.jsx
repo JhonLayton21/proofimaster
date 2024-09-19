@@ -27,19 +27,19 @@ const MenuPrincipal = ({ correoUsuario, titulo, subtitulo, children }) => {
     useEffect(() => {
         const user = auth.currentUser;
         if (user) {
-            setUserName(user.displayName || user.email); // Usa el nombre del usuario o el correo si el nombre no está disponible
+            setUserName(user.displayName || user.email);
         }
     }, []);
     
     return (
         <>
-            <div className={`dark:bg-[#242424] bg-[#eeeeee] md:p-8 min-w-[320px] w-full min-h-screen overflow-auto transition-all duration-300 ${isDrawerOpen ? 'blurred-background' : ''}`}>
+            <div className="dark:bg-[#242424] bg-[#eeeeee] md:p-8 min-w-[320px] w-full min-h-screen overflow-auto transition-all duration-300">
                 
                 {/* SIDEBAR */}
                 <Sidebar isDrawerOpen={isDrawerOpen} closeDrawer={closeDrawer} open={open} handleOpen={handleOpen} isActive={isActive} />
                 
                 {/* MENU PRINCIPAL */}
-                <div className="flew-grow p-4 overflow-hidden relative">
+                <div className={`flex-grow p-4 overflow-hidden relative ${isDrawerOpen ? 'blurred-background' : ''}`}>
                     <Header userName={userName} correoUsuario={correoUsuario} isDrawerOpen={isDrawerOpen} openDrawer={openDrawer} />
                     <MainContent titulo={titulo} subtitulo={subtitulo} > 
                         {children}
@@ -51,6 +51,8 @@ const MenuPrincipal = ({ correoUsuario, titulo, subtitulo, children }) => {
 }
 
 export default MenuPrincipal;
+
+
 
 
 
