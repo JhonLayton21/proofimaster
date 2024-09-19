@@ -44,58 +44,86 @@ const Informes = () => {
     fetchData();
   }, []);
 
-  const generatePDF = () => {
-    const doc = new jsPDF();
-
-    // Informe de productos
-    generatePDFBase(doc, "INFORME DE PRODUCTOS", "17/09/2024");
-    generateTable(doc, ['ID', 'NOMBRE', 'DESCRIPCIÓN'], productos.map((producto, index) => [
-      producto.id,
-      producto.nombre,
-      producto.descripcion
-    ]));
-    addFooter(doc);
-
-    // Nueva página para informe de ventas
-    doc.addPage();
-    generatePDFBase(doc, "INFORME DE VENTAS", "17/09/2024");
-    ventas.forEach((venta, index) => {
-      doc.text(`${index + 1}. ${venta.id} - ${venta.cliente_id}`, 10, 20 + (index * 10));
+  const generatePDF = (tipoInforme) => {
+    const doc = new jsPDF({
+      orientation: 'landscape', // Especificar orientación horizontal
+      unit: 'mm', // Unidad de medida (opcional, por defecto es 'mm')
+      format: 'a4' // Tamaño de página (opcional, por defecto es 'a4')
     });
-    addFooter(doc);
 
-    // Nueva página para informe de clientes
-    doc.addPage();
-    generatePDFBase(doc, "INFORME DE CLIENTES", "17/09/2024");
-    generateTable(doc, ['ID', 'NOMBRE', 'DIRECCIÓN', 'EMAIL', 'TELEFONO', 'TIPO'], clientes.map((cliente, index) => [
-      cliente.id,
-      cliente.nombre_cliente,
-      cliente.direccion_cliente,
-      cliente.email_cliente,
-      cliente.telefono_cliente,
-      cliente.tipo_cliente_id
-    ]));
-    addFooter(doc);
+    switch (tipoInforme) {
+      case 'productos':
+        // Informe de productos
+        generatePDFBase(doc, "INFORME DE PRODUCTOS", "17/09/2024");
+        generateTable(doc, ['ID', 'NOMBRE', 'DESCRIPCIÓN', 'FECHA', 'MIN. STOCK', 'COMPRA', 'VENTA', 'STOCK', 'MARCA', 'PROVEEDOR', 'REFERENCIA'], productos.map((producto) => [
+          producto.id,
+          producto.nombre,
+          producto.descripcion,
+          producto.fecha_entrada,
+          producto.nivel_minimo_stock,
+          producto.precio_compra,
+          producto.precio_venta,
+          producto.stock,
+          producto.marca,
+          producto.proveedor,
+          producto.referencia
+        ]));
+        break;
 
-    // Nueva página para informe de proveedores
-    doc.addPage();
-    generatePDFBase(doc, "INFORME DE PROVEEDORES", "17/09/2024");
-    generateTable(doc, ['ID', 'NOMBRE', 'CONTACTO', 'DIRECCIÓN', 'EMAIL', 'TELEFONO', 'METODO PAGO'], proveedores.map((proveedor, index) => [
-      proveedor.id,
-      proveedor.nombre_proveedor,
-      proveedor.contacto_proveedor,
-      proveedor.direccion_proveedor,
-      proveedor.email_proveedor,
-      proveedor.telefono_proveedor,
-      proveedor.metodo_pago_id
-    ]));
-    addFooter(doc);
+      case 'ventas':
+        // Informe de ventas
+        generatePDFBase(doc, "INFORME DE VENTAS", "17/09/2024");
+        generateTable(doc, ['ID', 'FECHA', 'DESCUENTO', 'NOTA', 'SUBTOTAL', 'TOTAL', 'CLIENTE', 'ESTADO', 'METODO PAGO', 'METODO ENVIO', 'PRODUCTOS'], ventas.map((venta) => [
+          venta.id,
+          venta.fecha_venta,
+          venta.descuento_venta,
+          venta.nota_venta,
+          venta.subtotal,
+          venta.total,
+          venta.cliente,
+          venta.estado,
+          venta.metodo_pago,
+          venta.metodo_envio,
+          venta.productos
+        ]));
+        break;
 
-    // Guardar el PDF
-    doc.save("Informe.pdf");
+      case 'clientes':
+        // Informe de clientes
+        generatePDFBase(doc, "INFORME DE CLIENTES", "17/09/2024");
+        generateTable(doc, ['ID', 'NOMBRE', 'DIRECCIÓN', 'EMAIL', 'TELEFONO', 'TIPO'], clientes.map((cliente) => [
+          cliente.id,
+          cliente.nombre_cliente,
+          cliente.direccion_cliente,
+          cliente.email_cliente,
+          cliente.telefono_cliente,
+          cliente.tipo_cliente
+        ]));
+        break;
+
+      case 'proveedores':
+        // Informe de proveedores
+        generatePDFBase(doc, "INFORME DE PROVEEDORES", "17/09/2024");
+        generateTable(doc, ['ID', 'NOMBRE', 'CONTACTO', 'DIRECCIÓN', 'EMAIL', 'TELEFONO', 'METODO PAGO'], proveedores.map((proveedor) => [
+          proveedor.id,
+          proveedor.nombre_proveedor,
+          proveedor.contacto_proveedor,
+          proveedor.direccion_proveedor,
+          proveedor.email_proveedor,
+          proveedor.telefono_proveedor,
+          proveedor.metodo_proveedor
+        ]));
+        break;
+
+      default:
+        console.error('Tipo de informe desconocido:', tipoInforme);
+        return;
+    }
+
+    // Añadir pie de página y guardar el PDF
+    addFooter(doc);
+    doc.save(`Informe_${tipoInforme}.pdf`);
   };
-
-
 
   const userEmail = auth.currentUser ? auth.currentUser.email : '';
 
@@ -134,10 +162,10 @@ const Informes = () => {
         <div className="col-span-12 max-w-4xl mx-auto">
           {/* BOTONES GENERAR INFORMES */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 cursor-pointer">
-            <GenerarInformesBoton titulo={"GENERAR INFORME PRODUCTOS"} Icon={ProductIcon} onClick={generatePDF} />
-            <GenerarInformesBoton titulo={"GENERAR INFORME VENTAS"} Icon={SaleIcon} onClick={generatePDF} />
-            <GenerarInformesBoton titulo={"GENERAR INFORME CLIENTES"} Icon={ClientIcon} onClick={generatePDF} />
-            <GenerarInformesBoton titulo={"GENERAR INFORME PROVEEDORES"} Icon={ProviderIcon} onClick={generatePDF} />
+            <GenerarInformesBoton titulo={"GENERAR INFORME PRODUCTOS"} Icon={ProductIcon} onClick={() => generatePDF('productos')} />
+            <GenerarInformesBoton titulo={"GENERAR INFORME VENTAS"} Icon={SaleIcon} onClick={() => generatePDF('ventas')} />
+            <GenerarInformesBoton titulo={"GENERAR INFORME CLIENTES"} Icon={ClientIcon} onClick={() => generatePDF('clientes')} />
+            <GenerarInformesBoton titulo={"GENERAR INFORME PROVEEDORES"} Icon={ProviderIcon} onClick={() => generatePDF('proveedores')} />
           </div>
 
           {/* TABLA INFORMES */}
