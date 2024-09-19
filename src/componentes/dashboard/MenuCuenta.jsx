@@ -58,7 +58,7 @@ export default function MenuCuenta() {
             <button
               ref={trigger}
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="mb-3.5 inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-stroke bg-[#ff6f00] text-slate-100 px-6 py-3 text-base font-bold text-dark dark:border-dark-3 dark:bg-dark-2 dark:text-white"
+              className="mb-3.5 inline-flex shadow-xl h-12 items-center justify-center gap-2 rounded-lg border border-stroke bg-[#ff6f00] text-slate-100 px-6 py-3 text-base font-bold text-dark dark:border-dark-3 dark:bg-dark-2 dark:text-white"
             >
               Mi cuenta
               <span
@@ -82,7 +82,7 @@ export default function MenuCuenta() {
               ref={dropdown}
               onFocus={() => setDropdownOpen(true)}
               onBlur={() => setDropdownOpen(false)}
-              className={`absolute right-0 top-full w-[240px] divide-y divide-stroke overflow-hidden rounded-lg z-40 bg-white dark:divide-dark-3 dark:bg-[#292929] ${dropdownOpen ? "block" : "hidden"}`}
+              className={`absolute shadow-2xl right-0 top-full w-[240px] divide-y divide-stroke overflow-hidden rounded-lg z-40 bg-white dark:divide-dark-3 dark:bg-[#292929] ${dropdownOpen ? "block" : "hidden"}`}
             >
               <div className="flex items-center gap-3 px-4 py-3">
                 <div className="relative aspect-square w-10 rounded-full">

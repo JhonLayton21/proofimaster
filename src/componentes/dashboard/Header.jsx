@@ -12,7 +12,7 @@ const Header = ({ userName, correoUsuario, isDrawerOpen, openDrawer }) => {
                 variant="text"
                 size="lg"
                 onClick={openDrawer}
-                className=" dark:bg-[#242424] hover:border-[#ff6f00] flex justify-center items-center"
+                className=" dark:bg-[#242424] hover:border-[#ff6f00] shadow-xl flex justify-center items-center"
             >
                 {isDrawerOpen ? (
                     <XMarkIcon className="h-8 w-8 stroke-2 text-[#ff6f00]" />
