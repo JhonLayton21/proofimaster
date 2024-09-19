@@ -46,9 +46,9 @@ const Informes = () => {
 
   const generatePDF = (tipoInforme) => {
     const doc = new jsPDF({
-      orientation: 'landscape', // Especificar orientación horizontal
-      unit: 'mm', // Unidad de medida (opcional, por defecto es 'mm')
-      format: 'a4' // Tamaño de página (opcional, por defecto es 'a4')
+      orientation: 'landscape',
+      unit: 'mm', 
+      format: 'a4'
     });
 
     switch (tipoInforme) {
@@ -143,11 +143,11 @@ const Informes = () => {
   );
 
   const ClientIcon = () => (
-    <FontAwesomeIcon icon={faTruckFast} className="fa-1x mx-4 text-orange-500" />
+    <FontAwesomeIcon icon={faAddressBook} className="fa-1x mx-4 text-orange-500" />
   );
 
   const ProviderIcon = () => (
-    <FontAwesomeIcon icon={faAddressBook} className="fa-1x mx-4 text-orange-500" />
+    <FontAwesomeIcon icon={faTruckFast} className="fa-1x mx-4 text-orange-500" />
   );
 
   return (
