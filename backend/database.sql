@@ -117,3 +117,11 @@ CREATE TABLE informes (
   ventas_por_periodo TEXT,
   ventas_por_producto TEXT
 );
+
+
+CREATE TABLE reportes (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(255),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ruta_archivo TEXT
+);
