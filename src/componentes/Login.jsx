@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Proofisillas2 from '../../public/proofisillas2.svg';
 import '../App.css';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 // CONFIGURACION SUPABASE
 import { supabase } from '../../supabase';
@@ -12,16 +13,22 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      const { user, password, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
+        options: {
+          redirectTo: 'https://proofimaster.vercel.app/'  // Asegúrate de que redirija correctamente
+        }
       });
-
+  
       if (error) throw error;
-      console.log('User logged in with Google:', user);
+      
+      // Si no hay error, navega manualmente a la página principal
+      navigate('/');
     } catch (error) {
       setError(error.message);
     }
   };
+  
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 h-full">

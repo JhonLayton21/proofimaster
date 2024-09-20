@@ -1,44 +1,52 @@
-//IMPORTACIONES BASICAS
+// IMPORTACIONES BÁSICAS
 import '../App.css';
 import Home from '../componentes/Home';
 import Login from '../componentes/Login';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-//CONFIGURACION FIREBASE
-import appFirebase from '../credenciales';
+// IMPORTAR SUPABASE
+import { supabase } from '../../supabase';
 
-import '../credenciales';
-
-//IMPORTACION MODULOS FIREBASE
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-
-//MODULOS ENRUTAMIENTO
+// MODULOS ENRUTAMIENTO
 import { Outlet } from 'react-router-dom';
 
-//INSTANCIA INICIAL AUTENTICACION
-const auth = getAuth(appFirebase);
-
 function App() {
+  const [usuario, setUsuario] = useState(null);
 
-  const [usuario, setUsuario] = useState(null)
+  // Verificar el estado de autenticación con Supabase
+  useEffect(() => {
+    const verificarSesion = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
 
-  onAuthStateChanged(auth, (usuarioFirebase) => {
-    if (usuarioFirebase) {
-      setUsuario(usuarioFirebase) //usuario correctamente autenticado
-    } else {
-      setUsuario(null) //usuario incorrectamente autenticado
-    }
-  });
-  
+      if (session?.user) {
+        setUsuario(session.user); // Usuario correctamente autenticado
+      } else {
+        setUsuario(null); // Usuario no autenticado
+      }
+    };
+
+    verificarSesion();
+
+    // Escuchar los cambios de autenticación
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUsuario(session?.user || null);
+    });
+
+    // Cleanup listener al desmontar el componente
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, []);
 
   return (
     <>
-      {usuario ? <Home correoUsuario = {usuario.email} /> : <Login/>} 
-      <div id='detail'>
+      {usuario ? <Home correoUsuario={usuario.email} /> : <Login />}
+      <div id="detail">
         <Outlet />
       </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
+
