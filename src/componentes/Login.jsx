@@ -14,9 +14,6 @@ const Login = () => {
     try {
       const { user, password, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options : {
-          redirectTo: 'https://proofimaster.vercel.app',
-        },
       });
 
       if (error) throw error;
