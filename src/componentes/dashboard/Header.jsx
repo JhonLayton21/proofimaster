@@ -7,12 +7,12 @@ import { faFileLines, faImagePortrait } from '@fortawesome/free-solid-svg-icons'
 
 const Header = ({ userName, correoUsuario, isDrawerOpen, openDrawer }) => {
     return (
-        <div className="flex flex-col md:flex-row items-center justify-between bg-white dark:bg-[#292929] p-4 rounded-md space-y-4 md:space-y-0 m-2 md:m-0 shadow-lg">
+        <div className="fixed top-0 left-0 w-full z-50 flex flex-col md:flex-row items-center justify-between bg-white dark:bg-[#292929] p-4 rounded-md space-y-4 md:space-y-0 m-2 md:m-0 shadow-lg">
             <IconButton
                 variant="text"
                 size="lg"
                 onClick={openDrawer}
-                className=" dark:bg-[#242424] hover:border-[#ff6f00] shadow-xl flex justify-center items-center"
+                className="dark:bg-[#242424] hover:border-[#ff6f00] shadow-xl flex justify-center items-center"
             >
                 {isDrawerOpen ? (
                     <XMarkIcon className="h-8 w-8 stroke-2 text-[#ff6f00]" />
