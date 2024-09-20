@@ -15,7 +15,7 @@ const Login = () => {
       const { user, password, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options : {
-          redirectTo: window.location.origin,
+          redirectTo: 'https://proofimaster.vercel.app',
         },
       });
 
@@ -38,7 +38,7 @@ const Login = () => {
         <button onClick={handleGoogleLogin} className="bg-[#DB4437] text-white font-bold py-2 px-4 rounded-xl w-full text-2xl btnLogin mt-4">
           Iniciar sesión con Google
         </button>
-        
+
         <div className="flex flex-col lg:flex-row justify-between w-full mt-4 text-xs dark:text-slate-50 text-[#757575] lg:mt-auto">
           <p className="mb-2 lg:mb-0">Eres cliente de Proofisillas? <a href="https://proofisillas.com/" className="text-[#E06D00] font-bold">Accede aquí</a></p>
           <p>Olvidaste tu contraseña? <a href="https://proofisillas.com/" className="text-[#E06D00] font-bold">Recupera tu cuenta aquí</a></p>
