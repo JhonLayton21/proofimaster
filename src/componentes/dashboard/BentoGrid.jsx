@@ -14,6 +14,12 @@ import Configuracion from "../bentoComponentes/Configuracion";
 import GraficoStock from "../bentoComponentes/GraficoStock";
 import GraficoTotalInventario from "../bentoComponentes/GraficoTotalInventario";
 import GraficoStockPorMarca from "../bentoComponentes/GraficoStockPorMarca";
+import VentasPorEstado from "../bentoComponentes/VentasPorEstado";
+import VentasPorMetodoPago from "../bentoComponentes/VentasPorMetodoPago";
+import VentasPorMetodoEnvio from "../bentoComponentes/VentasPorMetodoEnvio";
+import VentasPorCliente from "../bentoComponentes/VentasPorCliente";
+import ProductosPorProveedor from "../bentoComponentes/ProductosPorProveedor";
+import VentasPorFecha from "../bentoComponentes/VentasPorFecha";
 
 const BentoGrid = ({ correoUsuario }) => {
     const [productosConAlertas, setProductosConAlertas] = useState([]);
@@ -266,6 +272,18 @@ const BentoGrid = ({ correoUsuario }) => {
                 <GraficoTotalInventario />
 
                 <GraficoStockPorMarca />
+
+                <VentasPorEstado />
+
+                <VentasPorMetodoPago />
+
+                <VentasPorMetodoEnvio />
+
+                <VentasPorCliente />
+
+                <ProductosPorProveedor />
+
+                <VentasPorFecha />
 
                 <Proveedores proveedores={proveedores} />
 

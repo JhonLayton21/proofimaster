@@ -60,17 +60,17 @@ const GraficoTotalInventario = () => {
 
     return (
         <div className="bentoItem shadow-lg col-span-6 lg:col-span-4 flex flex-col lg:flex-row items-center justify-center relative rounded-lg overflow-hidden border p-4 alerta-stock">
-            {/* Título y subtítulo */}
-            <div className="mb-4 lg:mb-0 lg:mr-4">
-                <h2 className="text-lg font-semibold">Total inventario por productos</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Consulta el valor total en inventario por producto en COP</p>
-            </div>
-            {/* Gráfico de barras */}
-            <div className="w-full h-64 md:h-80 lg:h-96 flex justify-center items-center">
-                <Bar data={data} options={options} />
-            </div>
-            {/* Icono de enlace */}
             <Link to="/productos">
+                {/* Título y subtítulo */}
+                <div className="mb-4 lg:mb-0 lg:mr-4">
+                    <h2 className="text-lg font-semibold">Total inventario por productos</h2>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Consulta el valor total en inventario por producto en COP</p>
+                </div>
+                {/* Gráfico de barras */}
+                <div className="w-full h-64 md:h-80 lg:h-96 flex justify-center items-center">
+                    <Bar data={data} options={options} />
+                </div>
+                {/* Icono de enlace */}
                 <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
             </Link>
         </div>

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Pie } from 'react-chartjs-2';
+import { CategoryScale } from 'chart.js';
 import { Chart as ChartJS } from 'chart.js/auto';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 
-const GraficoStockPorMarca = () => {
+const ProductosPorProveedor = ({ }) => {
     const [productos, setProductos] = useState([]);
 
     useEffect(() => {
-        // Obtener productos directamente con el nombre de la marca
         fetch('http://localhost:5000/productos')
             .then((response) => response.json())
             .then((data) => {
@@ -18,43 +18,24 @@ const GraficoStockPorMarca = () => {
             .catch((error) => console.error('Error trayendo los productos:', error));
     }, []);
 
-    // Agrupar stock por marca
-    const stockPorMarca = {};
-    productos.forEach((producto) => {
-        const marca = producto.marca; // Usamos directamente el campo "marca"
-        if (!stockPorMarca[marca]) {
-            stockPorMarca[marca] = 0;
-        }
-        stockPorMarca[marca] += producto.stock;
-    });
+    //Datos a mostrar en el grafico
+    const productosProveedorConteo = productos.reduce((acc, producto) => {
+        acc[producto.proveedor] = (acc[producto.proveedor] || 0) + 1;
+        return acc;
+    }, {});
 
-    // Nombres de las marcas y el stock asociado
-    const nombresMarcas = Object.keys(stockPorMarca);
-    const stockPorMarcaData = Object.values(stockPorMarca);
+    const nombresProveedores = Object.keys(productosProveedorConteo);
+    const ProductosPorProveedor = Object.values(productosProveedorConteo);
 
-    // Gráfico de torta
+    //Grafico
     const data = {
-        labels: nombresMarcas,
+        labels: nombresProveedores,
         datasets: [
             {
-                label: 'Stock por marca',
-                data: stockPorMarcaData,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',
-                ],
+                label: 'Proveedores',
+                data: ProductosPorProveedor,
+                backgroundColor: 'rgba(255, 60, 130, 0.2)', // Color de las barras
+                borderColor: 'rgba(255, 60, 130, 1)', // Color de los bordes
                 borderWidth: 1,
             },
         ],
@@ -67,17 +48,23 @@ const GraficoStockPorMarca = () => {
                 position: 'top',
             },
         },
+        scales: {
+            y: {
+                beginAtZero: true,
+            },
+        },
     };
+
 
     return (
         <div className="bentoItem shadow-lg col-span-6 lg:col-span-4 flex flex-col lg:flex-row items-center justify-center relative rounded-lg overflow-hidden border p-4 alerta-stock">
-            <Link to="/productos">
+            <Link to="/ventas">
                 {/* Título y subtítulo */}
                 <div className="mb-4 lg:mb-0 lg:mr-4">
-                    <h2 className="text-lg font-semibold">Stock por Marca</h2>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Consulta el stock de productos por cada marca</p>
+                    <h2 className="text-lg font-semibold">Productos por Proveedor</h2>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Consulta los proveedores principales</p>
                 </div>
-                {/* Gráfico de torta */}
+                {/* Gráfico de barras */}
                 <div className="w-full flex justify-center items-center">
                     <Pie data={data} options={options} />
                 </div>
@@ -88,4 +75,4 @@ const GraficoStockPorMarca = () => {
     );
 };
 
-export default GraficoStockPorMarca;
+export default ProductosPorProveedor;

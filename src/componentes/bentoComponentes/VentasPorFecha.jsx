@@ -6,33 +6,36 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 
-
-const GraficoStock = ({ }) => {
-    const [productos, setProductos] = useState([]);
+const VentasPorFecha = ({ }) => {
+    const [ventas, setVentas] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:5000/productos')
+        fetch('http://localhost:5000/ventas')
             .then((response) => response.json())
             .then((data) => {
-                setProductos(data);
+                setVentas(data);
             })
-            .catch((error) => console.error('Error trayendo los productos:', error));
+            .catch((error) => console.error('Error trayendo las ventas:', error));
     }, []);
 
     //Datos a mostrar en el grafico
-    const nombresProductos = productos.map((producto) => producto.nombre);
-    const stockProductos = productos.map((producto) => producto.stock);
+    const fechasConteo = ventas.reduce((acc, venta) => {
+        acc[venta.fecha_venta] = (acc[venta.fecha_venta] || 0) + 1;
+        return acc;
+    }, {});
 
+    const fechasVentas = Object.keys(fechasConteo);
+    const VentasPorFecha = Object.values(fechasConteo);
 
     //Grafico
     const data = {
-        labels: nombresProductos,
+        labels: fechasVentas,
         datasets: [
             {
-                label: 'Stock',
-                data: stockProductos,
-                backgroundColor: 'rgba(255, 159, 64, 0.2)', // Color de las barras
-                borderColor: 'rgba(255, 159, 64, 1)', // Color de los bordes
+                label: 'Fechas',
+                data: VentasPorFecha,
+                backgroundColor: 'rgba(255, 0, 0, 0.2)', // Color de las barras
+                borderColor: 'rgba(255, 0, 0, 1)', // Color de los bordes
                 borderWidth: 1,
             },
         ],
@@ -55,11 +58,11 @@ const GraficoStock = ({ }) => {
 
     return (
         <div className="bentoItem shadow-lg col-span-6 lg:col-span-4 flex flex-col lg:flex-row items-center justify-center relative rounded-lg overflow-hidden border p-4 alerta-stock">
-            <Link to="/productos">
+            <Link to="/ventas">
                 {/* Título y subtítulo */}
                 <div className="mb-4 lg:mb-0 lg:mr-4">
-                    <h2 className="text-lg font-semibold">Stock por producto</h2>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Consulta la cantidad de stock de cada producto</p>
+                    <h2 className="text-lg font-semibold">Ventas por fecha</h2>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Consulta fechas de las ventas</p>
                 </div>
                 {/* Gráfico de barras */}
                 <div className="w-full flex justify-center items-center">
@@ -72,4 +75,4 @@ const GraficoStock = ({ }) => {
     );
 };
 
-export default GraficoStock;
+export default VentasPorFecha;
