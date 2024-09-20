@@ -11,6 +11,9 @@ import Clientes from "../bentoComponentes/Clientes";
 import Usuarios from "../bentoComponentes/Usuarios";
 import Documentacion from "../bentoComponentes/Documentacion";
 import Configuracion from "../bentoComponentes/Configuracion";
+import GraficoStock from "../bentoComponentes/GraficoStock";
+import GraficoTotalInventario from "../bentoComponentes/GraficoTotalInventario";
+import GraficoStockPorMarca from "../bentoComponentes/GraficoStockPorMarca";
 
 const BentoGrid = ({ correoUsuario }) => {
     const [productosConAlertas, setProductosConAlertas] = useState([]);
@@ -257,6 +260,12 @@ const BentoGrid = ({ correoUsuario }) => {
                 <DatosVentas displayedCantidadVentas={displayedCantidadVentas} displayedTotalVentas={displayedTotalVentas} />
 
                 <AlertasStock productosConAlertas={productosConAlertas} />
+
+                <GraficoStock />
+
+                <GraficoTotalInventario />
+
+                <GraficoStockPorMarca />
 
                 <Proveedores proveedores={proveedores} />
 

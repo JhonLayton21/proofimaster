@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const Usuarios = ({ }) => {
     return (
-        <div className="bentoItem shadow-lg col-span-6 lg:col-span-4 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 alerta-stock">
+        <div className="bentoItem shadow-lg col-span-6 lg:col-span-4 relative rounded-lg overflow-hidden border p-4 alerta-stock">
             <h2 className="text-lg font-">Usuarios activos</h2>
             <div className="flex flex-col justify-center h-full">
                 <div className="flex items-center gap-3 py-3 border-b border-gray-300">

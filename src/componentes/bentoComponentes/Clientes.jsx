@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const Clientes = ({ clientes }) => {
     return (
-        <div className="bentoItem shadow-lg col-span-6 lg:col-span-3 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 flex flex-col items-center justify-center min-h-[400px] alerta-stock">
+        <div className="bentoItem shadow-lg col-span-6 lg:col-span-3 relative rounded-lg overflow-hidden border p-4 flex flex-col items-center justify-center min-h-[400px] alerta-stock">
             <h2 className="text-lg font-bold mb-2">Clientes</h2>
             {clientes.length === 0 ? (
                 <p className="text-sm text-gray-500">No hay clientes disponibles</p>

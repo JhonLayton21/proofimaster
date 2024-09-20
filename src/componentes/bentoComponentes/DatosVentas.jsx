@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const DatosVentas = ({ displayedTotalVentas, displayedCantidadVentas }) => {
     return (
-        <div className="bentoItem shadow-lg col-span-6 lg:col-span-3 row-span-1 lg:row-span-2 relative rounded-lg overflow-hidden border p-4 alerta-stock">
+        <div className="bentoItem shadow-lg col-span-6 lg:col-span-3 relative rounded-lg overflow-hidden border p-4 alerta-stock">
             <h2 className="text-lg font-bold mb-6">Datos de ventas</h2>
             <div className="grid grid-cols-2 gap-2">
                 <div className="col-span-2 border border-gray-400 p-2 rounded-lg mb-2">
