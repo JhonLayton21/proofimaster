@@ -6,7 +6,7 @@ import TablaGenerica from "../componentesTablasDatos/TablaGenerica";
 import ModalEditar from "../componentesTablasDatos/ModalEditar";
 import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
-import { supabase } from '../../supabase';
+import { supabase } from '../../../supabase';
 
 const auth = getAuth(appFirebase);
 
