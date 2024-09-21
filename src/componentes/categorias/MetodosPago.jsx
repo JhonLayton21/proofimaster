@@ -6,6 +6,7 @@ import TablaGenerica from "../componentesTablasDatos/TablaGenerica";
 import ModalEditar from "../componentesTablasDatos/ModalEditar";
 import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
+import { supabase } from '../../../supabase';
 
 const auth = getAuth(appFirebase);
 
@@ -23,8 +24,13 @@ const MetodosPago = () => {
     }, []);
 
     const fetchData = async () => {
-        const response = await fetch('http://localhost:5000/metodo_pago');
-        const data = await response.json();
+        const { data, error } = await supabase
+                .from('metodo_pago')  
+                .select('*');  
+
+            if (error) {
+                throw error;
+            }
         setColumnas(Object.keys(data[0]));
         setDatos(data);
     };
@@ -44,7 +50,14 @@ const MetodosPago = () => {
     // Funcion eliminar
     const handleDelete = async (id) => {
         try {
-            await fetch(`http://localhost:5000/metodo_pago/${id}`, { method: 'DELETE' });
+            const { error } = await supabase
+                .from('metodo_pago')  
+                .delete()
+                .eq('id', id);  
+
+            if (error) {
+                throw error;
+            }
             fetchData();
             showAlert('Método de pago eliminado exitosamente', 'delete');
         } catch (error) {

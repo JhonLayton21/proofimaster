@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { format } from 'date-fns';
+import { supabase } from '../../../supabase';
 
 const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, disabledFields, endpoint }) => {
     const [formData, setFormData] = useState({});
@@ -11,7 +12,7 @@ const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, d
     
             setFormData({
                 ...initialData,
-                fecha_entrada: fechaEntradaFormateada
+                ...(initialData.fecha_entrada && { fecha_entrada: fechaEntradaFormateada })
             });
         }
     }, [initialData]);
@@ -27,25 +28,22 @@ const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, d
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         const { id, ...dataToUpdate } = formData;
-
+    
         try {
-            const response = await fetch(`http://localhost:5000/${endpoint}/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dataToUpdate),
-            });
-
-            if (!response.ok) {
+            const { data, error } = await supabase
+                .from(endpoint) 
+                .update(dataToUpdate) 
+                .eq('id', id); 
+    
+            if (error) {
                 throw new Error('Error al actualizar el item');
             }
 
-            const updatedItem = await response.json();
-            onSubmit(updatedItem);
+            onSubmit(data[0]); 
             onClose();
+            console.log("Cliente editado")
         } catch (error) {
             console.error("Error: ", error);
         }

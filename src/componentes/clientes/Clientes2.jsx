@@ -20,18 +20,16 @@ const Clientes = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [tiposClientes, setTiposClientes] = useState([]);
 
-    // Ejecuta las funciones cuando el componente se monta
     useEffect(() => {
         fetchData();
         fetchTipoClientes();
     }, []);
 
-    // Función para obtener tipos de clientes desde Supabase
     const fetchTipoClientes = async () => {
         try {
             const { data, error } = await supabase
-                .from('tipo_clientes')  // Nombre de la tabla
-                .select('*');  // Selecciona todas las columnas
+                .from('tipo_clientes')  
+                .select('*');  
 
             if (error) {
                 throw error;
@@ -42,51 +40,53 @@ const Clientes = () => {
         }
     };
 
-    // Función para obtener clientes desde Supabase
     const fetchData = async () => {
         try {
             const { data, error } = await supabase
-                .from('clientes')  // Nombre de la tabla
-                .select('*');  // Selecciona todas las columnas
+                .from('clientes')  
+                .select(` 
+                    id, 
+                    nombre_cliente,
+                    direccion_cliente,
+                    email_cliente,
+                    telefono_cliente,
+                    tipo_clientes(tipo)
+                `);  
 
             if (error) {
                 throw error;
             }
-            setColumnas(Object.keys(data[0]));  // Asume que los datos tienen al menos una fila
+            setColumnas(Object.keys(data[0]));  
             setDatos(data);
         } catch (error) {
             console.error('Error al obtener los clientes:', error);
         }
     };
 
-    // Función para mostrar alertas
     const showAlert = (message, type = 'info') => {
         setAlertMessage({ message, type });
         setTimeout(() => setAlertMessage(''), 3000);
     };
 
-    // Manejador para abrir el modal de agregar
     const handleAdd = () => setIsAddModalOpen(true);
 
-    // Manejador para abrir el modal de editar
     const handleEdit = (item) => {
         setEditingItem(item);
         setIsEditModalOpen(true);
     };
 
-    // Función para eliminar un cliente en Supabase
     const handleDelete = async (id) => {
         try {
             const { error } = await supabase
-                .from('clientes')  // Nombre de la tabla
+                .from('clientes')  
                 .delete()
-                .eq('id', id);  // Condición de eliminación por ID
+                .eq('id', id);  
 
             if (error) {
                 throw error;
             }
 
-            fetchData();  // Refresca los datos después de eliminar
+            fetchData();  
             showAlert('Cliente eliminado exitosamente', 'delete');
         } catch (error) {
             console.error('Error al eliminar el cliente:', error);

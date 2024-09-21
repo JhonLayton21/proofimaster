@@ -6,6 +6,7 @@ import TablaGenerica from "../componentesTablasDatos/TablaGenerica";
 import ModalEditar from "../componentesTablasDatos/ModalEditar";
 import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
+import { supabase } from '../../../supabase';
 
 const auth = getAuth(appFirebase);
 
@@ -30,8 +31,13 @@ const Productos2 = () => {
 
     const fetchReferenciasProductos = async () => {
         try {
-            const response = await fetch('http://localhost:5000/referencias_productos');
-            const data = await response.json();
+            const { data, error } = await supabase
+                .from('referencias_productos')  
+                .select('*');  
+
+            if (error) {
+                throw error;
+            }
             setReferenciasProductos(data);
         } catch (error) {
             console.error('Error al obtener las referencias de los productos:', error);
@@ -40,8 +46,13 @@ const Productos2 = () => {
 
     const fetchMarcasProductos = async () => {
         try {
-            const response = await fetch('http://localhost:5000/marcas_productos');
-            const data = await response.json();
+            const { data, error } = await supabase
+                .from('marcas_productos')  
+                .select('*');  
+
+            if (error) {
+                throw error;
+            }
             setMarcasProductos(data);
         } catch (error) {
             console.error('Error al obtener las marcas de los productos:', error);
@@ -50,8 +61,13 @@ const Productos2 = () => {
 
     const fetchProveedorProductos = async () => {
         try {
-            const response = await fetch('http://localhost:5000/proveedores');
-            const data = await response.json();
+            const { data, error } = await supabase
+                .from('proveedores')  
+                .select('*');  
+
+            if (error) {
+                throw error;
+            }
             setProveedorProductos(data);
         } catch (error) {
             console.error('Error al obtener el proveedor del producto:', error);
@@ -60,10 +76,28 @@ const Productos2 = () => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch('http://localhost:5000/productos');
-            const data = await response.json();
+            const { data, error } = await supabase
+                .from('productos')  
+                .select(`
+                    id,
+                    nombre,
+                    descripcion,
+                    fecha_entrada,
+                    nivel_minimo_stock,
+                    precio_compra,
+                    precio_venta,
+                    stock,
+                    marcas_productos(nombre),
+                    proveedores(nombre_proveedor),
+                    referencias_productos(codigo)
+                `); 
+
+            if (error) {
+                throw error;
+            }
             setColumnas(Object.keys(data[0]));
             setDatos(data);
+            console.log("PRODUCTOS")
         } catch (error) {
             console.error('Error al obtener los productos:', error);
         }

@@ -6,6 +6,7 @@ import TablaGenerica from "../componentesTablasDatos/TablaGenerica";
 import ModalEditar from "../componentesTablasDatos/ModalEditar";
 import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
+import { supabase } from '../../../supabase';
 
 const auth = getAuth(appFirebase);
 
@@ -26,9 +27,15 @@ const Proveedores2 = () => {
 
     const fetchMetodosPago = async () => {
         try {
-            const response = await fetch('http://localhost:5000/metodo_pago');
-            const data = await response.json();
+            const { data, error } = await supabase
+                .from('metodo_pago')  
+                .select('*');  
+
+            if (error) {
+                throw error;
+            }
             setMetodosPago(data);
+            console.log("PROVEEDORES")
         } catch (error) {
             console.error('Error al obtener los metodos de pago:', error);
         }
@@ -36,9 +43,22 @@ const Proveedores2 = () => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch('http://localhost:5000/proveedores');
-            const data = await response.json();
-            setColumnas(Object.keys(data[0]));
+            const { data, error } = await supabase
+                .from('proveedores')  
+                .select(`
+                    id, 
+                    contacto_proveedor,
+                    direccion_proveedor,
+                    email_proveedor,
+                    nombre_proveedor,
+                    telefono_proveedor,
+                    metodo_pago(metodo)
+                `);  
+
+            if (error) {
+                throw error;
+            }
+            setColumnas(Object.keys(data[0]));  
             setDatos(data);
         } catch (error) {
             console.error('Error al obtener los proveedores:', error);
@@ -59,8 +79,16 @@ const Proveedores2 = () => {
 
     const handleDelete = async (id) => {
         try {
-            await fetch(`http://localhost:5000/proveedores/${id}`, { method: 'DELETE' });
-            fetchData();
+            const { error } = await supabase
+                .from('proveedores')  
+                .delete()
+                .eq('id', id);  
+
+            if (error) {
+                throw error;
+            }
+
+            fetchData();  
             showAlert('Proveedor eliminado exitosamente', 'delete');
         } catch (error) {
             console.error('Error al eliminar el proveedor:', error);

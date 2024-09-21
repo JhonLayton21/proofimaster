@@ -6,6 +6,7 @@ import TablaGenerica from "../componentesTablasDatos/TablaGenerica";
 import ModalEditar from "../componentesTablasDatos/ModalEditar";
 import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
+import { supabase } from '../../../supabase';
 
 const auth = getAuth(appFirebase);
 
@@ -20,8 +21,13 @@ const EstadosVenta = () => {
 
     // DATOS ESTADOS VENTA
     const fetchData = async () => {
-        const response = await fetch('http://localhost:5000/estado_venta');
-        const data = await response.json();
+        const { data, error } = await supabase
+                .from('estado_venta')  
+                .select('*');  
+
+            if (error) {
+                throw error;
+            }
         setColumnas(Object.keys(data[0]));
         setDatos(data);
     };
@@ -47,7 +53,14 @@ const EstadosVenta = () => {
     // Funcion eliminar
     const handleDelete = async (id) => {
         try {
-            await fetch(`http://localhost:5000/estado_venta/${id}`, { method: 'DELETE' });
+            const { error } = await supabase
+                .from('estado_venta')  
+                .delete()
+                .eq('id', id);  
+
+            if (error) {
+                throw error;
+            }
             fetchData();
             showAlert('Método de pago eliminado exitosamente', 'delete');
         } catch (error) {

@@ -9,6 +9,7 @@ import TablaGenerica from "../componentesTablasDatos/TablaGenerica";
 import ModalEditar from "../componentesTablasDatos/ModalEditar";
 import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
+import { supabase } from '../../../supabase';
 
 const auth = getAuth(appFirebase);
 
@@ -37,8 +38,24 @@ const Ventas2 = () => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch('http://localhost:5000/ventas');
-            const data = await response.json();
+            const { data, error } = await supabase
+                .from('ventas')  
+                .select(`
+                    id,
+                    clientes(nombre_cliente),
+                    fecha_venta,
+                    estado_venta(estado),
+                    metodo_pago(metodo),
+                    descuento_venta,
+                    nota_venta,
+                    metodo_envio_venta(metodo),
+                    subtotal,
+                    total
+                `);  
+
+            if (error) {
+                throw error;
+            }
             setColumnas(Object.keys(data[0]));
             setDatos(data);
         } catch (error) {
@@ -48,8 +65,13 @@ const Ventas2 = () => {
 
     const fetchTipoClientes = async () => {
         try {
-            const response = await fetch('http://localhost:5000/tipo_clientes');
-            const data = await response.json();
+            const { data, error } = await supabase
+                .from('tipo_clientes')  
+                .select('*');  
+
+            if (error) {
+                throw error;
+            }
             setTipoClientes(data);
         } catch (error) {
             console.error('Error al obtener los tipos de clientes:', error);
@@ -58,8 +80,13 @@ const Ventas2 = () => {
 
     const fetchEstadoVentas = async () => {
         try {
-            const response = await fetch('http://localhost:5000/estado_venta');
-            const data = await response.json();
+            const { data, error } = await supabase
+                .from('estado_venta')  
+                .select('*');  
+
+            if (error) {
+                throw error;
+            }
             setEstadoVentas(data);
         } catch (error) {
             console.error('Error al obtener los estados de venta:', error);
@@ -68,8 +95,13 @@ const Ventas2 = () => {
 
     const fetchMetodoPago = async () => {
         try {
-            const response = await fetch('http://localhost:5000/metodo_pago');
-            const data = await response.json();
+            const { data, error } = await supabase
+                .from('metodo_pago')  
+                .select('*');  
+
+            if (error) {
+                throw error;
+            }
             setMetodoPago(data);
         } catch (error) {
             console.error('Error al obtener los métodos de pago:', error);
@@ -78,8 +110,13 @@ const Ventas2 = () => {
 
     const fetchMetodoEnvio = async () => {
         try {
-            const response = await fetch('http://localhost:5000/metodo_envio_venta');
-            const data = await response.json();
+            const { data, error } = await supabase
+                .from('metodo_envio_venta')  
+                .select('*');  
+
+            if (error) {
+                throw error;
+            }
             setMetodoEnvio(data);
         } catch (error) {
             console.error('Error al obtener los métodos de envío:', error);
@@ -100,7 +137,14 @@ const Ventas2 = () => {
 
     const handleDelete = async (id) => {
         try {
-            await fetch(`http://localhost:5000/ventas/${id}`, { method: 'DELETE' });
+            const { error } = await supabase
+                .from('ventas')  
+                .delete()
+                .eq('id', id);  
+
+            if (error) {
+                throw error;
+            }
             fetchData();
             showAlert('Venta eliminada exitosamente', 'delete');
         } catch (error) {

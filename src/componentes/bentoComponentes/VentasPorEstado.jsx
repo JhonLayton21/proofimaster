@@ -5,17 +5,29 @@ import { Chart as ChartJS } from 'chart.js/auto';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import { supabase } from '../../../supabase';
 
 const VentasPorEstado = ({ }) => {
     const [ventas, setVentas] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:5000/ventas')
-            .then((response) => response.json())
-            .then((data) => {
+        const fetchVentas = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('ventas')
+                    .select('*');
+    
+                if (error) {
+                    throw error;
+                }
+    
                 setVentas(data);
-            })
-            .catch((error) => console.error('Error trayendo las ventas:', error));
+            } catch (error) {
+                console.error('Error trayendo las ventas:', error);
+            }
+        };
+    
+        fetchVentas();
     }, []);
 
     //Datos a mostrar en el grafico

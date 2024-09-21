@@ -5,19 +5,32 @@ import { Chart as ChartJS } from 'chart.js/auto';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import { supabase } from '../../../supabase';
 
 
 const GraficoStock = ({ }) => {
     const [productos, setProductos] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:5000/productos')
-            .then((response) => response.json())
-            .then((data) => {
+        const fetchProductos = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('productos')
+                    .select('*');
+    
+                if (error) {
+                    throw error;
+                }
+    
                 setProductos(data);
-            })
-            .catch((error) => console.error('Error trayendo los productos:', error));
+            } catch (error) {
+                console.error('Error trayendo los productos:', error);
+            }
+        };
+    
+        fetchProductos();
     }, []);
+    
 
     //Datos a mostrar en el grafico
     const nombresProductos = productos.map((producto) => producto.nombre);
