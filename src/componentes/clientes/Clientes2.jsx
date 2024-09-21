@@ -6,6 +6,7 @@ import TablaGenerica from "../componentesTablasDatos/TablaGenerica";
 import ModalEditar from "../componentesTablasDatos/ModalEditar";
 import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
+import { supabase } from '../../supabase';
 
 const auth = getAuth(appFirebase);
 
@@ -19,48 +20,73 @@ const Clientes = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [tiposClientes, setTiposClientes] = useState([]);
 
+    // Ejecuta las funciones cuando el componente se monta
     useEffect(() => {
         fetchData();
         fetchTipoClientes();
     }, []);
 
+    // Función para obtener tipos de clientes desde Supabase
     const fetchTipoClientes = async () => {
         try {
-            const response = await fetch('http://localhost:5000/tipo_clientes');
-            const data = await response.json();
+            const { data, error } = await supabase
+                .from('tipo_clientes')  // Nombre de la tabla
+                .select('*');  // Selecciona todas las columnas
+
+            if (error) {
+                throw error;
+            }
             setTiposClientes(data);
         } catch (error) {
             console.error('Error al obtener los tipos de cliente:', error);
         }
     };
 
+    // Función para obtener clientes desde Supabase
     const fetchData = async () => {
         try {
-            const response = await fetch('http://localhost:5000/clientes');
-            const data = await response.json();
-            setColumnas(Object.keys(data[0]));
+            const { data, error } = await supabase
+                .from('clientes')  // Nombre de la tabla
+                .select('*');  // Selecciona todas las columnas
+
+            if (error) {
+                throw error;
+            }
+            setColumnas(Object.keys(data[0]));  // Asume que los datos tienen al menos una fila
             setDatos(data);
         } catch (error) {
             console.error('Error al obtener los clientes:', error);
         }
     };
 
+    // Función para mostrar alertas
     const showAlert = (message, type = 'info') => {
         setAlertMessage({ message, type });
         setTimeout(() => setAlertMessage(''), 3000);
     };
 
+    // Manejador para abrir el modal de agregar
     const handleAdd = () => setIsAddModalOpen(true);
 
+    // Manejador para abrir el modal de editar
     const handleEdit = (item) => {
         setEditingItem(item);
         setIsEditModalOpen(true);
     };
 
+    // Función para eliminar un cliente en Supabase
     const handleDelete = async (id) => {
         try {
-            await fetch(`http://localhost:5000/clientes/${id}`, { method: 'DELETE' });
-            fetchData();
+            const { error } = await supabase
+                .from('clientes')  // Nombre de la tabla
+                .delete()
+                .eq('id', id);  // Condición de eliminación por ID
+
+            if (error) {
+                throw error;
+            }
+
+            fetchData();  // Refresca los datos después de eliminar
             showAlert('Cliente eliminado exitosamente', 'delete');
         } catch (error) {
             console.error('Error al eliminar el cliente:', error);

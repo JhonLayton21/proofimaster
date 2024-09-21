@@ -11,12 +11,17 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
 
+  const redirectTo = process.env.NODE_ENV === 'development' 
+  ? 'http://localhost:5173/' 
+  : 'https://proofimaster.vercel.app/';
+
+
   const handleGoogleLogin = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'https://proofimaster.vercel.app/'  // Asegúrate de que redirija correctamente
+          redirectTo
         }
       });
   
