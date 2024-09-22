@@ -10,12 +10,16 @@ const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, d
             const fechaEntrada = initialData.fecha_entrada ? new Date(initialData.fecha_entrada) : null;
             const fechaEntradaFormateada = fechaEntrada ? format(fechaEntrada, 'yyyy-MM-dd') : '';
     
+            // Mostrar el valor de fecha en consola
+            console.log("Fecha de entrada:", fechaEntradaFormateada);
+    
             setFormData({
                 ...initialData,
                 ...(initialData.fecha_entrada && { fecha_entrada: fechaEntradaFormateada })
             });
         }
     }, [initialData]);
+    
     
 
     const handleChange = (e) => {
@@ -31,23 +35,33 @@ const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, d
     
         const { id, ...dataToUpdate } = formData;
     
+        // Convertir tipo_cliente_id a un número
+        if (dataToUpdate.tipo_cliente_id) {
+            dataToUpdate.tipo_cliente_id = parseInt(dataToUpdate.tipo_cliente_id, 10);
+        }
+    
+        // Mostrar los datos que se van a enviar
+        console.log("Datos a actualizar:", { id, ...dataToUpdate });
+    
         try {
             const { data, error } = await supabase
-                .from(endpoint) 
-                .update(dataToUpdate) 
-                .eq('id', id); 
+                .from(endpoint)
+                .update(dataToUpdate)
+                .eq('id', id);
     
             if (error) {
                 throw new Error('Error al actualizar el item');
             }
-
-            onSubmit(data[0]); 
+    
+            onSubmit(data[0]);
             onClose();
-            console.log("Cliente editado")
+            console.log("Cliente editado");
         } catch (error) {
             console.error("Error: ", error);
         }
     };
+    
+    
 
     return (
         <>

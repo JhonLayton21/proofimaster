@@ -50,7 +50,7 @@ const Clientes = () => {
                     direccion_cliente,
                     email_cliente,
                     telefono_cliente,
-                    tipo_clientes(tipo)
+                    tipo_clientes( id,tipo )
                 `);  
 
             if (error) {
@@ -60,6 +60,7 @@ const Clientes = () => {
             // configurar objeto tipo_clientes
             const clientesConTipoCliente = data.map(({ tipo_clientes, ...resto }) => ({
                 ...resto,
+                tipo_cliente_id: tipo_clientes.id,
                 tipo_cliente: tipo_clientes.tipo
             }));
 
