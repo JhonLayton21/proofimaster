@@ -21,7 +21,7 @@ const ProductosDestacados = ({ productosPrincipales }) => {
                         ) : (
                             productosPrincipales.map((producto) => (
                                 <li key={producto.id} className="py-3">
-                                    {producto.nombreProducto}
+                                    {producto.nombre} - {producto.fecha_entrada}
                                 </li>
                             ))
                         )}

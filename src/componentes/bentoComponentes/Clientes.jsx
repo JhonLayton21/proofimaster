@@ -15,7 +15,7 @@ const Clientes = ({ clientes }) => {
                             <FontAwesomeIcon icon={faAddressBook} className="text-slate-800 dark:text-slate-50 fa-xl" />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-slate-800 dark:text-white">{cliente.nombreCliente}</p>
+                            <p className="text-sm font-semibold text-slate-800 dark:text-white">{cliente.nombre_cliente}</p>
                         </div>
                     </div>
                 ))

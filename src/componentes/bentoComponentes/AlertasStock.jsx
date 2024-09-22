@@ -22,7 +22,7 @@ const AlertasStock = ({ productosConAlertas }) => {
                         ) : (
                             productosConAlertas.map((producto) => (
                                 <li key={producto.id} className="text-red-500">
-                                    {producto.nombreProducto} (Stock: {producto.stock}, Mínimo: {producto.nivelMinimoStock})
+                                    {producto.nombre} (Stock: {producto.stock}, Mínimo: {producto.nivel_minimo_stock})
                                 </li>
                             ))
                         )}

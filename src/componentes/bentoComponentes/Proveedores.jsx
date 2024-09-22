@@ -15,7 +15,7 @@ const Proveedores = ({ proveedores }) => {
                             <FontAwesomeIcon icon={faTruckFast} className="text-slate-800 dark:text-slate-50 fa-xl" />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-slate-800 dark:text-white">{proveedor.nombreProveedor}</p>
+                            <p className="text-sm font-semibold text-slate-800 dark:text-white">{proveedor.nombre_proveedor}</p>
                         </div>
                     </div>
                 ))

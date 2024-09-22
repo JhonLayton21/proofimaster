@@ -20,6 +20,7 @@ import VentasPorMetodoEnvio from "../bentoComponentes/VentasPorMetodoEnvio";
 import VentasPorCliente from "../bentoComponentes/VentasPorCliente";
 import ProductosPorProveedor from "../bentoComponentes/ProductosPorProveedor";
 import VentasPorFecha from "../bentoComponentes/VentasPorFecha";
+import { supabase } from '../../../supabase';
 
 const BentoGrid = ({ correoUsuario }) => {
     const [productosConAlertas, setProductosConAlertas] = useState([]);
@@ -38,6 +39,7 @@ const BentoGrid = ({ correoUsuario }) => {
     const [cantidadVentas, setCantidadVentas] = useState(0);
     const [displayedCantidadVentas, setDisplayedCantidadVentas] = useState(0);
     const [isAnimatingCantidadVentas, setIsAnimatingCantidadVentas] = useState(false);
+    const [usuariosActivos, setUsuariosActivos] = useState([]);
 
     useEffect(() => {
         const db = getFirestore();
@@ -49,92 +51,161 @@ const BentoGrid = ({ correoUsuario }) => {
         const ventasRef = collection(db, 'ventas');
 
         // Consulta para productos con alertas
-        const productosQuery = query(productosRef);
-        const unsubscribeProductos = onSnapshot(productosQuery, (querySnapshot) => {
+        const fetchProductosStock = async () => {
+            const { data, error } = await supabase
+            .from('productos')
+            .select('*');
+
+            if (error) {
+                console.error("Error mostrando productos");
+                return;
+            }
+
+            let totalStock = 0;
             const productos = [];
-            let totalStock = 0; // Variable para acumular el stock total
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const stock = Number(data.stock);
-                totalStock += stock; // Sumar el stock al total
-                const nivelMinimoStock = Number(data.nivelMinimoStock);
+
+            data.forEach(producto => {
+                const stock = Number(producto.stock);
+                totalStock += stock;
+
+                const nivelMinimoStock = Number(producto.nivel_minimo_stock);
                 if (stock < nivelMinimoStock) {
-                    productos.push({ id: doc.id, ...data });
+                    productos.push(producto);
                 }
             });
-            setProductosConAlertas(productos); // Actualizar el estado con los productos con alertas
-            setTotalProductos(totalStock); // Actualizar el estado con el stock total
-        });
+
+            setProductosConAlertas(productos);
+            setTotalProductos(totalStock);
+        };
+
+        fetchProductosStock();
 
         // Consulta para proveedores
-        const proveedoresQuery = query(proveedoresRef);
-        const unsubscribeProveedores = onSnapshot(proveedoresQuery, (querySnapshot) => {
-            const proveedoresList = [];
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                proveedoresList.push({ id: doc.id, ...data });
-            });
-            setProveedores(proveedoresList);
-        });
+        const fetchProveedores = async () => {
+            const { data, error } = await supabase
+                .from('proveedores')
+                .select('*')
+                .limit(3);
+
+            if (error) {
+                console.error("Error mostrando proveedores");
+            } else {
+                setProveedores(data);
+            }
+        };
+
+        fetchProveedores();
 
         // Consulta para clientes
-        const clientesQuery = query(clientesRef);
-        const unsubscribeClientes = onSnapshot(clientesQuery, (querySnapshot) => {
-            const clientesList = [];
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                clientesList.push({ id: doc.id, ...data });
-            });
-            setClientes(clientesList);
-        });
+        const fetchClientes = async () => {
+            const { data, error } = await supabase
+                .from('clientes')
+                .select('*')
+                .limit(3);
 
-        // Consulta para los últimos 3 productos agregados
-        const productosPrincipalesQuery = query(productosRef, orderBy("fechaEntradaProducto", "desc"), limit(4));
-        const unsubscribeProductosPrincipales = onSnapshot(productosPrincipalesQuery, (querySnapshot) => {
-            const productos = [];
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                productos.push({ id: doc.id, ...data });
-            });
-            setProductosPrincipales(productos);
-        });
+            if (error) {
+                console.error("Error mostrando clientes");
+            } else {
+                setClientes(data);
+            }
+        };
+
+        fetchClientes();
+
+        // Consulta para los últimos productos agregados
+        const fetchProductos = async () => {
+            const { data, error } = await supabase
+                .from('productos')
+                .select('*')
+                .order('fecha_entrada', { ascending: false })
+                .limit(3);
+
+            if (error) {
+                console.error("Error mostrando productos");
+            } else {
+                setProductosPrincipales(data);
+            }
+        };
+
+        fetchProductos();
 
         // Consulta total ventas y cantidad ventas
-        const ventasQuery = query(ventasRef);
-        const unsubscribeVentas = onSnapshot(ventasQuery, (querySnapshot) => {
+        const fetchDatosVentas = async () => {
+            const { data, error } = await supabase
+                .from('ventas')
+                .select('*');
+            if (error) {
+                console.error("Error mostrando ventas");
+                return;
+            }
+
             let total = 0;
             let count = 0;
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                total += Number(data.total);
+
+            data.forEach(venta => {
+                total += Number(venta.total);
                 count += 1;
             });
+
             setTotalVentas(total);
             setCantidadVentas(count);
-        });
+        };
+
+        fetchDatosVentas();
 
         // Consulta para la suma de todos los precios de compra de los productos
-        const valorStockQuery = query(productosRef);
-        const unsubscribeValorStock = onSnapshot(valorStockQuery, (querySnapshot) => {
+        const fetchDatosProductos = async () => {
+            const { data, error } = await supabase
+                .from('productos')
+                .select('*');
+
+            if (error) {
+                console.error("Error mostrando productos");
+                return;
+            }
+
             let totalValorStock = 0;
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const precioCompra = Number(data.precioCompraProducto);
-                totalValorStock += precioCompra; // Solo sumar el precioCompraProducto
+
+            data.forEach(producto => {
+                const precioCompra = Number(producto.precio_compra);
+                totalValorStock += precioCompra;
             });
+
             setValorStock(totalValorStock);
-        });
-
-
-
-        return () => {
-            unsubscribeValorStock();
-            unsubscribeProductos();
-            unsubscribeProveedores();
-            unsubscribeClientes();
-            unsubscribeProductosPrincipales();
-            unsubscribeVentas();
         };
+
+        fetchDatosProductos();
+
+        // Consulta para usuarios activos
+        const fetchUsuarios = async () => {
+            const { data, error } = await supabase
+                .from('auth.users')
+                .select('id, email, last_sign_in_at');
+
+            if (error) {
+                console.error("Error mostrando usuarios");
+                return;
+            }
+
+            // Filtrar usuarios por los que han iniciado sesión recientemente o están activos
+            const usuariosRecientes = data.filter(user => {
+                const lastSignIn = new Date(user.last_sign_in_at);
+                const now = new Date();
+
+                // Por ejemplo, definir "activo" como si el usuario ha iniciado sesión en los últimos 7 días
+                const sevenDaysAgo = new Date(now.setDate(now.getDate() - 7));
+                return lastSignIn >= sevenDaysAgo;
+            });
+
+            setUsuariosActivos(usuariosRecientes);
+        };
+
+        fetchUsuarios();
+
+        // Actualizar cada 1 minuto para mantener la lista de usuarios activos actualizada
+        const intervalId = setInterval(fetchUsuarios, 60000);
+
+        return () => clearInterval(intervalId);
     }, []);
 
     useEffect(() => {
@@ -291,7 +362,7 @@ const BentoGrid = ({ correoUsuario }) => {
 
                 <Clientes clientes={clientes} />
 
-                <Usuarios />
+                <Usuarios usuariosActivos={usuariosActivos} />
 
                 <Documentacion />
 
