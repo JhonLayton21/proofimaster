@@ -44,7 +44,7 @@ const Proveedores2 = () => {
     const fetchData = async () => {
         try {
             const { data, error } = await supabase
-                .from('proveedores')  
+                .from('proveedores')
                 .select(`
                     id, 
                     contacto_proveedor,
@@ -52,18 +52,27 @@ const Proveedores2 = () => {
                     email_proveedor,
                     nombre_proveedor,
                     telefono_proveedor,
-                    metodo_pago(metodo)
-                `);  
-
+                    metodo_pago (metodo)
+                `);
+    
             if (error) {
                 throw error;
             }
-            setColumnas(Object.keys(data[0]));  
-            setDatos(data);
+    
+            // Usamos desestructuración directamente dentro del map para aplanar el objeto 'metodo_pago'
+            const proveedoresConMetodo = data.map(({ metodo_pago, ...resto }) => ({
+                ...resto,
+                metodo_pago: metodo_pago.metodo
+            }));
+    
+            // Actualizamos el estado con los datos ya modificados
+            setColumnas(Object.keys(proveedoresConMetodo[0]));  
+            setDatos(proveedoresConMetodo);
         } catch (error) {
             console.error('Error al obtener los proveedores:', error);
         }
     };
+    
 
     const showAlert = (message, type = 'info') => {
         setAlertMessage({ message, type });

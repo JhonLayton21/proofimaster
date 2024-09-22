@@ -8,6 +8,7 @@ import autoTable from 'jspdf-autotable'
 import { generatePDFBase, generateTable, addFooter } from './PDFUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAddressBook, faList, faCartShopping, faChartSimple, faHouse, faMoneyCheckDollar, faRightFromBracket, faTruckFast } from '@fortawesome/free-solid-svg-icons';
+import { supabase } from '../../../supabase';
 
 const auth = getAuth(appFirebase);
 
@@ -18,23 +19,34 @@ const Informes = () => {
   const [proveedores, setProveedores] = useState([]);
 
   useEffect(() => {
-    // Traer datos de los endpoints
     const fetchData = async () => {
       try {
-        const resProductos = await fetch('http://localhost:5000/productos');
-        const dataProductos = await resProductos.json();
+        // Obtener productos desde la tabla "productos"
+        const { data: dataProductos, error: errorProductos } = await supabase
+          .from('productos')
+          .select('*, marcas_productos (nombre), referencias_productos (codigo), proveedores (nombre_proveedor)');
+        if (errorProductos) throw errorProductos;
         setProductos(dataProductos);
 
-        const resVentas = await fetch('http://localhost:5000/ventas');
-        const dataVentas = await resVentas.json();
+        // Obtener ventas desde la tabla "ventas"
+        const { data: dataVentas, error: errorVentas } = await supabase
+          .from('ventas')
+          .select('*, clientes (nombre_cliente), estado_venta (estado), metodo_pago (metodo), metodo_envio_venta (metodo)');
+        if (errorVentas) throw errorVentas;
         setVentas(dataVentas);
 
-        const resClientes = await fetch('http://localhost:5000/clientes');
-        const dataClientes = await resClientes.json();
+        // Obtener clientes desde la tabla "clientes"
+        const { data: dataClientes, error: errorClientes } = await supabase
+          .from('clientes')
+          .select('*, tipo_clientes (tipo)');
+        if (errorClientes) throw errorClientes;
         setClientes(dataClientes);
 
-        const resProveedores = await fetch('http://localhost:5000/proveedores');
-        const dataProveedores = await resProveedores.json();
+        // Obtener proveedores desde la tabla "proveedores"
+        const { data: dataProveedores, error: errorProveedores } = await supabase
+          .from('proveedores')
+          .select('*, metodo_pago (metodo)');
+        if (errorProveedores) throw errorProveedores;
         setProveedores(dataProveedores);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -47,7 +59,7 @@ const Informes = () => {
   const generatePDF = (tipoInforme) => {
     const doc = new jsPDF({
       orientation: 'landscape',
-      unit: 'mm', 
+      unit: 'mm',
       format: 'a4'
     });
 
@@ -64,9 +76,9 @@ const Informes = () => {
           producto.precio_compra,
           producto.precio_venta,
           producto.stock,
-          producto.marca,
-          producto.proveedor,
-          producto.referencia
+          producto.marcas_productos.nombre,
+          producto.proveedores.nombre_proveedor,
+          producto.referencias_productos.codigo
         ]));
         break;
 
@@ -80,10 +92,10 @@ const Informes = () => {
           venta.nota_venta,
           venta.subtotal,
           venta.total,
-          venta.cliente,
-          venta.estado,
-          venta.metodo_pago,
-          venta.metodo_envio,
+          venta.clientes.nombre_cliente,
+          venta.estado_venta.estado,
+          venta.metodo_pago.metodo,
+          venta.metodo_envio_venta.metodo,
           venta.productos
         ]));
         break;
@@ -97,7 +109,7 @@ const Informes = () => {
           cliente.direccion_cliente,
           cliente.email_cliente,
           cliente.telefono_cliente,
-          cliente.tipo_cliente
+          cliente.tipo_clientes.tipo
         ]));
         break;
 
@@ -111,7 +123,7 @@ const Informes = () => {
           proveedor.direccion_proveedor,
           proveedor.email_proveedor,
           proveedor.telefono_proveedor,
-          proveedor.metodo_proveedor
+          proveedor.metodo_pago.metodo
         ]));
         break;
 
