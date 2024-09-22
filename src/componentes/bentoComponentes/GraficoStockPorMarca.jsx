@@ -14,13 +14,17 @@ const GraficoStockPorMarca = () => {
             try {
                 const { data, error } = await supabase
                     .from('productos')
-                    .select('*');
+                    .select('*, marcas_productos (nombre)');
     
                 if (error) {
                     throw error;
                 }
     
-                setProductos(data);
+                const marcaProductos = data.map(({ marcas_productos, ...resto }) => ({
+                    ...resto,
+                    marca: marcas_productos.nombre
+                }));
+                setProductos(marcaProductos);
             } catch (error) {
                 console.error('Error trayendo los productos:', error);
             }

@@ -15,13 +15,17 @@ const VentasPorMetodoEnvio = ({ }) => {
             try {
                 const { data, error } = await supabase
                     .from('ventas')
-                    .select('*');
+                    .select('*, metodo_envio_venta (metodo)');
     
                 if (error) {
                     throw error;
                 }
     
-                setVentas(data);
+                const metodoEnvio = data.map(({ metodo_envio_venta, ...resto }) => ({
+                    ...resto,
+                    metodo: metodo_envio_venta.metodo
+                }));
+                setVentas(metodoEnvio);
             } catch (error) {
                 console.error('Error trayendo las ventas:', error);
             }
@@ -32,7 +36,7 @@ const VentasPorMetodoEnvio = ({ }) => {
 
     //Datos a mostrar en el grafico
     const metodoEnvioConteo = ventas.reduce((acc, venta) => {
-        acc[venta.metodo_envio] = (acc[venta.metodo_envio] || 0) + 1;
+        acc[venta.metodo] = (acc[venta.metodo] || 0) + 1;
         return acc;
     }, {});
 

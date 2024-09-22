@@ -15,13 +15,17 @@ const ProductosPorProveedor = ({ }) => {
             try {
                 const { data, error } = await supabase
                     .from('productos')
-                    .select('*');
+                    .select('*, proveedores (nombre_proveedor)');
     
                 if (error) {
                     throw error;
                 }
     
-                setProductos(data);
+                const productosProveedor = data.map(({ proveedores, ...resto }) => ({
+                    ...resto,
+                    proveedor: proveedores.nombre_proveedor
+                }));
+                setProductos(productosProveedor);
             } catch (error) {
                 console.error('Error trayendo los productos:', error);
             }

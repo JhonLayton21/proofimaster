@@ -15,13 +15,17 @@ const VentasPorEstado = ({ }) => {
             try {
                 const { data, error } = await supabase
                     .from('ventas')
-                    .select('*');
+                    .select('*, estado_venta (estado)');
     
                 if (error) {
                     throw error;
                 }
     
-                setVentas(data);
+                const estadoVenta = data.map(({ estado_venta, ...resto }) => ({
+                    ...resto,
+                    estado: estado_venta.estado
+                }));
+                setVentas(estadoVenta);
             } catch (error) {
                 console.error('Error trayendo las ventas:', error);
             }

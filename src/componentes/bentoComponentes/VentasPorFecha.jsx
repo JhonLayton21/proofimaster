@@ -46,8 +46,8 @@ const VentasPorFecha = ({ }) => {
             {
                 label: 'Fechas',
                 data: VentasPorFecha,
-                backgroundColor: 'rgba(255, 0, 0, 0.2)', // Color de las barras
-                borderColor: 'rgba(255, 0, 0, 1)', // Color de los bordes
+                backgroundColor: 'rgba(230, 200, 200, 0.2)', // Color de las barras
+                borderColor: 'rgba(230, 200, 200, 1)', // Color de los bordes
                 borderWidth: 1,
             },
         ],

@@ -15,13 +15,17 @@ const VentasPorCliente = ({ }) => {
             try {
                 const { data, error } = await supabase
                     .from('ventas')
-                    .select('*');
+                    .select('*, clientes (nombre_cliente)');
     
                 if (error) {
                     throw error;
                 }
     
-                setVentas(data);
+                const ventaCliente = data.map(({ clientes, ...resto }) => ({
+                    ...resto,
+                    cliente: clientes.nombre_cliente
+                }));
+                setVentas(ventaCliente);
             } catch (error) {
                 console.error('Error trayendo las ventas:', error);
             }

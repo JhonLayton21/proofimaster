@@ -15,13 +15,17 @@ const VentasPorMetodoPago = ({ }) => {
             try {
                 const { data, error } = await supabase
                     .from('ventas')
-                    .select('*');
+                    .select('*, metodo_pago (metodo)');
     
                 if (error) {
                     throw error;
                 }
     
-                setVentas(data);
+                const metodoPago = data.map(({ metodo_pago, ...resto }) => ({
+                    ...resto,
+                    metodo: metodo_pago.metodo
+                }));
+                setVentas(metodoPago);
             } catch (error) {
                 console.error('Error trayendo las ventas:', error);
             }
@@ -32,7 +36,7 @@ const VentasPorMetodoPago = ({ }) => {
 
     //Datos a mostrar en el grafico
     const metodoPagoConteo = ventas.reduce((acc, venta) => {
-        acc[venta.metodo_pago] = (acc[venta.metodo_pago] || 0) + 1;
+        acc[venta.metodo] = (acc[venta.metodo] || 0) + 1;
         return acc;
     }, {});
 
