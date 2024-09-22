@@ -56,8 +56,15 @@ const Clientes = () => {
             if (error) {
                 throw error;
             }
-            setColumnas(Object.keys(data[0]));  
-            setDatos(data);
+
+            // configurar objeto tipo_clientes
+            const clientesConTipoCliente = data.map(({ tipo_clientes, ...resto }) => ({
+                ...resto,
+                tipo_cliente: tipo_clientes.tipo
+            }));
+
+            setColumnas(Object.keys(clientesConTipoCliente[0]));  
+            setDatos(clientesConTipoCliente);
         } catch (error) {
             console.error('Error al obtener los clientes:', error);
         }

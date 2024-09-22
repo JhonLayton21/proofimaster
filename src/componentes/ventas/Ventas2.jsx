@@ -56,8 +56,17 @@ const Ventas2 = () => {
             if (error) {
                 throw error;
             }
-            setColumnas(Object.keys(data[0]));
-            setDatos(data);
+
+            const referenciasVentas = data.map(({ clientes, estado_venta, metodo_pago, metodo_envio_venta, ...resto }) => ({
+                ...resto,
+                cliente: clientes.nombre_cliente,
+                estado_venta: estado_venta.estado,
+                metodo_pago: metodo_pago.metodo,
+                metodo_envio_venta: metodo_envio_venta.metodo
+            }));
+
+            setColumnas(Object.keys(referenciasVentas[0]));
+            setDatos(referenciasVentas);
         } catch (error) {
             console.error('Error al obtener las ventas:', error);
         }

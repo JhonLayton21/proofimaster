@@ -95,8 +95,16 @@ const Productos2 = () => {
             if (error) {
                 throw error;
             }
-            setColumnas(Object.keys(data[0]));
-            setDatos(data);
+
+            const referenciasProductos = data.map(({ marcas_productos, proveedores, referencias_productos, ...resto }) => ({
+                ...resto,
+                marca_productos: marcas_productos.nombre,
+                proveedor: proveedores.nombre_proveedor,
+                referencia_productos: referencias_productos.codigo
+            }));
+
+            setColumnas(Object.keys(referenciasProductos[0]));
+            setDatos(referenciasProductos);
             console.log("PRODUCTOS")
         } catch (error) {
             console.error('Error al obtener los productos:', error);
