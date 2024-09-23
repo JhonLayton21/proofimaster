@@ -17,6 +17,7 @@ const Informes = () => {
   const [ventas, setVentas] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [proveedores, setProveedores] = useState([]);
+  const [informes, setInformes] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,7 +57,7 @@ const Informes = () => {
     fetchData();
   }, []);
 
-  const generatePDF = (tipoInforme) => {
+  const generatePDF = async (tipoInforme) => {
     const doc = new jsPDF({
       orientation: 'landscape',
       unit: 'mm',
@@ -134,8 +135,78 @@ const Informes = () => {
 
     // Añadir pie de página y guardar el PDF
     addFooter(doc);
-    doc.save(`Informe_${tipoInforme}.pdf`);
+
+    // Convertir el PDF a Blob
+    const pdfBlob = doc.output('blob');
+    const fileName = `Informe_${tipoInforme}_${Date.now()}.pdf`;
+
+    // Subir el PDF a Supabase Storage
+    // Subir el PDF a Supabase Storage
+    const { data, error } = await supabase.storage
+      .from('informes')
+      .upload(`informes/${fileName}`, pdfBlob);
+
+    if (error) {
+      console.error('Error uploading PDF:', error.message);
+      return;
+    }
+
+
+    // Obtener la URL del archivo subido
+    const fileUrl = supabase.storage.from('informes').getPublicUrl(`informes/${fileName}`).data.publicUrl;
+
+    // Guardar los metadatos del informe
+    await saveReportMetadata(fileName, fileUrl);
   };
+
+  const uploadToSupabase = async (file, fileName) => {
+    const { data, error } = await supabase.storage
+      .from('informes')
+      .upload(`informes/${fileName}`, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    if (error) {
+      console.error('Error uploading file:', error.message);
+    } else {
+      console.log('File uploaded successfully:', data);
+    }
+  };
+
+
+  const saveReportMetadata = async (fileName, fileUrl) => {
+    const { data, error } = await supabase
+      .from('informes')
+      .insert([{ nombre: fileName, url_archivo: fileUrl, fecha_creacion: new Date() }]);
+
+    if (error) {
+      console.error('Error saving report metadata:', error.message);
+    } else {
+      console.log('Report metadata saved:', data);
+    }
+  };
+
+  useEffect(() => {
+    const fetchInformes = async () => {
+      const { data, error } = await supabase
+        .from('informes')
+        .select('*')
+        .order('fecha_creacion', { ascending: false })
+        .limit(4);
+
+      if (error) {
+        console.error('Error fetching reports:', error.message);
+      } else {
+        setInformes(data);
+      }
+    };
+
+    fetchInformes();
+  }, []);
+
+
+
 
   const userEmail = auth.currentUser ? auth.currentUser.email : '';
 
@@ -183,22 +254,20 @@ const Informes = () => {
           {/* TABLA INFORMES */}
           <div className="bg-white dark:bg-[#292929] p-6 rounded-lg shadow-lg">
             <h2 className="text-xl font-bold mb-4 text-slate-800 dark:text-slate-50">INFORMES CREADOS</h2>
-            {createdReports.map((report, index) => (
+            {informes.map((informe, index) => (
               <div key={index} className="flex items-center justify-between py-2 border-b last:border-b-0">
                 <div className="flex-1">
-                  <h2 className="text-sm font-semibold text-[#757575]">{report.name}</h2>
+                  <h2 className="text-sm font-semibold text-[#757575]">{informe.nombre}</h2>
                 </div>
                 <div className="flex space-x-2">
-                  <button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-green-500 text-white hover:bg-green-600">
-                    .XLSX
-                  </button>
-                  <button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-red-500 text-white hover:bg-red-600">
-                    .PDF
-                  </button>
+                  <a href={informe.url_archivo} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-red-500 text-white hover:bg-red-600">
+                    Descargar PDF
+                  </a>
                 </div>
               </div>
             ))}
           </div>
+
         </div>
       </div>
     </MenuPrincipal>
