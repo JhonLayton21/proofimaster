@@ -15,6 +15,7 @@ import MetodosPago from './componentes/categorias/MetodosPago.jsx';
 import ReferenciaProductos from './componentes/categorias/ReferenciaProductos.jsx';
 import TipoClientes from './componentes/categorias/TipoClientes.jsx';
 import Informes from './componentes/informes/Informes.jsx';
+import SolicitarPermiso from './componentes/SolicitarPermiso.jsx';
 import './index.css';
 import './credenciales.js';
 
@@ -26,6 +27,11 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: 'solicitar-permiso',
+    element: <SolicitarPermiso />,
     errorElement: <ErrorPage />,
   },
   {

@@ -10,10 +10,11 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const redirectTo = process.env.NODE_ENV === 'development' 
-  ? 'http://localhost:5173/' 
-  : 'https://proofimaster.vercel.app/';
+  const redirectTo = process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5173/'
+    : 'https://proofimaster.vercel.app/';
 
 
   const handleGoogleLogin = async () => {
@@ -24,16 +25,34 @@ const Login = () => {
           redirectTo
         }
       });
-  
+
       if (error) throw error;
-      
+
+      // Verificar si el usuario tiene permisos en la base de datos
+      const { data: permisos, error: permisosError } = await supabase
+        .from('permisos_usuarios')
+        .select('rol')
+        .eq('user_id', user.id)
+        .single();
+
+      if (permisosError || !permisos) {
+        // Si no tiene permisos o no existe el usuario en la tabla de permisos, redirigir a la página de solicitud de permisos
+        navigate('/solicitar-permiso');
+      } else if (permisos.rol === 'admin') {
+        navigate('/configuracion'); // Redirigir a configuración si es admin
+      } else if (permisos.rol === 'user') {
+        navigate('/'); // Redirigir al Home si es un usuario con permisos
+      } else {
+        navigate('/solicitar-permiso'); // Si no tiene permisos, redirigir a la página de solicitud
+      }
+
       // Si no hay error, navega manualmente a la página principal
       navigate('/');
     } catch (error) {
       setError(error.message);
     }
   };
-  
+
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 h-full">
@@ -47,6 +66,8 @@ const Login = () => {
         <button onClick={handleGoogleLogin} className="bg-[#DB4437] text-white font-bold py-2 px-4 rounded-xl w-full text-2xl btnLogin mt-4">
           Iniciar sesión con Google
         </button>
+
+        {error && <p className="text-red-500 mt-4">{error}</p>}
 
         <div className="flex flex-col lg:flex-row justify-between w-full mt-4 text-xs dark:text-slate-50 text-[#757575] lg:mt-auto">
           <p className="mb-2 lg:mb-0">Eres cliente de Proofisillas? <a href="https://proofisillas.com/" className="text-[#E06D00] font-bold">Accede aquí</a></p>

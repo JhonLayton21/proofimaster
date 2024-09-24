@@ -20,6 +20,7 @@ function App() {
 
       if (session?.user) {
         setUsuario(session.user); // Usuario correctamente autenticado
+        console.log(session.user);
       } else {
         setUsuario(null); // Usuario no autenticado
       }
