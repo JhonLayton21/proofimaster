@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { getFirestore, collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import MenuPrincipal from "../MenuPrincipal";
 import ProductosDestacados from "../bentoComponentes/ProductosDestacados";
-import DatosProductos from "../bentoComponentes/DatosProductos";
 import DatosPrincipales from "../bentoComponentes/DatosPrincipales";
 import AlertasStock from "../bentoComponentes/AlertasStock";
 import Proveedores from "../bentoComponentes/Proveedores";
