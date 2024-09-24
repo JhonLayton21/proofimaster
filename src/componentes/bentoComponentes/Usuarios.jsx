@@ -22,7 +22,6 @@ const Usuarios = ({ usuariosActivos }) => {
                     </div>
                 ))}
             </div>
-            <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
         </div>
     );
 };

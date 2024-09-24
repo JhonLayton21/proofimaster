@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 const Clientes = ({ clientes }) => {
     return (
         <div className="bentoItem shadow-lg col-span-6 lg:col-span-3 relative rounded-lg overflow-hidden border p-4 flex flex-col items-center justify-center min-h-[400px] alerta-stock">
+            <Link to="/clientes" className="w-full flex flex-col items-center">
             <h2 className="text-lg font-bold mb-2">Clientes</h2>
             {clientes.length === 0 ? (
                 <p className="text-sm text-gray-500">No hay clientes disponibles</p>
@@ -20,7 +21,6 @@ const Clientes = ({ clientes }) => {
                     </div>
                 ))
             )}
-            <Link to="/clientes">
                 <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
             </Link>
         </div>

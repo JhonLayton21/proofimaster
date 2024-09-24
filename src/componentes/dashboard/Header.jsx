@@ -7,7 +7,7 @@ import { faFileLines, faImagePortrait } from '@fortawesome/free-solid-svg-icons'
 
 const Header = ({ userName, correoUsuario, isDrawerOpen, openDrawer }) => {
     return (
-        <div className="fixed top-0 left-0 w-full z-50 flex flex-col md:flex-row items-center justify-between bg-white dark:bg-[#292929] p-4 rounded-md space-y-4 md:space-y-0 m-2 md:m-0 shadow-lg">
+        <div className="top-0 left-0 w-full z-50 flex flex-col md:flex-row items-center justify-between bg-white dark:bg-[#292929] p-4 rounded-md space-y-4 md:space-y-0 m-2 md:m-0 shadow-lg">
             <IconButton
                 variant="text"
                 size="lg"

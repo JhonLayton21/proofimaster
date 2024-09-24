@@ -73,12 +73,12 @@ const ProductosPorProveedor = ({ }) => {
 
 
     return (
-        <div className="bentoItem shadow-lg col-span-6 lg:col-span-4 flex flex-col lg:flex-row items-center justify-center relative rounded-lg overflow-hidden border p-4 alerta-stock">
+        <div className="bentoItem shadow-lg col-span-12 lg:col-span-4 flex flex-col lg:flex-row items-center justify-center relative rounded-lg overflow-hidden border p-4 alerta-stock">
             <Link to="/ventas">
                 {/* Título y subtítulo */}
-                <div className="mb-4 lg:mb-0 lg:mr-4">
-                    <h2 className="text-lg font-semibold">Productos por Proveedor</h2>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Consulta los proveedores principales</p>
+                <div className="m-4 lg:mb-0 lg:mr-4">
+                    <h2 className="pl-6 sm:pl-0 text-lg font-semibold">Productos por Proveedor</h2>
+                    <p className="pl-6 sm:pl-0 text-sm text-gray-600 dark:text-gray-400">Consulta los proveedores principales</p>
                 </div>
                 {/* Gráfico de barras */}
                 <div className="w-full flex justify-center items-center">

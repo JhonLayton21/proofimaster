@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 const Proveedores = ({ proveedores }) => {
     return (
         <div className="bentoItem shadow-lg col-span-6 lg:col-span-3 relative rounded-lg overflow-hidden border p-4 flex flex-col items-center justify-center alerta-stock">
+            <Link to="/proveedores" className="w-full flex flex-col items-center">
             <h2 className="text-lg font-bold mb-2">Proveedores</h2>
             {proveedores.length === 0 ? (
                 <p className="text-sm text-gray-500">No hay proveedores disponibles</p>
@@ -20,7 +21,6 @@ const Proveedores = ({ proveedores }) => {
                     </div>
                 ))
             )}
-            <Link to="/proveedores">
                 <FontAwesomeIcon icon={faArrowRight} className="absolute bottom-2 right-4 text-gray-500 transform transition-transform hover:scale-125 hover:translate-x-2 cursor-pointer hover:text-orange-500" />
             </Link>
         </div>

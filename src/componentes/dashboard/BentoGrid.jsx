@@ -3,7 +3,7 @@ import { getFirestore, collection, query, orderBy, limit, onSnapshot } from "fir
 import MenuPrincipal from "../MenuPrincipal";
 import ProductosDestacados from "../bentoComponentes/ProductosDestacados";
 import DatosProductos from "../bentoComponentes/DatosProductos";
-import DatosVentas from "../bentoComponentes/DatosVentas";
+import DatosPrincipales from "../bentoComponentes/DatosPrincipales";
 import AlertasStock from "../bentoComponentes/AlertasStock";
 import Proveedores from "../bentoComponentes/Proveedores";
 import Informes from "../bentoComponentes/Informes";
@@ -330,11 +330,9 @@ const BentoGrid = ({ correoUsuario }) => {
         <MenuPrincipal correoUsuario={correoUsuario} titulo={"MENÚ PRINCIPAL"} subtitulo={"Ingresa rápidamente al contenido en Proofimaster"}>
             <div className="grid grid-cols-12 grid-rows-6 gap-2 mt-8 px-2 md:px-0">
 
+                <DatosPrincipales displayedCantidadVentas={displayedCantidadVentas} displayedTotalVentas={displayedTotalVentas}  displayedStockValue={displayedStockValue} displayedTotal={displayedTotal} />
+
                 <ProductosDestacados productosPrincipales={productosPrincipales} />
-
-                <DatosProductos displayedStockValue={displayedStockValue} displayedTotal={displayedTotal} />
-
-                <DatosVentas displayedCantidadVentas={displayedCantidadVentas} displayedTotalVentas={displayedTotalVentas} />
 
                 <AlertasStock productosConAlertas={productosConAlertas} />
 
@@ -358,9 +356,9 @@ const BentoGrid = ({ correoUsuario }) => {
 
                 <Proveedores proveedores={proveedores} />
 
-                <Informes />
-
                 <Clientes clientes={clientes} />
+
+                <Informes />
 
                 <Usuarios usuariosActivos={usuariosActivos} />
 
