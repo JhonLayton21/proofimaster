@@ -3,7 +3,8 @@ import { faCircleUser, faFileLines, faBell, faEnvelope, faGear, faImagePortrait 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getAuth, signOut } from 'firebase/auth';
 import appFirebase from '../../credenciales';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from '../../../supabase';
 
 const auth = getAuth(appFirebase);
 
@@ -11,6 +12,18 @@ export default function MenuCuenta() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.log(error);
+    }
+
+    navigate("/login");
+  };
+
 
   const trigger = useRef(null);
   const dropdown = useRef(null);
@@ -134,7 +147,7 @@ export default function MenuCuenta() {
 
               </div>
               <div>
-                <button className="flex w-full items-center justify-between px-4 py-2.5 text-sm font-medium text-dark hover:bg-gray-50 dark:text-[#ff6f00] dark:bg-[#292929] dark:hover:bg-white/5 border-none" onClick={() => signOut(auth)}>
+                <button className="flex w-full items-center justify-between px-4 py-2.5 text-sm font-medium text-dark hover:bg-gray-50 dark:text-[#ff6f00] dark:bg-[#292929] dark:hover:bg-white/5 border-none" onClick={logout}>
                   Cerrar sesión
                 </button>
               </div>

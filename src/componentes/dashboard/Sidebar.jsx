@@ -1,15 +1,27 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAddressBook, faList, faCartShopping, faChartSimple, faHouse, faMoneyCheckDollar, faRightFromBracket, faTruckFast } from '@fortawesome/free-solid-svg-icons';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { Accordion, AccordionHeader, AccordionBody, List, ListItem, ListItemPrefix, Drawer, Card, Typography } from "@material-tailwind/react";
 import { getAuth, signOut } from 'firebase/auth';
 import appFirebase from '../../credenciales';
+import { supabase } from '../../../supabase';
 
 
 const Sidebar = ({ isDrawerOpen, closeDrawer, open, handleOpen, isActive }) => {
     const auth = getAuth(appFirebase);
+    const navigate = useNavigate();
+
+    const logout = async () => {
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+            console.log(error);
+        }
+
+        navigate("/login");
+    };
 
     return (
         <Drawer open={isDrawerOpen} onClose={closeDrawer} className="z-10 bg-[#ff6f00] drawer-open overflow-auto rounded-xl">
@@ -122,7 +134,7 @@ const Sidebar = ({ isDrawerOpen, closeDrawer, open, handleOpen, isActive }) => {
 
                 {/* FOOTER */}
                 <div className="flex justify-start border-t border-solid mt-auto p-4">
-                    <button className="btn-primary font-semibold text-xl text-left" onClick={() => signOut(auth)}>
+                    <button className="btn-primary font-semibold text-xl text-left" onClick={logout}>
                         <FontAwesomeIcon icon={faRightFromBracket} className="fa-1x mx-2" />
                         Cerrar sesión
                     </button>
