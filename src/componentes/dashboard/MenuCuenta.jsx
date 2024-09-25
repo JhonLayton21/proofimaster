@@ -1,19 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import { faCircleUser, faFileLines, faBell, faEnvelope, faGear, faImagePortrait } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { getAuth, signOut } from 'firebase/auth';
-import appFirebase from '../../credenciales';
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from '../../../supabase';
 
-const auth = getAuth(appFirebase);
-
 export default function MenuCuenta() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
+  const [userName, setUserName] = useState("Usuario");
+  const [userEmail, setUserEmail] = useState("No disponible");
+  const [userRole, setUserRole] = useState("Cargando..."); 
   const navigate = useNavigate();
+  const trigger = useRef(null);
+  const dropdown = useRef(null);
 
+  // Cerrar sesión
   const logout = async () => {
     const { error } = await supabase.auth.signOut();
 
@@ -24,17 +24,36 @@ export default function MenuCuenta() {
     navigate("/login");
   };
 
-
-  const trigger = useRef(null);
-  const dropdown = useRef(null);
-
-  // Obtener información del usuario al montar el componente
+  // Obtener información del usuario y su rol desde Supabase
   useEffect(() => {
-    const user = auth.currentUser;
-    if (user) {
-      setUserName(user.displayName || "Usuario"); // Usa el nombre del usuario o "Usuario" si no está disponible
-      setUserEmail(user.email || "No disponible"); // Usa el correo del usuario o "No disponible" si no está disponible
-    }
+    const fetchUserInfo = async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      
+      if (error) {
+        console.error("Error al obtener el usuario:", error);
+        return;
+      }
+
+      if (user) {
+        setUserName(user.user_metadata?.name || "Usuario");
+        setUserEmail(user.email || "No disponible");
+
+        // Obtener el rol desde la tabla permisos_usuarios
+        const { data: userRoleData, error: roleError } = await supabase
+          .from('permisos_usuarios')
+          .select('rol')
+          .eq('user_id', user.id)  
+          .single();  
+
+        if (roleError) {
+          console.error("Error al obtener el rol:", roleError);
+        } else if (userRoleData) {
+          setUserRole(userRoleData.rol); 
+        }
+      }
+    };
+
+    fetchUserInfo();
   }, []);
 
   // Cerrar el menú desplegable al hacer clic fuera de él
@@ -109,6 +128,9 @@ export default function MenuCuenta() {
                   <p className="text-sm text-body-color text-[#757575] dark:text-dark-6">
                     {userEmail}
                   </p>
+                  <p className="text-sm text-body-color text-[#757575] dark:text-dark-6">
+                    Rol: {userRole}
+                  </p> 
                 </div>
               </div>
               <div>
@@ -117,13 +139,14 @@ export default function MenuCuenta() {
                   className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                 >
                   Ver perfil
-                  <FontAwesomeIcon icon={faImagePortrait} className="text-slate-800 dark:text-slate-50 fa-lg" /> </a>
+                  <FontAwesomeIcon icon={faImagePortrait} className="text-slate-800 dark:text-slate-50 fa-lg" />
+                </a>
                 <Link to="/configuracion"
-                  href="#0"
                   className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                 >
                   Configuración
-                  <FontAwesomeIcon icon={faGear} className="text-slate-800 dark:text-slate-50 fa-lg" /> </Link>
+                  <FontAwesomeIcon icon={faGear} className="text-slate-800 dark:text-slate-50 fa-lg" />
+                </Link>
               </div>
               <div>
                 <a
@@ -131,23 +154,25 @@ export default function MenuCuenta() {
                   className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                 >
                   Ir al correo
-                  <FontAwesomeIcon icon={faEnvelope} className="text-slate-800 dark:text-slate-50 fa-lg cursor-pointer" /> </a>
+                  <FontAwesomeIcon icon={faEnvelope} className="text-slate-800 dark:text-slate-50 fa-lg cursor-pointer" />
+                </a>
                 <a
                   href="#0"
                   className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                 >
                   Consultar alertas
-                  <FontAwesomeIcon icon={faBell} className="text-slate-800 dark:text-slate-50 fa-lg cursor-pointer" /> </a>
+                  <FontAwesomeIcon icon={faBell} className="text-slate-800 dark:text-slate-50 fa-lg cursor-pointer" />
+                </a>
                 <a
                   href="#0"
                   className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                 >
                   Documentación
-                  <FontAwesomeIcon icon={faFileLines} className="text-slate-800 dark:text-slate-50 fa-lg" /> </a>
-
+                  <FontAwesomeIcon icon={faFileLines} className="text-slate-800 dark:text-slate-50 fa-lg" />
+                </a>
               </div>
               <div>
-                <button className="flex w-full items-center justify-between px-4 py-2.5 text-sm font-medium text-dark hover:bg-gray-50 dark:text-[#ff6f00] dark:bg-[#292929] dark:hover:bg-white/5 border-none" onClick={logout}>
+                <button className="flex w-full rounded-none items-center justify-between px-4 py-2.5 text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5" onClick={logout}>
                   Cerrar sesión
                 </button>
               </div>
@@ -158,4 +183,5 @@ export default function MenuCuenta() {
     </section>
   );
 }
+
 
