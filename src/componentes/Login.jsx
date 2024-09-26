@@ -2,20 +2,34 @@ import React, { useState, useEffect } from 'react';
 import Proofisillas2 from '../../public/proofisillas2.svg';
 import '../App.css';
 import { Navigate, useNavigate } from 'react-router-dom';
-
-// CONFIGURACION SUPABASE
+import { useAuth } from '../UseAuth'; 
 import { supabase } from '../../supabase';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const { usuario, rol, loading } = useAuth(); // Desestructurar usuario y rol del contexto
   const navigate = useNavigate();
 
   const redirectTo = process.env.NODE_ENV === 'development'
     ? 'http://localhost:5173/'
     : 'https://proofimaster.vercel.app/';
 
+  useEffect(() => {
+    // Redirigir según el rol una vez que se haya verificado
+    if (!loading) {
+      if (usuario) {
+        if (rol === 'admin') {
+          navigate('/configuracion');
+        } else if (rol === 'user') {
+          navigate('/');
+        } else if (rol === 'sin_permiso') {
+          navigate('/solicitar-permiso');
+        } else {
+          navigate('/login');
+        }
+      }
+    }
+  }, [usuario, rol, loading, navigate]);
 
   const handleGoogleLogin = async () => {
     try {
@@ -27,32 +41,17 @@ const Login = () => {
       });
 
       if (error) throw error;
-
-      // Verificar si el usuario tiene permisos en la base de datos
-      const { data: permisos, error: permisosError } = await supabase
-        .from('permisos_usuarios')
-        .select('rol')
-        .eq('user_id', user.id)
-        .single();
-
-      if (permisosError || !permisos) {
-        // Si no tiene permisos o no existe el usuario en la tabla de permisos, redirigir a la página de solicitud de permisos
-        navigate('/solicitar-permiso');
-      } else if (permisos.rol === 'admin') {
-        navigate('/configuracion'); // Redirigir a configuración si es admin
-      } else if (permisos.rol === 'user') {
-        navigate('/'); // Redirigir al Home si es un usuario con permisos
-      } else {
-        navigate('/solicitar-permiso'); // Si no tiene permisos, redirigir a la página de solicitud
-      }
-
-      // Si no hay error, navega manualmente a la página principal
-      navigate('/');
+      
+      // No es necesario navegar manualmente aquí
     } catch (error) {
       setError(error.message);
     }
   };
 
+  // Si está cargando, no renderizar nada o mostrar un loader
+  if (loading) {
+    return <div>Cargando...</div>; // O algún spinner
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 h-full">
@@ -67,8 +66,6 @@ const Login = () => {
           Iniciar sesión con Google
         </button>
 
-        {error && <p className="text-red-500 mt-4">{error}</p>}
-
         <div className="flex flex-col lg:flex-row justify-between w-full mt-4 text-xs dark:text-slate-50 text-[#757575] lg:mt-auto">
           <p className="mb-2 lg:mb-0">Eres cliente de Proofisillas? <a href="https://proofisillas.com/" className="text-[#E06D00] font-bold">Accede aquí</a></p>
           <p>Olvidaste tu contraseña? <a href="https://proofisillas.com/" className="text-[#E06D00] font-bold">Recupera tu cuenta aquí</a></p>
@@ -79,6 +76,8 @@ const Login = () => {
 };
 
 export default Login;
+
+
 
 
 

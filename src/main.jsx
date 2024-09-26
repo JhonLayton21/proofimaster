@@ -4,7 +4,7 @@ import App from './rutas/App.jsx';
 import Login from './componentes/Login.jsx';
 import ErrorPage from './paginaError.jsx';
 import Configuracion from './componentes/Configuracion.jsx';
-import Ventas2 from './componentes//ventas/Ventas2.jsx';
+import Ventas2 from './componentes/ventas/Ventas2.jsx';
 import Clientes2 from './componentes/clientes/Clientes2.jsx';
 import Proveedores2 from './componentes/proveedores/Proveedores2.jsx';
 import Productos2 from './componentes/productos/Productos2.jsx';
@@ -18,11 +18,15 @@ import Informes from './componentes/informes/Informes.jsx';
 import SolicitarPermiso from './componentes/SolicitarPermiso.jsx';
 import './index.css';
 import './credenciales.js';
+import PrivateRoute from './componentes/PrivateRoute.jsx';
 
-//IMPORTACIONES PARA ENRUTAMIENTO
-import {createBrowserRouter, RouterProvider} from 'react-router-dom';
+// IMPORTAR ENRUTAMIENTO
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-//DEFINIR RUTAS PARA PAGINAS
+// IMPORTAR EL CONTEXTO DE AUTENTICACIÓN
+import { AuthProvider, useAuth } from './UseAuth.jsx';
+
+// DEFINIR RUTAS PARA PÁGINAS
 const router = createBrowserRouter([
   {
     path: '/',
@@ -41,56 +45,120 @@ const router = createBrowserRouter([
   },
   {
     path: 'configuracion',
-    element: <Configuracion />,
+    element: (
+      <PrivateRoute>
+        <Configuracion />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />,
   },
   {
     path: 'productos',
-    element: <Productos2 />,
+    element: ( 
+      <PrivateRoute>
+        <Productos2 />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />
   },
   {
     path: 'ventas',
-    element: <Ventas2 />,
+    element: (
+      <PrivateRoute>
+        <Ventas2 />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />,
   },
   {
     path: 'proveedores',
-    element: <Proveedores2 />,
+    element: (
+      <PrivateRoute>
+        <Proveedores2 />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />,
   },
   {
     path: 'clientes',
-    element: <Clientes2 />,
+    element: (
+      <PrivateRoute>
+        <Clientes2 />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />,
   },
   {
     path: 'metodos-pago',
-    element: <MetodosPago />,
+    element: (
+      <PrivateRoute>
+        <MetodosPago />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />,
   },
   {
     path: 'marca-productos',
-    element: <MarcaProductos />,
+    element: (
+      <PrivateRoute>
+        <MarcaProductos />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />,
   },
   {
     path: 'referencia-productos',
-    element: <ReferenciaProductos />,
+    element: (
+      <PrivateRoute>
+        <ReferenciaProductos />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />,
   },
   {
     path: 'tipo-clientes',
-    element: <TipoClientes />,
+    element: (
+      <PrivateRoute>
+        <TipoClientes />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />,
   },
   {
     path: 'estados-venta',
-    element: <EstadosVenta />,
+    element: (
+      <PrivateRoute>
+        <EstadosVenta />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />,
   },
   {
     path: 'metodo-envio-venta',
-    element: <MetodoEnvioVenta />,
+    element: (
+      <PrivateRoute>
+        <MetodoEnvioVenta />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />,
   },
   {
     path: 'informes',
-    element: <Informes />,
+    element: (
+      <PrivateRoute>
+        <Informes />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />,
   },
 ]);
 
+// ENVOLVER LA APLICACIÓN EN EL PROVEEDOR DE AUTENTICACIÓN
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>,
 );
+
