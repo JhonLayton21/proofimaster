@@ -32,7 +32,7 @@ const Informes = () => {
         // Obtener ventas desde la tabla "ventas"
         const { data: dataVentas, error: errorVentas } = await supabase
           .from('ventas')
-          .select('*, clientes (nombre_cliente), estado_venta (estado), metodo_pago (metodo), metodo_envio_venta (metodo)');
+          .select('*, clientes (nombre_cliente), estado_venta (estado), metodo_pago (metodo), metodo_envio_venta (metodo), venta_productos ( productos (nombre) )');
         if (errorVentas) throw errorVentas;
         setVentas(dataVentas);
 
@@ -97,7 +97,7 @@ const Informes = () => {
           venta.estado_venta.estado,
           venta.metodo_pago.metodo,
           venta.metodo_envio_venta.metodo,
-          venta.productos
+          venta.venta_productos.map(vp => vp.productos.nombre).join(', ')
         ]));
         break;
 
@@ -148,6 +148,12 @@ const Informes = () => {
 
     // Guardar los metadatos del informe
     await saveReportMetadata(fileName, fileUrl);
+
+    // Generar el PDF y obtener el blob URL
+    const pdfBlobUrl = doc.output('bloburl');
+
+    // Abrir el PDF en una nueva pestaña
+    window.open(pdfBlobUrl, '_blank');
   };
 
   const uploadToSupabase = async (file, fileName) => {
