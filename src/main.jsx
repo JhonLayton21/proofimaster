@@ -144,11 +144,7 @@ const router = createBrowserRouter([
   },
   {
     path: 'informes',
-    element: (
-      <PrivateRoute>
-        <Informes />
-      </PrivateRoute>
-    ),
+    element: <Informes />,
     errorElement: <ErrorPage />,
   },
 ]);

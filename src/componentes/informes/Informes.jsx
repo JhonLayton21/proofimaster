@@ -140,17 +140,8 @@ const Informes = () => {
     const pdfBlob = doc.output('blob');
     const fileName = `Informe_${tipoInforme}_${Date.now()}.pdf`;
 
-    // Subir el PDF a Supabase Storage
-    // Subir el PDF a Supabase Storage
-    const { data, error } = await supabase.storage
-      .from('informes')
-      .upload(`informes/${fileName}`, pdfBlob);
-
-    if (error) {
-      console.error('Error uploading PDF:', error.message);
-      return;
-    }
-
+    // Utilizar la función uploadToSupabase
+    await uploadToSupabase(pdfBlob, fileName);
 
     // Obtener la URL del archivo subido
     const fileUrl = supabase.storage.from('informes').getPublicUrl(`informes/${fileName}`).data.publicUrl;
