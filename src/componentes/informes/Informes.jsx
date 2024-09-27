@@ -144,7 +144,7 @@ const Informes = () => {
     await uploadToSupabase(pdfBlob, fileName);
 
     // Obtener la URL del archivo subido
-    const fileUrl = supabase.storage.from('informes').getPublicUrl(`informes/${fileName}`).data.publicUrl;
+    const fileUrl = supabase.storage.from('informes').getPublicUrl(fileName).data.publicUrl;
 
     // Guardar los metadatos del informe
     await saveReportMetadata(fileName, fileUrl);
