@@ -22,24 +22,15 @@ const Ventas2 = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
 
-    // Estados para los datos de las listas desplegables
-    const [tipoClientes, setTipoClientes] = useState([]);
-    const [estadoVentas, setEstadoVentas] = useState([]);
-    const [metodoPago, setMetodoPago] = useState([]);
-    const [metodoEnvio, setMetodoEnvio] = useState([]);
-
     useEffect(() => {
         fetchData();
-        fetchTipoClientes();
-        fetchEstadoVentas();
-        fetchMetodoPago();
-        fetchMetodoEnvio();
     }, []);
 
+    // Info base de datos
     const fetchData = async () => {
         try {
             const { data, error } = await supabase
-                .from('ventas')  
+                .from('ventas')
                 .select(`
                     id,
                     clientes(nombre_cliente),
@@ -50,19 +41,23 @@ const Ventas2 = () => {
                     nota_venta,
                     metodo_envio_venta(metodo),
                     subtotal,
-                    total
-                `);  
+                    total,
+                    venta_productos (
+                        productos (nombre)
+                    )
+                `);
 
             if (error) {
                 throw error;
             }
 
-            const referenciasVentas = data.map(({ clientes, estado_venta, metodo_pago, metodo_envio_venta, ...resto }) => ({
+            const referenciasVentas = data.map(({ clientes, estado_venta, metodo_pago, metodo_envio_venta, venta_productos, ...resto }) => ({
                 ...resto,
                 cliente: clientes.nombre_cliente,
                 estado_venta: estado_venta.estado,
                 metodo_pago: metodo_pago.metodo,
-                metodo_envio_venta: metodo_envio_venta.metodo
+                metodo_envio_venta: metodo_envio_venta.metodo,
+                productos: venta_productos.map(vp => vp.productos.nombre).join(', ')
             }));
 
             setColumnas(Object.keys(referenciasVentas[0]));
@@ -72,84 +67,28 @@ const Ventas2 = () => {
         }
     };
 
-    const fetchTipoClientes = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('tipo_clientes')  
-                .select('*');  
-
-            if (error) {
-                throw error;
-            }
-            setTipoClientes(data);
-        } catch (error) {
-            console.error('Error al obtener los tipos de clientes:', error);
-        }
-    };
-
-    const fetchEstadoVentas = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('estado_venta')  
-                .select('*');  
-
-            if (error) {
-                throw error;
-            }
-            setEstadoVentas(data);
-        } catch (error) {
-            console.error('Error al obtener los estados de venta:', error);
-        }
-    };
-
-    const fetchMetodoPago = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('metodo_pago')  
-                .select('*');  
-
-            if (error) {
-                throw error;
-            }
-            setMetodoPago(data);
-        } catch (error) {
-            console.error('Error al obtener los métodos de pago:', error);
-        }
-    };
-
-    const fetchMetodoEnvio = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('metodo_envio_venta')  
-                .select('*');  
-
-            if (error) {
-                throw error;
-            }
-            setMetodoEnvio(data);
-        } catch (error) {
-            console.error('Error al obtener los métodos de envío:', error);
-        }
-    };
-
+    // Alerta segun el caso
     const showAlert = (message, type = 'info') => {
         setAlertMessage({ message, type });
         setTimeout(() => setAlertMessage(''), 3000);
     };
 
+    // Agregar
     const handleAdd = () => setIsAddModalOpen(true);
 
+    // Editar
     const handleEdit = (item) => {
         setEditingItem(item);
         setIsEditModalOpen(true);
     };
 
+    // Eliminar
     const handleDelete = async (id) => {
         try {
             const { error } = await supabase
-                .from('ventas')  
+                .from('ventas')
                 .delete()
-                .eq('id', id);  
+                .eq('id', id);
 
             if (error) {
                 throw error;
@@ -162,6 +101,7 @@ const Ventas2 = () => {
         }
     };
 
+    // Formateo fecha
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         if (isNaN(date)) {
