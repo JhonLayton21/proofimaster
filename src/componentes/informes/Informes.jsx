@@ -17,7 +17,6 @@ const Informes = () => {
   const [ventas, setVentas] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [proveedores, setProveedores] = useState([]);
-  const [informes, setInformes] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,7 +56,7 @@ const Informes = () => {
     fetchData();
   }, []);
 
-  const generatePDF = async (tipoInforme) => {
+  const generatePDF = (tipoInforme) => {
     const doc = new jsPDF({
       orientation: 'landscape',
       unit: 'mm',
@@ -135,143 +134,75 @@ const Informes = () => {
 
     // Añadir pie de página y guardar el PDF
     addFooter(doc);
-
-    // Convertir el PDF a Blob
-    const pdfBlob = doc.output('blob');
-    const fileName = `Informe_${tipoInforme}_${Date.now()}.pdf`;
-
-    // Utilizar la función uploadToSupabase
-    await uploadToSupabase(pdfBlob, fileName);
-
-    // Obtener la URL del archivo subido
-    const fileUrl = supabase.storage.from('informes').getPublicUrl(fileName).data.publicUrl;
-
-    // Guardar los metadatos del informe
-    await saveReportMetadata(fileName, fileUrl);
-
-    // Generar el PDF y obtener el blob URL
-    const pdfBlobUrl = doc.output('bloburl');
-
-    // Abrir el PDF en una nueva pestaña
-    window.open(pdfBlobUrl, '_blank');
+    doc.save(`Informe_${tipoInforme}.pdf`);
   };
-
-  const uploadToSupabase = async (file, fileName) => {
-    const { data, error } = await supabase.storage
-      .from('informes')
-      .upload(`informes/${fileName}`, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
-
-    if (error) {
-      console.error('Error uploading file:', error.message);
-    } else {
-      console.log('File uploaded successfully:', data);
-    }
-  };
-
-
-  const saveReportMetadata = async (fileName, fileUrl) => {
-    const { data, error } = await supabase
-      .from('informes')
-      .insert([{ nombre: fileName, url_archivo: fileUrl, fecha_creacion: new Date() }]);
-
-    if (error) {
-      console.error('Error saving report metadata:', error.message);
-    } else {
-      console.log('Report metadata saved:', data);
-    }
-  };
-
-  useEffect(() => {
-    const fetchInformes = async () => {
-      const { data, error } = await supabase
-        .from('informes')
-        .select('*')
-        .order('fecha_creacion', { ascending: false })
-        .limit(4);
-
-      if (error) {
-        console.error('Error fetching reports:', error.message);
-      } else {
-        setInformes(data);
-      }
-    };
-
-    fetchInformes();
-  }, []);
-
-
-
 
   const userEmail = auth.currentUser ? auth.currentUser.email : '';
 
-  const createdReports = [
-    { name: "Report 1" },
-    { name: "Report 2" },
-    { name: "Report 3" },
-    { name: "Report 4" },
-  ];
-
   const ProductIcon = () => (
-    <FontAwesomeIcon icon={faCartShopping} className="fa-1x mx-4 text-orange-500" />
+    <FontAwesomeIcon icon={faCartShopping} className="fa-2xl m-4 text-orange-500" />
   );
 
   const SaleIcon = () => (
-    <FontAwesomeIcon icon={faMoneyCheckDollar} className="fa-1x mx-4 text-orange-500" />
+    <FontAwesomeIcon icon={faMoneyCheckDollar} className="fa-2xl m-4 text-orange-500" />
   );
 
   const ClientIcon = () => (
-    <FontAwesomeIcon icon={faAddressBook} className="fa-1x mx-4 text-orange-500" />
+    <FontAwesomeIcon icon={faAddressBook} className="fa-2xl m-4 text-orange-500" />
   );
 
   const ProviderIcon = () => (
-    <FontAwesomeIcon icon={faTruckFast} className="fa-1x mx-4 text-orange-500" />
+    <FontAwesomeIcon icon={faTruckFast} className="fa-2xl m-4 text-orange-500" />
   );
 
   return (
-    <MenuPrincipal
-      correoUsuario={userEmail}
-      showTablaProductos={false}
-      titulo={"INFORMES"}
-      subtitulo={"Impulsa tu negocio con reportes e informes detallados"}
-    >
-      {/* CONTENIDO DE INFORMES */}
-      <div className="grid grid-cols-12 gap-0 h-full p-8 overflow-auto">
-        <div className="col-span-12 max-w-4xl mx-auto">
-          {/* BOTONES GENERAR INFORMES */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 cursor-pointer">
-            <GenerarInformesBoton titulo={"GENERAR INFORME PRODUCTOS"} Icon={ProductIcon} onClick={() => generatePDF('productos')} />
-            <GenerarInformesBoton titulo={"GENERAR INFORME VENTAS"} Icon={SaleIcon} onClick={() => generatePDF('ventas')} />
-            <GenerarInformesBoton titulo={"GENERAR INFORME CLIENTES"} Icon={ClientIcon} onClick={() => generatePDF('clientes')} />
-            <GenerarInformesBoton titulo={"GENERAR INFORME PROVEEDORES"} Icon={ProviderIcon} onClick={() => generatePDF('proveedores')} />
-          </div>
-
-          {/* TABLA INFORMES */}
-          <div className="bg-white dark:bg-[#292929] p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold mb-4 text-slate-800 dark:text-slate-50">INFORMES CREADOS</h2>
-            {informes.map((informe, index) => (
-              <div key={index} className="flex items-center justify-between py-2 border-b last:border-b-0">
-                <div className="flex-1">
-                  <h2 className="text-sm font-semibold text-[#757575]">{informe.nombre}</h2>
-                </div>
-                <div className="flex space-x-2">
-                  <a href={informe.url_archivo} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-red-500 text-white hover:bg-red-600">
-                    Descargar PDF
-                  </a>
-                </div>
+    <div className="grid grid-cols-12 gap-0 h-full overflow-auto">
+      <div className="col-span-12">
+        <MenuPrincipal
+          correoUsuario={userEmail}
+          showTablaProductos={false}
+          titulo={"INFORMES"}
+          subtitulo={"Impulsa tu negocio con reportes e informes detallados"}
+        >
+          {/* CONTENIDO DE INFORMES */}
+          <div className="grid grid-cols-12 gap-0 h-full p-8 overflow-auto">
+            <div className="col-span-12 mx-auto">
+              {/* BOTONES GENERAR INFORMES */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 cursor-pointer">
+                <GenerarInformesBoton
+                  titulo={"GENERAR INFORME PRODUCTOS"}
+                  Icon={ProductIcon}
+                  onClick={() => generatePDF('productos')}
+                />
+                <GenerarInformesBoton
+                  titulo={"GENERAR INFORME VENTAS"}
+                  Icon={SaleIcon}
+                  onClick={() => generatePDF('ventas')}
+                />
+                <GenerarInformesBoton
+                  titulo={"GENERAR INFORME CLIENTES"}
+                  Icon={ClientIcon}
+                  onClick={() => generatePDF('clientes')}
+                />
+                <GenerarInformesBoton
+                  titulo={"GENERAR INFORME PROVEEDORES"}
+                  Icon={ProviderIcon}
+                  onClick={() => generatePDF('proveedores')}
+                />
               </div>
-            ))}
+            </div>
           </div>
 
-        </div>
+        </MenuPrincipal>
       </div>
-    </MenuPrincipal>
-  );
-};
+    </div>
+  )
+}
 
 export default Informes;
+
+
+
 
 
 
