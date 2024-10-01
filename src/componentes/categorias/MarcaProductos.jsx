@@ -19,7 +19,6 @@ const MarcaProductos = () => {
     const [editingItem, setEditingItem] = useState(null);
     const [alertMessage, setAlertMessage] = useState('');
 
-
     // DATOS MARCA PRODUCTOS
     const fetchData = async () => {
         const { data, error } = await supabase
@@ -33,8 +32,23 @@ const MarcaProductos = () => {
         setDatos(data);
     };
 
+    // Actualizaciones en tiempo real
     useEffect(() => {
         fetchData();
+
+        const channel = supabase
+            .channel('custom-all-channel') 
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'marcas_productos' }, 
+                (payload) => {
+                    fetchData(); 
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel); 
+        };
     }, []);
 
     const showAlert = (message, type = 'info') => {
@@ -100,7 +114,6 @@ const MarcaProductos = () => {
                         fetchData();
                     }}
                     onSubmit={(nuevaMarcaProducto) => {
-                        setDatos([...datos, nuevaMarcaProducto]);
                         showAlert('Marca de producto agregada exitosamente', 'add');
                     }}
                     titulo="Agregar Marca de Producto"
@@ -128,9 +141,6 @@ const MarcaProductos = () => {
                     initialData={editingItem}
                     disabledFields={['id']}
                     onSubmit={(updatedItem) => {
-                        setDatos((prevDatos) =>
-                            prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-                        );
                         showAlert('Marca de producto editado exitosamente', 'edit');
                     }}
                     endpoint={"marcas_productos"}

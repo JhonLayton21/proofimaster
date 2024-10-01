@@ -32,8 +32,23 @@ const TipoClientes = () => {
         setDatos(data);
     };
 
+    // Actualizaciones en tiempo real
     useEffect(() => {
         fetchData();
+
+        const channel = supabase
+            .channel('custom-all-channel') 
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'tipo_clientes' }, 
+                (payload) => {
+                    fetchData(); 
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel); 
+        };
     }, []);
 
     const showAlert = (message, type = 'info') => {
@@ -99,7 +114,6 @@ const TipoClientes = () => {
                         fetchData();
                     }}
                     onSubmit={(nuevoTipoClientes) => {
-                        setDatos([...datos, nuevoTipoClientes]);
                         showAlert('Tipo de cliente agregado exitosamente', 'add');
                     }}
                     titulo="Agregar Tipo de Cliente"
@@ -126,9 +140,6 @@ const TipoClientes = () => {
                     ]}
                     initialData={editingItem}
                     onSubmit={(updatedItem) => {
-                        setDatos((prevDatos) =>
-                            prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-                        );
                         showAlert('Método de pago editado exitosamente', 'edit');
                     }}
                     disabledFields={['id']}

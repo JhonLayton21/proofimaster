@@ -81,11 +81,7 @@ const router = createBrowserRouter([
   },
   {
     path: 'clientes',
-    element: (
-      <PrivateRoute>
-        <Clientes2 />
-      </PrivateRoute>
-    ),
+    element: <Clientes2 />,
     errorElement: <ErrorPage />,
   },
   {
@@ -108,20 +104,12 @@ const router = createBrowserRouter([
   },
   {
     path: 'referencia-productos',
-    element: (
-      <PrivateRoute>
-        <ReferenciaProductos />
-      </PrivateRoute>
-    ),
+    element: <ReferenciaProductos />,
     errorElement: <ErrorPage />,
   },
   {
     path: 'tipo-clientes',
-    element: (
-      <PrivateRoute>
-        <TipoClientes />
-      </PrivateRoute>
-    ),
+    element: <TipoClientes />,
     errorElement: <ErrorPage />,
   },
   {

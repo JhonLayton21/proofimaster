@@ -34,6 +34,20 @@ const EstadosVenta = () => {
 
     useEffect(() => {
         fetchData();
+
+        const channel = supabase
+            .channel('custom-all-channel') 
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'estado_venta' }, 
+                (payload) => {
+                    fetchData(); 
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel); 
+        };
     }, []);
 
     const showAlert = (message, type = 'info') => {
@@ -62,10 +76,10 @@ const EstadosVenta = () => {
                 throw error;
             }
             fetchData();
-            showAlert('Método de pago eliminado exitosamente', 'delete');
+            showAlert('Estado de venta eliminado exitosamente', 'delete');
         } catch (error) {
-            console.error('Error al eliminar el método de pago:', error);
-            showAlert('Error al eliminar el método de pago', 'error');
+            console.error('Error al eliminar el estado de venta:', error);
+            showAlert('Error al eliminar el estado de venta', 'error');
         }
     };
 
@@ -99,7 +113,6 @@ const EstadosVenta = () => {
                         fetchData();
                     }}
                     onSubmit={(nuevoEstadoVenta) => {
-                        setDatos([...datos, nuevoEstadoVenta]);
                         showAlert('Estado de venta agregado exitosamente', 'add');
                     }}
                     titulo="Agregar Estado de Venta"
@@ -126,9 +139,6 @@ const EstadosVenta = () => {
                     ]}
                     initialData={editingItem}
                     onSubmit={(updatedItem) => {
-                        setDatos((prevDatos) =>
-                            prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-                        );
                         showAlert('Estado de venta editado exitosamente', 'edit');
                     }}
                     disabledFields={['id']}

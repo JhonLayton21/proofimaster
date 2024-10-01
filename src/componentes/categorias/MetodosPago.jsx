@@ -19,8 +19,23 @@ const MetodosPago = () => {
     const [editingItem, setEditingItem] = useState(null);
     const [alertMessage, setAlertMessage] = useState('');
 
+    // Actualizaciones en tiempo real
     useEffect(() => {
         fetchData();
+
+        const channel = supabase
+            .channel('custom-all-channel') 
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'metodo_pago' }, 
+                (payload) => {
+                    fetchData(); 
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel); 
+        };
     }, []);
 
     const fetchData = async () => {
@@ -93,7 +108,6 @@ const MetodosPago = () => {
                         fetchData();
                     }}
                     onSubmit={(nuevoMetodoPago) => {
-                        setDatos([...datos, nuevoMetodoPago]);
                         showAlert('Método de pago agregado exitosamente', 'add');
                     }}
                     titulo="Agregar Método de Pago"
@@ -120,9 +134,6 @@ const MetodosPago = () => {
                     ]}
                     initialData={editingItem}
                     onSubmit={(updatedItem) => {
-                        setDatos((prevDatos) =>
-                            prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-                        );
                         showAlert('Método de pago editado exitosamente', 'edit');
                     }}
                     disabledFields={['id']}

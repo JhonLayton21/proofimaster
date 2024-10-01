@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { supabase } from "../../../supabase";
 
 const ModalAgregar = ({ isOpen, onClose, onSubmit, titulo, campos, disabledFields, endpoint }) => {
     const [formData, setFormData] = useState({});
@@ -14,25 +15,21 @@ const ModalAgregar = ({ isOpen, onClose, onSubmit, titulo, campos, disabledField
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`http://localhost:5000/${endpoint}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (!response.ok) {
+    
+            const { data, error } = await supabase.from(`${endpoint}`).insert(formData);
+    
+            if (error) {
+                console.error('Error al agregar el nuevo item:', error);
                 throw new Error('Error al agregar el nuevo item');
             }
-
-            const nuevoItem = await response.json();
-            onSubmit(nuevoItem);
+    
+            onSubmit(data);
             onClose();
         } catch (error) {
-            console.error("Error: ", error);
+            console.error("Error: ", error.message);
         }
-    };
+    };    
+
 
     return (
         <>

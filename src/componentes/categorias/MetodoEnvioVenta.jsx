@@ -32,8 +32,23 @@ const MetodoEnvioVenta = () => {
         setDatos(data);
     };
 
+    // Actualizaciones en tiempo real
     useEffect(() => {
         fetchData();
+
+        const channel = supabase
+            .channel('custom-all-channel') 
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'metodo_envio_venta' }, 
+                (payload) => {
+                    fetchData(); 
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel); 
+        };
     }, []);
 
     const showAlert = (message, type = 'info') => {
@@ -99,7 +114,6 @@ const MetodoEnvioVenta = () => {
                         fetchData();
                     }}
                     onSubmit={(nuevoMetodoEnvioVenta) => {
-                        setDatos([...datos, nuevoMetodoEnvioVenta]);
                         showAlert('Metodo de envio de venta agregado exitosamente', 'add');
                     }}
                     titulo="Agregar Método de Envío"
@@ -128,9 +142,6 @@ const MetodoEnvioVenta = () => {
                     ]}
                     initialData={editingItem}
                     onSubmit={(updatedItem) => {
-                        setDatos((prevDatos) =>
-                            prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-                        );
                         showAlert('Método de envio de venta editado exitosamente', 'edit');
                     }}
                     disabledFields={['id']}

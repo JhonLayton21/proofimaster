@@ -22,7 +22,7 @@ const ReferenciaProductos = () => {
     // DATOS REFERENCIAS PRODUCTOS
     const fetchData = async () => {
         const { data, error } = await supabase
-                .from('referencias_prodctos')  
+                .from('referencias_productos')  
                 .select('*');  
 
             if (error) {
@@ -32,8 +32,23 @@ const ReferenciaProductos = () => {
         setDatos(data);
     };
 
+    // Actualizaciones en tiempo real
     useEffect(() => {
         fetchData();
+
+        const channel = supabase
+            .channel('custom-all-channel') 
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'referencias_productos' }, 
+                (payload) => {
+                    fetchData(); 
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel); 
+        };
     }, []);
 
     const showAlert = (message, type = 'info') => {
@@ -43,7 +58,6 @@ const ReferenciaProductos = () => {
 
     // Funcion Agregar
     const handleAdd = () => setIsAddModalOpen(true);
-
 
     // Funcion editar
     const handleEdit = (item) => {
@@ -62,14 +76,12 @@ const ReferenciaProductos = () => {
             if (error) {
                 throw error;
             }
-            fetchData();
             showAlert('Referencia de producto eliminado exitosamente', 'delete');
         } catch (error) {
             console.error('Error al eliminar la referencia de producto:', error);
             showAlert('Error al eliminar la referencia de producto', 'error');
         }
     };
-
 
     return (
         <div className="grid grid-cols-12 gap-0 h-full overflow-auto">
@@ -100,7 +112,6 @@ const ReferenciaProductos = () => {
                         fetchData();
                     }}
                     onSubmit={(nuevaReferenciaProductos) => {
-                        setDatos([...datos, nuevaReferenciaProductos]);
                         showAlert('Referencia de producto agregada exitosamente', 'add');
                     }}
                     titulo="Agregar Referencia de Producto"
@@ -127,18 +138,14 @@ const ReferenciaProductos = () => {
                     ]}
                     initialData={editingItem}
                     onSubmit={(updatedItem) => {
-                        setDatos((prevDatos) =>
-                            prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-                        );
                         showAlert('Referencia de producto editada exitosamente', 'edit');
                     }}
                     disabledFields={['id']}
-                    endpoint={"referencias_productos"}
+                    endpoint="referencias_productos"
                 />
             )}
         </div>
     )
 }
-
 
 export default ReferenciaProductos;
