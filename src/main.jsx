@@ -25,6 +25,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 // IMPORTAR EL CONTEXTO DE AUTENTICACIÓN
 import { AuthProvider, useAuth } from './UseAuth.jsx';
+import { elements } from 'chart.js';
 
 // DEFINIR RUTAS PARA PÁGINAS
 const router = createBrowserRouter([
@@ -54,29 +55,17 @@ const router = createBrowserRouter([
   },
   {
     path: 'productos',
-    element: ( 
-      <PrivateRoute>
-        <Productos2 />
-      </PrivateRoute>
-    ),
+    element: <Productos2 />,
     errorElement: <ErrorPage />
   },
   {
     path: 'ventas',
-    element: (
-      <PrivateRoute>
-        <Ventas2 />
-      </PrivateRoute>
-    ),
+    element: <Ventas2 />,
     errorElement: <ErrorPage />,
   },
   {
     path: 'proveedores',
-    element: (
-      <PrivateRoute>
-        <Proveedores2 />
-      </PrivateRoute>
-    ),
+    element: <Proveedores2 />,
     errorElement: <ErrorPage />,
   },
   {

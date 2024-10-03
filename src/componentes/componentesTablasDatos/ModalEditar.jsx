@@ -38,26 +38,34 @@ const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, d
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
-        const { id, ...dataToUpdate } = formData;
-        console.log("Datos a actualizar:", { id, ...dataToUpdate });
-    
+        
+        // Desestructuramos 'formData' y eliminamos 'metodo_pago' antes de la actualización
+        const { id, metodo_pago, tipo_cliente, ...dataToUpdate } = formData;
+        console.log("Datos completos del formulario:", formData); // Log de todos los datos
+        console.log("Datos a actualizar (sin id):", dataToUpdate); // Log de los datos que se van a actualizar
+        
         try {
+            console.log(`Actualizando en la tabla: ${endpoint}`); // Log del endpoint al que estás actualizando
             const { data, error } = await supabase
                 .from(`${endpoint}`)
-                .update(dataToUpdate)
-                .eq('id', id);
-    
+                .update(dataToUpdate) // Enviar solo los datos a actualizar, sin 'id'
+                .eq('id', id); // Filtro por ID para actualizar el item correcto
+            
+            // Verificar si hubo algún error en la respuesta de Supabase
             if (error) {
+                console.error("Error detallado de Supabase:", error); // Log detallado del error
                 throw new Error('Error al actualizar el item');
             }
     
-            onSubmit(data);
-            onClose();
+            console.log("Datos recibidos tras la actualización:", data); // Log de la respuesta exitosa
+    
+            onSubmit(data);  // Ejecutar la acción que corresponda después de la actualización
+            onClose();       // Cerrar el modal o formulario
         } catch (error) {
-            console.error("Error: ", error);
+            console.error("Error: ", error.message); // Log del mensaje de error en el bloque catch
         }
     };
+    
     
     return (
         <>
