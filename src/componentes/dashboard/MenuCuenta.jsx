@@ -134,13 +134,6 @@ export default function MenuCuenta() {
                 </div>
               </div>
               <div>
-                <a
-                  href="#0"
-                  className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                >
-                  Ver perfil
-                  <FontAwesomeIcon icon={faImagePortrait} className="text-slate-800 dark:text-slate-50 fa-lg" />
-                </a>
                 <Link to="/configuracion"
                   className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                 >
@@ -149,20 +142,6 @@ export default function MenuCuenta() {
                 </Link>
               </div>
               <div>
-                <a
-                  href="#0"
-                  className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                >
-                  Ir al correo
-                  <FontAwesomeIcon icon={faEnvelope} className="text-slate-800 dark:text-slate-50 fa-lg cursor-pointer" />
-                </a>
-                <a
-                  href="#0"
-                  className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                >
-                  Consultar alertas
-                  <FontAwesomeIcon icon={faBell} className="text-slate-800 dark:text-slate-50 fa-lg cursor-pointer" />
-                </a>
                 <a
                   href="#0"
                   className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
