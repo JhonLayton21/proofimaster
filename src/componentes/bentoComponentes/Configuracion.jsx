@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const Configuracion = ({ }) => {
     return (
-        <div className="bentoItem shadow-lg col-span-6 lg:col-span-4 row-span-1 flex items-center justify-center relative rounded-lg overflow-hidden border p-4 alerta-stock">
+        <div className="bentoItem shadow-lg col-span-6 lg:col-span-3 row-span-1 flex items-center justify-center relative rounded-lg overflow-hidden border p-4 alerta-stock">
             <Link to="/configuracion">
                 <div className="mx-4 my-4">
                     <FontAwesomeIcon icon={faCog} className="text-slate-800 dark:text-slate-50 fa-3x mr-4 mt-4 mb-4" />

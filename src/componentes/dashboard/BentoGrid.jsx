@@ -357,10 +357,6 @@ const BentoGrid = ({ correoUsuario }) => {
 
                 <Clientes clientes={clientes} />
 
-                <Informes />
-
-                <Usuarios usuariosActivos={usuariosActivos} />
-
                 <Documentacion />
 
                 <Configuracion />
