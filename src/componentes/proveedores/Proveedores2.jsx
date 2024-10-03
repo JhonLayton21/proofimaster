@@ -20,9 +20,24 @@ const Proveedores2 = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [metodosPago, setMetodosPago] = useState([]);
 
+    // Actualizaciones en tiempo real
     useEffect(() => {
         fetchData();
         fetchMetodosPago();
+
+        const channel = supabase
+            .channel('custom-all-channel') 
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'proveedores' }, 
+                (payload) => {
+                    fetchData(); 
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel); 
+        };
     }, []);
 
     const fetchMetodosPago = async () => {
@@ -52,7 +67,7 @@ const Proveedores2 = () => {
                     email_proveedor,
                     nombre_proveedor,
                     telefono_proveedor,
-                    metodo_pago (metodo)
+                    metodo_pago (id, metodo)
                 `);
     
             if (error) {
@@ -62,6 +77,7 @@ const Proveedores2 = () => {
             // Usamos desestructuración directamente dentro del map para aplanar el objeto 'metodo_pago'
             const proveedoresConMetodo = data.map(({ metodo_pago, ...resto }) => ({
                 ...resto,
+                metodo_pago_id: metodo_pago.id,
                 metodo_pago: metodo_pago.metodo
             }));
     
@@ -132,7 +148,6 @@ const Proveedores2 = () => {
                         fetchData();
                     }}
                     onSubmit={(nuevoProveedor) => {
-                        setDatos([...datos, nuevoProveedor]);
                         showAlert('Proveedor agregado exitosamente', 'add');
                     }}
                     titulo="Agregar Proveedor"
@@ -181,9 +196,6 @@ const Proveedores2 = () => {
                     ]}
                     initialData={editingItem}
                     onSubmit={(updatedItem) => {
-                        setDatos((prevDatos) =>
-                            prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-                        );
                         showAlert('Proveedor editado exitosamente', 'edit');
                     }}
                     disabledFields={['id']}

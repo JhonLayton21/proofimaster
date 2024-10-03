@@ -20,11 +20,6 @@ const Clientes = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [tiposClientes, setTiposClientes] = useState([]);
 
-    useEffect(() => {
-        fetchData();
-        fetchTipoClientes();
-    }, []);
-
     const fetchTipoClientes = async () => {
         try {
             const { data, error } = await supabase
@@ -70,6 +65,26 @@ const Clientes = () => {
             console.error('Error al obtener los clientes:', error);
         }
     };
+
+    // Actualizaciones en tiempo real
+    useEffect(() => {
+        fetchData();
+        fetchTipoClientes();
+
+        const channel = supabase
+            .channel('custom-all-channel') 
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'clientes' }, 
+                (payload) => {
+                    fetchData(); 
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel); 
+        };
+    }, []);
 
     const showAlert = (message, type = 'info') => {
         setAlertMessage({ message, type });
@@ -129,7 +144,6 @@ const Clientes = () => {
                         fetchData();
                     }}
                     onSubmit={(nuevoCliente) => {
-                        setDatos([...datos, nuevoCliente]);
                         showAlert('Cliente agregado exitosamente', 'add');
                     }}
                     titulo="Agregar Cliente"
@@ -176,9 +190,6 @@ const Clientes = () => {
                     ]}
                     initialData={editingItem}
                     onSubmit={(updatedItem) => {
-                        setDatos((prevDatos) =>
-                            prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-                        );
                         showAlert('Cliente editado exitosamente', 'edit');
                     }}
                     disabledFields={['id']}
