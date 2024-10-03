@@ -22,13 +22,6 @@ const Productos2 = () => {
     const [marcasProductos, setMarcasProductos] = useState([]);
     const [proveedorProductos, setProveedorProductos] = useState([]);
 
-    useEffect(() => {
-        fetchData();
-        fetchReferenciasProductos();
-        fetchMarcasProductos();
-        fetchProveedorProductos();
-    }, []);
-
     const fetchReferenciasProductos = async () => {
         try {
             const { data, error } = await supabase
@@ -87,9 +80,9 @@ const Productos2 = () => {
                     precio_compra,
                     precio_venta,
                     stock,
-                    marcas_productos(nombre),
-                    proveedores(nombre_proveedor),
-                    referencias_productos(codigo)
+                    marcas_productos( id, nombre ),
+                    proveedores( id, nombre_proveedor ),
+                    referencias_productos( id,codigo )
                 `); 
 
             if (error) {
@@ -98,8 +91,11 @@ const Productos2 = () => {
 
             const referenciasProductos = data.map(({ marcas_productos, proveedores, referencias_productos, ...resto }) => ({
                 ...resto,
+                marca_id: marcas_productos.id,
                 marca_productos: marcas_productos.nombre,
+                proveedor_id: proveedores.id,
                 proveedor: proveedores.nombre_proveedor,
+                referencia_id: referencias_productos.id,
                 referencia_productos: referencias_productos.codigo
             }));
 
@@ -110,6 +106,28 @@ const Productos2 = () => {
             console.error('Error al obtener los productos:', error);
         }
     };
+
+    // Actualizaciones en tiempo real
+    useEffect(() => {
+        fetchData();
+        fetchReferenciasProductos();
+        fetchMarcasProductos();
+        fetchProveedorProductos();
+
+        const channel = supabase
+            .channel('custom-all-channel') 
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'productos' }, 
+                (payload) => {
+                    fetchData(); 
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel); 
+        };
+    }, []);
 
     const showAlert = (message, type = 'info') => {
         setAlertMessage({ message, type });
@@ -125,8 +143,16 @@ const Productos2 = () => {
 
     const handleDelete = async (id) => {
         try {
-            await fetch(`http://localhost:5000/productos/${id}`, { method: 'DELETE' });
-            fetchData();
+            const { error } = await supabase
+                .from('productos')  
+                .delete()
+                .eq('id', id);  
+
+            if (error) {
+                throw error;
+            }
+
+            fetchData();  
             showAlert('Producto eliminado exitosamente', 'delete');
         } catch (error) {
             console.error('Error al eliminar el producto:', error);
@@ -170,7 +196,6 @@ const Productos2 = () => {
                         fetchData();
                     }}
                     onSubmit={(nuevoProducto) => {
-                        setDatos([...datos, nuevoProducto]);
                         showAlert('Producto agregado exitosamente', 'add');
                     }}
                     titulo="Agregar producto"
@@ -263,9 +288,6 @@ const Productos2 = () => {
                     ]}
                     initialData={editingItem}
                     onSubmit={(updatedItem) => {
-                        setDatos((prevDatos) =>
-                            prevDatos.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-                        );
                         showAlert('producto editado exitosamente', 'edit');
                     }}
                     disabledFields={['id']}

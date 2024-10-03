@@ -40,7 +40,7 @@ const ModalEditar = ({ isOpen, onClose, onSubmit, titulo, campos, initialData, d
         e.preventDefault();
         
         // Desestructuramos 'formData' y eliminamos 'metodo_pago' antes de la actualización
-        const { id, metodo_pago, tipo_cliente, ...dataToUpdate } = formData;
+        const { id, metodo_pago, tipo_cliente, marca_productos, referencia_productos, proveedor, ...dataToUpdate } = formData;
         console.log("Datos completos del formulario:", formData); // Log de todos los datos
         console.log("Datos a actualizar (sin id):", dataToUpdate); // Log de los datos que se van a actualizar
         
