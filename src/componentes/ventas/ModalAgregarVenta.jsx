@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { faCircleUser, faFileLines, faBell, faEnvelope, faGear, faImagePortrait } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { supabase } from '../../../supabase';
 
 const ModalAgregarVenta = ({ isOpen, onClose }) => {
     const [newSale, setNewSale] = useState({
         productoId: 0,
-        precioVenta: 0,
         clienteId: 0,
         fechaVenta: '',
         estadoVentaId: 0,
         metodoPagoId: 0,
-        descuentoVenta: '',
+        descuentoVenta: 0,
         notaVenta: '',
         metodoEnvioVentaId: 0,
         subtotal: 0,
@@ -28,25 +28,24 @@ const ModalAgregarVenta = ({ isOpen, onClose }) => {
 
 
     // FETCH TABLAS NECESARIAS
-    // Función reutilizable para obtener datos de una API
-    const fetchDataFromAPI = async (endpoint, setStateFunction) => {
-        try {
-            const response = await fetch(`http://localhost:5000/${endpoint}`);
-            const data = await response.json();
+    // Función para obtener datos desde Supabase
+    const fetchDataFromSupabase = async (tableName, setStateFunction) => {
+        const { data, error } = await supabase.from(tableName).select('*');
+        if (error) {
+            console.error(`Error al obtener los datos de ${tableName}:`, error);
+        } else {
             setStateFunction(data);
             console.log(data);
-        } catch (error) {
-            console.error(`Error al obtener los datos de ${endpoint}`, error);
         }
     };
 
     // FECTCH TABLAS NECESARIAS
     useEffect(() => {
-        fetchDataFromAPI("productos", setProductos);
-        fetchDataFromAPI("clientes", setClientes);
-        fetchDataFromAPI("estado_venta", setEstadoVentas);
-        fetchDataFromAPI("metodo_pago", setMetodoPago);
-        fetchDataFromAPI("metodo_envio_venta", setMetodoEnvio);
+        fetchDataFromSupabase("productos", setProductos);
+        fetchDataFromSupabase("clientes", setClientes);
+        fetchDataFromSupabase("estado_venta", setEstadoVentas);
+        fetchDataFromSupabase("metodo_pago", setMetodoPago);
+        fetchDataFromSupabase("metodo_envio_venta", setMetodoEnvio);
     }, []);
 
     const handleInputChange = (e) => {
@@ -58,8 +57,6 @@ const ModalAgregarVenta = ({ isOpen, onClose }) => {
             [name]: value,
         });
     };
-
-
 
     const calcularTotal = (subtotal, descuentoVenta) => {
         const descuento = ((descuentoVenta || 0) / 100) * subtotal;
@@ -173,9 +170,13 @@ const ModalAgregarVenta = ({ isOpen, onClose }) => {
     }, [subtotal, newSale.descuentoVenta]);
 
 
+    // Envio info del formulario de ventas
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
+        // Muestra los productos seleccionados para depuración
+        console.log("Productos seleccionados:", productosSeleccionados);
+    
         const productosFiltrados = Object.entries(productosSeleccionados)
             .filter(([id, detalles]) => detalles)
             .map(([id, detalles]) => ({
@@ -183,44 +184,86 @@ const ModalAgregarVenta = ({ isOpen, onClose }) => {
                 cantidad: detalles.cantidad,
                 precio: detalles.precio
             }));
-
+    
+        // Muestra los productos filtrados que se insertarán
+        console.log("Productos filtrados para la venta:", productosFiltrados);
+    
         try {
-            const response = await fetch("http://localhost:5000/crearVenta", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    venta: {
-                        precio_venta: newSale.precioVenta,
-                        cliente_id: newSale.clienteId,
-                        fecha_venta: newSale.fechaVenta,
-                        estado_venta_id: newSale.estadoVentaId,
-                        metodo_pago_id: newSale.metodoPagoId,
-                        descuento_venta: newSale.descuentoVenta,
-                        nota_venta: newSale.notaVenta,
-                        metodo_envio_venta_id: newSale.metodoEnvioVentaId,
-                        subtotal: subtotal,  // Usar los valores calculados actuales
-                        total: total,        // Usar los valores calculados actuales
-                    },
-                    productos: productosFiltrados
-                }),
+            // Muestra los datos de la venta antes de la inserción
+            console.log("Datos de la venta a insertar:", {
+                cliente_id: newSale.clienteId,
+                fecha_venta: newSale.fechaVenta,
+                estado_venta_id: newSale.estadoVentaId,
+                metodo_pago_id: newSale.metodoPagoId,
+                descuento_venta: newSale.descuentoVenta,
+                nota_venta: newSale.notaVenta,
+                metodo_envio_venta_id: newSale.metodoEnvioVentaId,
+                subtotal: subtotal,
+                total: total,
             });
-
-            if (!response.ok) {
+    
+            // Inserta la venta en Supabase
+            const { data: ventaData, error: ventaError } = await supabase
+                .from('ventas')
+                .insert([{
+                    cliente_id: parseInt(newSale.clienteId, 10),
+                    fecha_venta: newSale.fechaVenta,
+                    estado_venta_id: parseInt(newSale.estadoVentaId, 10),
+                    metodo_pago_id: parseInt(newSale.metodoPagoId, 10),
+                    descuento_venta: newSale.descuentoVenta,
+                    nota_venta: newSale.notaVenta,
+                    metodo_envio_venta_id: parseInt(newSale.metodoEnvioVentaId, 10),
+                    subtotal: subtotal,
+                    total: total,
+                }])
+                .select();
+    
+            // Verifica si hubo un error al insertar la venta
+            if (ventaError) {
+                console.error("Error al agregar la venta en Supabase:", ventaError);
                 throw new Error("Error al agregar la venta");
             }
-
-            const data = await response.json();
-            console.log("Venta agregada:", data);
-
+    
+            // Muestra los datos devueltos por Supabase tras la inserción de la venta
+            console.log("Datos de la venta insertados en Supabase:", ventaData);
+    
+            // Verifica si los datos de la venta están vacíos o son nulos
+            if (!ventaData || ventaData.length === 0) {
+                console.error("Error: ventaData está vacío o es null");
+                return;
+            }
+    
+            // Muestra el ID de la venta insertada
+            console.log("ID de la venta insertada:", ventaData[0].id);
+    
+            // Inserta los productos de la venta en Supabase
+            const { error: productosError } = await supabase
+                .from('venta_productos')
+                .insert(productosFiltrados.map(producto => ({
+                    venta_id: ventaData[0].id,
+                    producto_id: producto.producto_id,
+                    cantidad: producto.cantidad,
+                    precio: producto.precio,
+                })));
+    
+            // Verifica si hubo un error al insertar los productos
+            if (productosError) {
+                console.error("Error al agregar los productos de la venta en Supabase:", productosError);
+                throw new Error("Error al agregar los productos de la venta");
+            }
+    
+            // Si todo fue exitoso, muestra los datos completos
+            console.log("Venta y productos agregados exitosamente:", {
+                venta: ventaData,
+                productos: productosFiltrados
+            });
+    
+            // Cierra el modal
             onClose();
-
         } catch (err) {
-            console.error("Error en la solicitud:", err);
+            console.error("Error al agregar la venta:", err);
         }
     };
-
 
     if (!isOpen) return null;
 

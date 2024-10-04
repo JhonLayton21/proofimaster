@@ -174,37 +174,6 @@ const BentoGrid = ({ correoUsuario }) => {
         };
 
         fetchDatosProductos();
-
-        // Consulta para usuarios activos
-        const fetchUsuarios = async () => {
-            const { data, error } = await supabase
-                .from('auth.users')
-                .select('id, email, last_sign_in_at');
-
-            if (error) {
-                console.error("Error mostrando usuarios");
-                return;
-            }
-
-            // Filtrar usuarios por los que han iniciado sesión recientemente o están activos
-            const usuariosRecientes = data.filter(user => {
-                const lastSignIn = new Date(user.last_sign_in_at);
-                const now = new Date();
-
-                // Por ejemplo, definir "activo" como si el usuario ha iniciado sesión en los últimos 7 días
-                const sevenDaysAgo = new Date(now.setDate(now.getDate() - 7));
-                return lastSignIn >= sevenDaysAgo;
-            });
-
-            setUsuariosActivos(usuariosRecientes);
-        };
-
-        fetchUsuarios();
-
-        // Actualizar cada 1 minuto para mantener la lista de usuarios activos actualizada
-        const intervalId = setInterval(fetchUsuarios, 60000);
-
-        return () => clearInterval(intervalId);
     }, []);
 
     useEffect(() => {

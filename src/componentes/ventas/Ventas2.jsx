@@ -20,7 +20,7 @@ const Ventas2 = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [editingItem, setEditingItem] = useState(null);
+    const [editingItem, setEditingItem] = useState(null)
 
     useEffect(() => {
         fetchData();
@@ -66,6 +66,25 @@ const Ventas2 = () => {
             console.error('Error al obtener las ventas:', error);
         }
     };
+
+    // Actualizaciones en tiempo real
+    useEffect(() => {
+        fetchData();
+
+        const channel = supabase
+            .channel('custom-all-channel') 
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'ventas' }, 
+                (payload) => {
+                    fetchData(); 
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel); 
+        };
+    }, []);
 
     // Alerta segun el caso
     const showAlert = (message, type = 'info') => {
@@ -126,6 +145,7 @@ const Ventas2 = () => {
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                         onAlert={showAlert}
+                        disableEdit={true}
                     />
                 </MenuPrincipal>
             </div>
@@ -143,10 +163,6 @@ const Ventas2 = () => {
                         fetchData();
                     }}
                     editingItem={editingItem} // El ítem que estás editando
-                    tipoClientes={tipoClientes} // Los tipos de clientes que le pasas como prop
-                    estadoVentas={estadoVentas} // Los estados de ventas que le pasas como prop
-                    metodoPago={metodoPago} // Los métodos de pago que le pasas como prop
-                    metodoEnvio={metodoEnvio} // Los métodos de envío que le pasas como prop
                 />
             )}
         </div>

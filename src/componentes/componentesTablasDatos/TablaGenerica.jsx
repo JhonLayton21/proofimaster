@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { format } from 'date-fns';
 
-const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert }) => (
+const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert, disableEdit = false }) => (
     <div>
         <div className="flex justify-end m-2">
             <button
@@ -43,8 +43,9 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert }) =>
                             ))}
                             <td className="px-6 py-4 text-right">
                                 <button
-                                    className="text-blue-600 dark:bg-[#242424] hover:underline m-1"
-                                    onClick={() => onEdit(fila)}
+                                    className={`text-blue-600 dark:bg-[#242424] m-1 ${disableEdit ? 'cursor-not-allowed opacity-50' : 'hover:underline'}`}
+                                    onClick={() => !disableEdit && onEdit(fila)}
+                                    disabled={disableEdit}
                                 >
                                     Editar
                                     <FontAwesomeIcon icon={faPenToSquare} className="ml-1" />
@@ -71,6 +72,7 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert }) =>
 );
 
 export default TablaGenerica;
+
 
 
 
