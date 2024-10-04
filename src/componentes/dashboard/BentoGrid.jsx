@@ -52,8 +52,8 @@ const BentoGrid = ({ correoUsuario }) => {
         // Consulta para productos con alertas
         const fetchProductosStock = async () => {
             const { data, error } = await supabase
-            .from('productos')
-            .select('*');
+                .from('productos')
+                .select('*');
 
             if (error) {
                 console.error("Error mostrando productos");
@@ -167,7 +167,8 @@ const BentoGrid = ({ correoUsuario }) => {
 
             data.forEach(producto => {
                 const precioCompra = Number(producto.precio_compra);
-                totalValorStock += precioCompra;
+                const cantidad = Number(producto.stock);
+                totalValorStock += precioCompra * cantidad;
             });
 
             setValorStock(totalValorStock);
@@ -229,8 +230,16 @@ const BentoGrid = ({ correoUsuario }) => {
                 start = end;
                 setIsAnimatingStock(false); // Termina la animación
             }
-            setDisplayedStockValue(start.toFixed(3));
+
+            // Formatear el valor para que tenga separadores de miles y 3 decimales
+            const formattedValue = start.toLocaleString('es-ES', {
+                minimumFractionDigits: 0, // Muestra 3 decimales
+                maximumFractionDigits: 0
+            });
+
+            setDisplayedStockValue(formattedValue);
         }, stepTime);
+
 
         return () => clearInterval(timer);
     }, [isAnimatingStock, valorStock]);
@@ -264,7 +273,14 @@ const BentoGrid = ({ correoUsuario }) => {
                 start = end;
                 setIsAnimatingTotalVentas(false); // Termina la animación
             }
-            setDisplayedTotalVentas(start.toFixed(3));
+
+            // Formatear el valor para que tenga separadores de miles y 3 decimales
+            const formattedValue = start.toLocaleString('es-ES', {
+                minimumFractionDigits: 0, // Muestra 3 decimales
+                maximumFractionDigits: 0
+            });
+
+            setDisplayedTotalVentas(formattedValue);
         }, stepTime);
 
         return () => clearInterval(timer);
@@ -298,7 +314,7 @@ const BentoGrid = ({ correoUsuario }) => {
         <MenuPrincipal correoUsuario={correoUsuario} titulo={"MENÚ PRINCIPAL"} subtitulo={"Ingresa rápidamente al contenido en Proofimaster"}>
             <div className="grid grid-cols-12 grid-rows-6 gap-2 mt-8 px-2 md:px-0">
 
-                <DatosPrincipales displayedCantidadVentas={displayedCantidadVentas} displayedTotalVentas={displayedTotalVentas}  displayedStockValue={displayedStockValue} displayedTotal={displayedTotal} />
+                <DatosPrincipales displayedCantidadVentas={displayedCantidadVentas} displayedTotalVentas={displayedTotalVentas} displayedStockValue={displayedStockValue} displayedTotal={displayedTotal} />
 
                 <ProductosDestacados productosPrincipales={productosPrincipales} />
 
