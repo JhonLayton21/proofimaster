@@ -75,20 +75,12 @@ const router = createBrowserRouter([
   },
   {
     path: 'metodos-pago',
-    element: (
-      <PrivateRoute>
-        <MetodosPago />
-      </PrivateRoute>
-    ),
+    element: <MetodosPago />,
     errorElement: <ErrorPage />,
   },
   {
     path: 'marca-productos',
-    element: (
-      <PrivateRoute>
-        <MarcaProductos />
-      </PrivateRoute>
-    ),
+    element: <MarcaProductos />,
     errorElement: <ErrorPage />,
   },
   {
@@ -103,20 +95,12 @@ const router = createBrowserRouter([
   },
   {
     path: 'estados-venta',
-    element: (
-      <PrivateRoute>
-        <EstadosVenta />
-      </PrivateRoute>
-    ),
+    element: <EstadosVenta />,
     errorElement: <ErrorPage />,
   },
   {
     path: 'metodo-envio-venta',
-    element: (
-      <PrivateRoute>
-        <MetodoEnvioVenta />
-      </PrivateRoute>
-    ),
+    element: <MetodoEnvioVenta />,
     errorElement: <ErrorPage />,
   },
   {
