@@ -35,7 +35,7 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert, disa
                                         ? JSON.stringify(fila[columna]) // Convierte el objeto a string
                                         : columna === 'fecha_entrada' || columna === 'fecha_venta'
                                             ? format(new Date(fila[columna]), 'dd/MM/yyyy') // Formatea las fechas
-                                            : columna === 'precio_compra' || columna === 'precio_venta'
+                                            : columna === 'precio_compra' || columna === 'precio_venta' || columna === 'precio' || columna === 'subtotal' || columna === 'total'
                                                 ? `${parseFloat(fila[columna]).toLocaleString('es-CO')} COP` // Formatea precios
                                                 : fila[columna] // Renderiza el valor normal si no es un objeto
                                     }
