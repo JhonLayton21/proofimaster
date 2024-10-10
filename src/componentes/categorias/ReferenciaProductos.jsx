@@ -7,6 +7,7 @@ import ModalEditar from "../componentesTablasDatos/ModalEditar";
 import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
+import SearchBar from "../SearchBar";
 
 const auth = getAuth(appFirebase);
 
@@ -83,6 +84,10 @@ const ReferenciaProductos = () => {
         }
     };
 
+    const handleSearchResults = (resultados) => {
+        setDatos(resultados); // Actualizar los datos con los resultados de la búsqueda
+    };
+
     return (
         <div className="grid grid-cols-12 gap-0 h-full overflow-auto">
             <div className="col-span-12">
@@ -93,6 +98,12 @@ const ReferenciaProductos = () => {
                     subtitulo={"Gestiona las referencias"}
                 >
                     <Alert message={alertMessage.message} type={alertMessage.type} />
+                    <SearchBar
+                        placeholder="Buscar referencias..."
+                        table="referencias_productos" // El nombre de tu tabla en Supabase
+                        columns={["codigo"]} // Las columnas donde quieres realizar la búsqueda
+                        onSearchResults={handleSearchResults}
+                    />
                     <TablaGenerica
                         columnas={columnas}
                         datos={datos}

@@ -7,6 +7,7 @@ import ModalEditar from "../componentesTablasDatos/ModalEditar";
 import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
+import SearchBar from "../SearchBar";
 
 const auth = getAuth(appFirebase);
 
@@ -84,6 +85,9 @@ const MetodoEnvioVenta = () => {
         }
     };
     
+    const handleSearchResults = (resultados) => {
+        setDatos(resultados);
+    }
 
     return (
         <div className="grid grid-cols-12 gap-0 h-full overflow-auto">
@@ -95,6 +99,12 @@ const MetodoEnvioVenta = () => {
                     subtitulo={"Gestiona los métodos de envío y sus precios"}
                 >
                     <Alert message={alertMessage.message} type={alertMessage.type} />
+                    <SearchBar
+                        placeholder="Buscar métodos de envío..."
+                        table="metodo_envio_venta" // El nombre de tu tabla en Supabase
+                        columns={["metodo"]} // Las columnas donde quieres realizar la búsqueda
+                        onSearchResults={handleSearchResults}
+                    />
                     <TablaGenerica 
                         columnas={columnas} 
                         datos={datos}

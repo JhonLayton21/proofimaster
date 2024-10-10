@@ -10,6 +10,7 @@ import ModalEditar from "../componentesTablasDatos/ModalEditar";
 import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
+import SearchBar from "../SearchBar";
 
 const auth = getAuth(appFirebase);
 
@@ -120,6 +121,10 @@ const Ventas2 = () => {
         }
     };
 
+    const handleSearchResults = (resultados) => {
+        setDatos(resultados); // Actualizar los datos con los resultados de la búsqueda
+    };
+
     // Formateo fecha
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -138,6 +143,12 @@ const Ventas2 = () => {
                     subtitulo={"Seguimiento y control de transacciones"}
                 >
                     <Alert message={alertMessage.message} type={alertMessage.type} />
+                    <SearchBar
+                        placeholder="Buscar ventas..."
+                        table="ventas" // El nombre de tu tabla en Supabase
+                        columns={["nota_venta"]} // Las columnas donde quieres realizar la búsqueda
+                        onSearchResults={handleSearchResults}
+                    />
                     <TablaGenerica
                         columnas={columnas}
                         datos={datos}

@@ -7,6 +7,7 @@ import ModalEditar from "../componentesTablasDatos/ModalEditar";
 import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
+import SearchBar from "../SearchBar";
 
 const auth = getAuth(appFirebase);
 
@@ -167,6 +168,10 @@ const Productos2 = () => {
         }
         return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
     };
+
+    const handleSearchResults = (resultados) => {
+        setDatos(resultados); // Actualizar los datos con los resultados de la búsqueda
+    };
     
 
     return (
@@ -178,6 +183,12 @@ const Productos2 = () => {
                     subtitulo={"Gestiona los Productos y sus características"}
                 >
                     <Alert message={alertMessage.message} type={alertMessage.type} />
+                    <SearchBar
+                        placeholder="Buscar productos..."
+                        table="productos" // El nombre de tu tabla en Supabase
+                        columns={["nombre", "descripcion"]} // Las columnas donde quieres realizar la búsqueda
+                        onSearchResults={handleSearchResults}
+                    />
                     <TablaGenerica
                         columnas={columnas}
                         datos={datos}

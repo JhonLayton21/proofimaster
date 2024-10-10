@@ -7,6 +7,7 @@ import ModalEditar from "../componentesTablasDatos/ModalEditar";
 import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
+import SearchBar from '../SearchBar';
 
 const auth = getAuth(appFirebase);
 
@@ -23,8 +24,8 @@ const Clientes = () => {
     const fetchTipoClientes = async () => {
         try {
             const { data, error } = await supabase
-                .from('tipo_clientes')  
-                .select('*');  
+                .from('tipo_clientes')
+                .select('*');
 
             if (error) {
                 throw error;
@@ -38,7 +39,7 @@ const Clientes = () => {
     const fetchData = async () => {
         try {
             const { data, error } = await supabase
-                .from('clientes')  
+                .from('clientes')
                 .select(` 
                     id, 
                     nombre_cliente,
@@ -46,7 +47,7 @@ const Clientes = () => {
                     email_cliente,
                     telefono_cliente,
                     tipo_clientes( id,tipo )
-                `);  
+                `);
 
             if (error) {
                 throw error;
@@ -59,7 +60,7 @@ const Clientes = () => {
                 tipo_cliente: tipo_clientes.tipo
             }));
 
-            setColumnas(Object.keys(clientesConTipoCliente[0]));  
+            setColumnas(Object.keys(clientesConTipoCliente[0]));
             setDatos(clientesConTipoCliente);
         } catch (error) {
             console.error('Error al obtener los clientes:', error);
@@ -72,17 +73,17 @@ const Clientes = () => {
         fetchTipoClientes();
 
         const channel = supabase
-            .channel('custom-all-channel') 
-            .on('postgres_changes', 
-                { event: '*', schema: 'public', table: 'clientes' }, 
+            .channel('custom-all-channel')
+            .on('postgres_changes',
+                { event: '*', schema: 'public', table: 'clientes' },
                 (payload) => {
-                    fetchData(); 
+                    fetchData();
                 }
             )
             .subscribe();
 
         return () => {
-            supabase.removeChannel(channel); 
+            supabase.removeChannel(channel);
         };
     }, []);
 
@@ -101,20 +102,24 @@ const Clientes = () => {
     const handleDelete = async (id) => {
         try {
             const { error } = await supabase
-                .from('clientes')  
+                .from('clientes')
                 .delete()
-                .eq('id', id);  
+                .eq('id', id);
 
             if (error) {
                 throw error;
             }
 
-            fetchData();  
+            fetchData();
             showAlert('Cliente eliminado exitosamente', 'delete');
         } catch (error) {
             console.error('Error al eliminar el cliente:', error);
             showAlert('Error al eliminar el cliente', 'error');
         }
+    };
+
+    const handleSearchResults = (resultados) => {
+        setDatos(resultados); // Actualizar los datos con los resultados de la búsqueda
     };
 
     return (
@@ -126,6 +131,12 @@ const Clientes = () => {
                     subtitulo={"Gestiona los clientes y su información básica"}
                 >
                     <Alert message={alertMessage.message} type={alertMessage.type} />
+                    <SearchBar
+                        placeholder="Buscar clientes..."
+                        table="clientes" // El nombre de tu tabla en Supabase
+                        columns={["nombre_cliente", "email_cliente", "telefono_cliente", "direccion_cliente"]} // Las columnas donde quieres realizar la búsqueda
+                        onSearchResults={handleSearchResults}
+                    />
                     <TablaGenerica
                         columnas={columnas}
                         datos={datos}

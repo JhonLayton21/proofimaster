@@ -7,6 +7,7 @@ import ModalEditar from "../componentesTablasDatos/ModalEditar";
 import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
+import SearchBar from '../SearchBar';
 
 const auth = getAuth(appFirebase);
 
@@ -84,6 +85,10 @@ const TipoClientes = () => {
         }
     };
 
+    const handleSearchResults = (resultados) => {
+        setDatos(resultados); // Actualizar los datos con los resultados de la búsqueda
+    };
+
 
     return (
         <div className="grid grid-cols-12 gap-0 h-full overflow-auto">
@@ -95,6 +100,12 @@ const TipoClientes = () => {
                     subtitulo={"Gestiona los tipos de clientes"}
                 >
                     <Alert message={alertMessage.message} type={alertMessage.type} />
+                    <SearchBar
+                        placeholder="Buscar tipos cliente..."
+                        table="tipo_clientes" // El nombre de tu tabla en Supabase
+                        columns={["tipo"]} // Las columnas donde quieres realizar la búsqueda
+                        onSearchResults={handleSearchResults}
+                    />
                     <TablaGenerica
                         columnas={columnas}
                         datos={datos}
