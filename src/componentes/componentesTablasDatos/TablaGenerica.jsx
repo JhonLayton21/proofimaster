@@ -42,14 +42,15 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert, disa
                                 </td>
                             ))}
                             <td className="px-6 py-4 text-right">
-                                <button
-                                    className={`text-blue-600 dark:bg-[#242424] m-1 ${disableEdit ? 'cursor-not-allowed opacity-50' : 'hover:underline'}`}
-                                    onClick={() => !disableEdit && onEdit(fila)}
-                                    disabled={disableEdit}
-                                >
-                                    Editar
-                                    <FontAwesomeIcon icon={faPenToSquare} className="ml-1" />
-                                </button>
+                                {!disableEdit && (
+                                    <button
+                                        className="text-blue-600 dark:bg-[#242424] m-1 hover:underline"
+                                        onClick={() => onEdit(fila)}
+                                    >
+                                        Editar
+                                        <FontAwesomeIcon icon={faPenToSquare} className="ml-1" />
+                                    </button>
+                                )}
                                 <button
                                     className="text-red-600 dark:bg-[#242424] hover:underline m-1"
                                     onClick={() => {
@@ -72,6 +73,7 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert, disa
 );
 
 export default TablaGenerica;
+
 
 
 
