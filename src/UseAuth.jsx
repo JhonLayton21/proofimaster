@@ -12,63 +12,75 @@ export const useAuth = () => {
 // Proveedor de autenticación
 export const AuthProvider = ({ children }) => {
   const [usuario, setUsuario] = useState(null);
-  const [rol, setRol] = useState(null); // Nuevo estado para el rol
-  const [loading, setLoading] = useState(true); // Estado de carga
+  const [rol, setRol] = useState(null); 
+  const [loading, setLoading] = useState(true);
+
+  // Función para cargar permisos del usuario
+  const cargarPermisos = async (userId) => {
+    try {
+      const { data: permisos, error: permisosError } = await supabase
+        .from('permisos_usuarios')
+        .select('rol')
+        .eq('user_id', userId)
+        .single();
+      
+      if (permisosError || !permisos) {
+        setRol(null);
+      } else {
+        setRol(permisos.rol);
+      }
+    } catch (error) {
+      setRol(null);
+    }
+  };
 
   useEffect(() => {
     const verificarSesion = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (session?.user) {
-        setUsuario(session.user);
-        // Verificar permisos
-        const { data: permisos, error: permisosError } = await supabase
-          .from('permisos_usuarios')
-          .select('rol')
-          .eq('user_id', session.user.id)
-          .single();
-
-        if (permisosError || !permisos) {
-          setRol(null);
+      try {
+        // Verificar si existe una sesión
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          setUsuario(session.user);
+          await cargarPermisos(session.user.id);
         } else {
-          setRol(permisos.rol);
+          setUsuario(null);
+          setRol(null);
         }
-      } else {
+      } catch (error) {
+        console.error("Error al verificar la sesión: ", error);
         setUsuario(null);
         setRol(null);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     verificarSesion();
 
+    // Detectar cambios en el estado de autenticación
     const { data: subscription } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setUsuario(session?.user || null);
-      setLoading(false); // Indicar que ya no está cargando
+      setLoading(true); // Iniciar carga en caso de cambio de sesión
       if (session?.user) {
-        // Verificar permisos nuevamente en caso de cambio de sesión
-        const { data: permisos, error: permisosError } = await supabase
-          .from('permisos_usuarios')
-          .select('rol')
-          .eq('user_id', session.user.id)
-          .single();
-          
-        if (permisosError || !permisos) {
-          setRol(null);
-        } else {
-          setRol(permisos.rol);
-        }
+        setUsuario(session.user);
+        await cargarPermisos(session.user.id);
       } else {
+        setUsuario(null);
         setRol(null);
       }
+      setLoading(false);
     });
 
+    // Al cerrar la ventana, cerrar sesión
+    const handleBeforeUnload = () => {
+      supabase.auth.signOut(); // Cerrar la sesión cuando la pestaña o ventana se cierre
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
     return () => {
-      // Asegúrate de que subscription sea válido antes de intentar desuscribirte
-      if (subscription && typeof subscription.unsubscribe === 'function') {
-        subscription.unsubscribe();
-      }
+      subscription?.unsubscribe?.();
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, []);
 
@@ -78,3 +90,4 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
