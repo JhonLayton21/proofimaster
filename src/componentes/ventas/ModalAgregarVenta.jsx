@@ -136,7 +136,6 @@ const ModalAgregarVenta = ({ isOpen, onClose }) => {
         }));
     };
 
-
     // Calcular subtotal
     const calcularSubtotal = () => {
         // Calcular subtotal de productos seleccionados
@@ -147,8 +146,8 @@ const ModalAgregarVenta = ({ isOpen, onClose }) => {
         console.log("Subtotal actual:", subtotalProductos);
 
         // Obtener el precio del método de envío seleccionado
-        const metodoEnvioSeleccionado = metodoEnvio.find(envio => envio.id === newSale.metodoEnvioVentaId);
-        const precioEnvio = metodoEnvioSeleccionado ? metodoEnvioSeleccionado.precio * 1000 : 0;
+        const metodoEnvioSeleccionado = metodoEnvio.find(envio => envio.id === parseInt(newSale.metodoEnvioVentaId, 10));
+        const precioEnvio = metodoEnvioSeleccionado ? metodoEnvioSeleccionado.precio : 0;
         console.log("Precio del método de envío seleccionado:", precioEnvio);
         console.log('Método de envío seleccionado:', newSale.metodoEnvioVentaId);
 
