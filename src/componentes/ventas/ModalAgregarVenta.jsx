@@ -231,10 +231,10 @@ const ModalAgregarVenta = ({ isOpen, onClose }) => {
     // Envio info del formulario de ventas
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         // Muestra los productos seleccionados para depuración
         console.log("Productos seleccionados:", productosSeleccionados);
-
+    
         const productosFiltrados = Object.entries(productosSeleccionados)
             .filter(([id, detalles]) => detalles)
             .map(([id, detalles]) => ({
@@ -242,10 +242,10 @@ const ModalAgregarVenta = ({ isOpen, onClose }) => {
                 cantidad: detalles.cantidad,
                 precio: detalles.precio
             }));
-
+    
         // Muestra los productos filtrados que se insertarán
         console.log("Productos filtrados para la venta:", productosFiltrados);
-
+    
         try {
             // Muestra los datos de la venta antes de la inserción
             console.log("Datos de la venta a insertar:", {
@@ -259,14 +259,14 @@ const ModalAgregarVenta = ({ isOpen, onClose }) => {
                 subtotal: subtotal,
                 total: total,
             });
-
+    
             // Verificar cantidad de stock antes de procesar la venta
             const stockDisponible = await verificarStockDisponible(productosSeleccionados);
             if (!stockDisponible) {
                 alert("Stock insuficiente para uno o más productos.");
                 return;
             }
-
+    
             // Inserta la venta en Supabase
             const { data: ventaData, error: ventaError } = await supabase
                 .from('ventas')
@@ -282,25 +282,21 @@ const ModalAgregarVenta = ({ isOpen, onClose }) => {
                     total: total,
                 }])
                 .select();
-
-            // Verifica si hubo un error al insertar la venta
+    
             if (ventaError) {
                 console.error("Error al agregar la venta en Supabase:", ventaError);
                 throw new Error("Error al agregar la venta");
             }
-
-            // Muestra los datos devueltos por Supabase tras la inserción de la venta
+    
             console.log("Datos de la venta insertados en Supabase:", ventaData);
-
-            // Verifica si los datos de la venta están vacíos o son nulos
+    
             if (!ventaData || ventaData.length === 0) {
                 console.error("Error: ventaData está vacío o es null");
                 return;
             }
-
-            // Muestra el ID de la venta insertada
+    
             console.log("ID de la venta insertada:", ventaData[0].id);
-
+    
             // Inserta los productos de la venta en Supabase
             const { error: productosError } = await supabase
                 .from('venta_productos')
@@ -310,28 +306,35 @@ const ModalAgregarVenta = ({ isOpen, onClose }) => {
                     cantidad: producto.cantidad,
                     precio: producto.precio,
                 })));
-
-            // Verifica si hubo un error al insertar los productos
+    
             if (productosError) {
                 console.error("Error al agregar los productos de la venta en Supabase:", productosError);
                 throw new Error("Error al agregar los productos de la venta");
             }
-
-            // Actualizar stock productos
-            await actualizarStockProductos(productosSeleccionados);
-
+    
+            // Solo actualiza el stock si el estado de la venta es "Completado"
+            const estadoVentaCompletadoId = 1; // Reemplaza con el ID real de "Completado"
+            if (parseInt(newSale.estadoVentaId, 10) === estadoVentaCompletadoId) {
+                // Actualizar stock productos
+                await actualizarStockProductos(productosSeleccionados);
+                console.log("Stock de productos actualizado.");
+            } else {
+                console.log("La venta no está completada, el stock no se ha actualizado.");
+            }
+    
             // Si todo fue exitoso, muestra los datos completos
             console.log("Venta y productos agregados exitosamente:", {
                 venta: ventaData,
                 productos: productosFiltrados
             });
-
+    
             // Cierra el modal
             onClose();
         } catch (err) {
             console.error("Error al agregar la venta:", err);
         }
     };
+    
 
     if (!isOpen) return null;
 
