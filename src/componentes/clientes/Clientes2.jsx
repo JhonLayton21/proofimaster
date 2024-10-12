@@ -8,6 +8,8 @@ import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
 import SearchBar from '../SearchBar';
+import Filter from './Filter';
+import Paginacion from '../Busqueda_Filtrado_Paginacion/Paginacion';  
 
 const auth = getAuth(appFirebase);
 
@@ -20,6 +22,9 @@ const Clientes = () => {
     const [editingItem, setEditingItem] = useState(null);
     const [alertMessage, setAlertMessage] = useState('');
     const [tiposClientes, setTiposClientes] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);  // Página actual
+    const [totalItems, setTotalItems] = useState(0);  // Total de elementos
+    const itemsPerPage = 5;  // Número de elementos por página
 
     const fetchTipoClientes = async () => {
         try {
@@ -38,7 +43,7 @@ const Clientes = () => {
 
     const fetchData = async () => {
         try {
-            const { data, error } = await supabase
+            const { data, error, count } = await supabase
                 .from('clientes')
                 .select(` 
                     id, 
@@ -47,7 +52,8 @@ const Clientes = () => {
                     email_cliente,
                     telefono_cliente,
                     tipo_clientes( id,tipo )
-                `);
+                `, { count: 'exact' })
+                .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Consultar el rango de elementos
 
             if (error) {
                 throw error;
@@ -60,8 +66,9 @@ const Clientes = () => {
                 tipo_cliente: tipo_clientes.tipo
             }));
 
-            setColumnas(Object.keys(clientesConTipoCliente[0]));
+            setColumnas(Object.keys(clientesConTipoCliente[0] || {}));
             setDatos(clientesConTipoCliente);
+            setTotalItems(count);  // Actualizar el total de elementos
         } catch (error) {
             console.error('Error al obtener los clientes:', error);
         }
@@ -85,20 +92,24 @@ const Clientes = () => {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, []);
+    }, [currentPage]);
 
+    // mostrar alertas
     const showAlert = (message, type = 'info') => {
         setAlertMessage({ message, type });
         setTimeout(() => setAlertMessage(''), 3000);
     };
 
+    // manejar agregar 
     const handleAdd = () => setIsAddModalOpen(true);
 
+    // manejar editar
     const handleEdit = (item) => {
         setEditingItem(item);
         setIsEditModalOpen(true);
     };
 
+    // manejar eliminar
     const handleDelete = async (id) => {
         try {
             const { error } = await supabase
@@ -118,6 +129,7 @@ const Clientes = () => {
         }
     };
 
+    // manejar resultados
     const handleSearchResults = (resultados) => {
         setDatos(resultados); // Actualizar los datos con los resultados de la búsqueda
     };
@@ -133,10 +145,11 @@ const Clientes = () => {
                     <Alert message={alertMessage.message} type={alertMessage.type} />
                     <SearchBar
                         placeholder="Buscar clientes..."
-                        table="clientes" // El nombre de tu tabla en Supabase
-                        columns={["nombre_cliente", "email_cliente", "telefono_cliente", "direccion_cliente"]} // Las columnas donde quieres realizar la búsqueda
+                        table="clientes" 
+                        columns={["nombre_cliente", "email_cliente", "telefono_cliente", "direccion_cliente"]} 
                         onSearchResults={handleSearchResults}
                     />
+                    <Filter />
                     <TablaGenerica
                         columnas={columnas}
                         datos={datos}
@@ -144,6 +157,13 @@ const Clientes = () => {
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                         onAlert={showAlert}
+                    />
+                    <Paginacion
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        totalItems={totalItems}
+                        setTotalItems={setTotalItems}
+                        itemsPerPage={itemsPerPage}
                     />
                 </MenuPrincipal>
             </div>
@@ -212,3 +232,4 @@ const Clientes = () => {
 };
 
 export default Clientes;
+
