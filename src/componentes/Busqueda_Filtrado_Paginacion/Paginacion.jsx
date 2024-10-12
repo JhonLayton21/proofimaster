@@ -2,23 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../supabase';
 
 const Paginacion = ({ currentPage, setCurrentPage, totalItems, setTotalItems, itemsPerPage }) => {
-  const [data, setData] = useState([]); // Estado para almacenar datos
-  
+  const [data, setData] = useState([]); // Estado para almacenar los datos
+  const [nextPageData, setNextPageData] = useState(null); // Estado para almacenar los datos de la siguiente página
 
   // Determinar número total de páginas
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   // Función para ir a la siguiente página
   const nextPage = () => {
-    if (currentPage < totalPages) { // Si la página actual es menor que el total de páginas
-      setCurrentPage(currentPage + 1); // Incrementar la página actual
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      if (nextPageData) {
+        setData(nextPageData); // Si los datos de la siguiente página ya están cargados, los usamos
+      }
     }
   };
 
   // Función para ir a la página anterior
   const prevPage = () => {
-    if (currentPage > 1) { // Si la página actual es mayor que 1
-      setCurrentPage(currentPage - 1); // Decrementar la página actual
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
     }
   };
 
@@ -29,7 +32,7 @@ const Paginacion = ({ currentPage, setCurrentPage, totalItems, setTotalItems, it
 
     const { data, error, count } = await supabase
       .from('clientes')
-      .select('*', { count: 'exact' }) // Solicitar los registros con un conteo exacto
+      .select('*', { count: 'exact' })
       .range(start, end); // Solicitar los registros del rango actual
 
     if (error) {
@@ -40,9 +43,29 @@ const Paginacion = ({ currentPage, setCurrentPage, totalItems, setTotalItems, it
     }
   };
 
-  // Efecto para llamar a la función de fetchData cuando la página cambie
+  // Función para prefetch de la siguiente página
+  const prefetchNextPage = async (page) => {
+    if (page < totalPages) { // Si no estamos en la última página
+      const start = page * itemsPerPage;
+      const end = start + itemsPerPage - 1;
+
+      const { data, error } = await supabase
+        .from('clientes')
+        .select('*')
+        .range(start, end); // Obtener datos de la siguiente página
+
+      if (error) {
+        console.error('Error fetching next page data:', error);
+      } else {
+        setNextPageData(data); // Guardar los datos de la siguiente página
+      }
+    }
+  };
+
+  // Efecto para llamar a la función de fetchData y prefetchNextPage cuando la página cambie
   useEffect(() => {
-    fetchData(currentPage); // Llamar la función pasando la página actual
+    fetchData(currentPage); // Llamar a la función pasando la página actual
+    prefetchNextPage(currentPage); // Prefetch de la siguiente página
   }, [currentPage]);
 
   // Calcular los elementos que se están mostrando en la página actual
@@ -71,4 +94,5 @@ const Paginacion = ({ currentPage, setCurrentPage, totalItems, setTotalItems, it
 }
 
 export default Paginacion;
+
 
