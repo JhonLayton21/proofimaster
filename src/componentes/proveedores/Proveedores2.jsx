@@ -8,6 +8,7 @@ import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
 import SearchBar from "../SearchBar";
+import Paginacion from "../Busqueda_Filtrado_Paginacion/Paginacion";
 
 const auth = getAuth(appFirebase);
 
@@ -20,6 +21,9 @@ const Proveedores2 = () => {
     const [editingItem, setEditingItem] = useState(null);
     const [alertMessage, setAlertMessage] = useState('');
     const [metodosPago, setMetodosPago] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1); // Estado para la página actual
+    const [totalItems, setTotalItems] = useState(0); // Estado para el total de proveedores
+    const itemsPerPage = 2; // Número de elementos por página
 
     // Actualizaciones en tiempo real
     useEffect(() => {
@@ -27,25 +31,25 @@ const Proveedores2 = () => {
         fetchMetodosPago();
 
         const channel = supabase
-            .channel('custom-all-channel') 
-            .on('postgres_changes', 
-                { event: '*', schema: 'public', table: 'proveedores' }, 
+            .channel('custom-all-channel')
+            .on('postgres_changes',
+                { event: '*', schema: 'public', table: 'proveedores' },
                 (payload) => {
-                    fetchData(); 
+                    fetchData();
                 }
             )
             .subscribe();
 
         return () => {
-            supabase.removeChannel(channel); 
+            supabase.removeChannel(channel);
         };
-    }, []);
+    }, [currentPage]); // Ejecutar fetchData al cambiar de página
 
     const fetchMetodosPago = async () => {
         try {
             const { data, error } = await supabase
-                .from('metodo_pago')  
-                .select('*');  
+                .from('metodo_pago')
+                .select('*');
 
             if (error) {
                 throw error;
@@ -59,7 +63,7 @@ const Proveedores2 = () => {
 
     const fetchData = async () => {
         try {
-            const { data, error } = await supabase
+            const { data, error, count } = await supabase
                 .from('proveedores')
                 .select(`
                     id, 
@@ -69,27 +73,29 @@ const Proveedores2 = () => {
                     nombre_proveedor,
                     telefono_proveedor,
                     metodo_pago (id, metodo)
-                `);
-    
+                `, { count: 'exact' })
+                .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);
+
             if (error) {
                 throw error;
             }
-    
+
             // Usamos desestructuración directamente dentro del map para aplanar el objeto 'metodo_pago'
             const proveedoresConMetodo = data.map(({ metodo_pago, ...resto }) => ({
                 ...resto,
                 metodo_pago_id: metodo_pago.id,
                 metodo_pago: metodo_pago.metodo
             }));
-    
+
             // Actualizamos el estado con los datos ya modificados
-            setColumnas(Object.keys(proveedoresConMetodo[0]));  
+            setColumnas(Object.keys(proveedoresConMetodo[0]));
             setDatos(proveedoresConMetodo);
+            setTotalItems(count);  // Actualizar total de elementos
         } catch (error) {
             console.error('Error al obtener los proveedores:', error);
         }
     };
-    
+
 
     const showAlert = (message, type = 'info') => {
         setAlertMessage({ message, type });
@@ -106,15 +112,15 @@ const Proveedores2 = () => {
     const handleDelete = async (id) => {
         try {
             const { error } = await supabase
-                .from('proveedores')  
+                .from('proveedores')
                 .delete()
-                .eq('id', id);  
+                .eq('id', id);
 
             if (error) {
                 throw error;
             }
 
-            fetchData();  
+            fetchData();
             showAlert('Proveedor eliminado exitosamente', 'delete');
         } catch (error) {
             console.error('Error al eliminar el proveedor:', error);
@@ -149,6 +155,16 @@ const Proveedores2 = () => {
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                         onAlert={showAlert}
+                    />
+                    <Paginacion
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        totalItems={totalItems}
+                        setTotalItems={setTotalItems}
+                        itemsPerPage={itemsPerPage}
+                        tableName="proveedores" // Nombre de la tabla en Supabase
+                        columns="*" // Columnas a seleccionar (puedes personalizar si lo deseas)
+                        processData={(data) => data} // Procesar los datos (si es necesario)
                     />
                 </MenuPrincipal>
             </div>

@@ -26,6 +26,7 @@ const Clientes = () => {
     const [totalItems, setTotalItems] = useState(0);  // Total de elementos
     const itemsPerPage = 5;  // Número de elementos por página
 
+    // Fetch de tipos de clientes
     const fetchTipoClientes = async () => {
         try {
             const { data, error } = await supabase
@@ -41,6 +42,7 @@ const Clientes = () => {
         }
     };
 
+    // Fetch de clientes con paginación
     const fetchData = async () => {
         try {
             const { data, error, count } = await supabase
@@ -53,13 +55,13 @@ const Clientes = () => {
                     telefono_cliente,
                     tipo_clientes( id,tipo )
                 `, { count: 'exact' })
-                .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Consultar el rango de elementos
+                .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Paginación
 
             if (error) {
                 throw error;
             }
 
-            // configurar objeto tipo_clientes
+            // Configurar tipo_clientes
             const clientesConTipoCliente = data.map(({ tipo_clientes, ...resto }) => ({
                 ...resto,
                 tipo_cliente_id: tipo_clientes.id,
@@ -68,7 +70,7 @@ const Clientes = () => {
 
             setColumnas(Object.keys(clientesConTipoCliente[0] || {}));
             setDatos(clientesConTipoCliente);
-            setTotalItems(count);  // Actualizar el total de elementos
+            setTotalItems(count);  // Actualizar total de elementos
         } catch (error) {
             console.error('Error al obtener los clientes:', error);
         }
@@ -92,24 +94,24 @@ const Clientes = () => {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [currentPage]);
+    }, [currentPage]);  // Ejecutar fetchData al cambiar de página
 
-    // mostrar alertas
+    // Mostrar alertas
     const showAlert = (message, type = 'info') => {
         setAlertMessage({ message, type });
         setTimeout(() => setAlertMessage(''), 3000);
     };
 
-    // manejar agregar 
+    // Manejar agregar
     const handleAdd = () => setIsAddModalOpen(true);
 
-    // manejar editar
+    // Manejar editar
     const handleEdit = (item) => {
         setEditingItem(item);
         setIsEditModalOpen(true);
     };
 
-    // manejar eliminar
+    // Manejar eliminar
     const handleDelete = async (id) => {
         try {
             const { error } = await supabase
@@ -129,7 +131,7 @@ const Clientes = () => {
         }
     };
 
-    // manejar resultados
+    // Manejar resultados de búsqueda
     const handleSearchResults = (resultados) => {
         setDatos(resultados); // Actualizar los datos con los resultados de la búsqueda
     };
@@ -164,6 +166,9 @@ const Clientes = () => {
                         totalItems={totalItems}
                         setTotalItems={setTotalItems}
                         itemsPerPage={itemsPerPage}
+                        tableName="clientes" // Nombre de la tabla en Supabase
+                        columns="*" // Columnas a seleccionar (puedes personalizar si lo deseas)
+                        processData={(data) => data} // Procesar los datos (si es necesario)
                     />
                 </MenuPrincipal>
             </div>
@@ -224,7 +229,7 @@ const Clientes = () => {
                         showAlert('Cliente editado exitosamente', 'edit');
                     }}
                     disabledFields={['id']}
-                    endpoint={"clientes"}
+                    endpoint="clientes"
                 />
             )}
         </div>
@@ -232,4 +237,5 @@ const Clientes = () => {
 };
 
 export default Clientes;
+
 
