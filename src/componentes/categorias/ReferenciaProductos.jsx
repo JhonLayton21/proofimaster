@@ -8,6 +8,7 @@ import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
 import SearchBar from "../SearchBar";
+import Paginacion from "../Busqueda_Filtrado_Paginacion/Paginacion";
 
 const auth = getAuth(appFirebase);
 
@@ -19,18 +20,23 @@ const ReferenciaProductos = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const [alertMessage, setAlertMessage] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);  // Página actual
+    const [totalItems, setTotalItems] = useState(0);  // Total de elementos
+    const itemsPerPage = 5;  // Número de elementos por página
 
     // DATOS REFERENCIAS PRODUCTOS
     const fetchData = async () => {
-        const { data, error } = await supabase
+        const { data, error, count } = await supabase
                 .from('referencias_productos')  
-                .select('*');  
+                .select('*', { count: 'exact' })
+                .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Paginación  
 
             if (error) {
                 throw error;
             }
         setColumnas(Object.keys(data[0]));
         setDatos(data);
+        setTotalItems(count);  // Actualizar total de elementos
     };
 
     // Actualizaciones en tiempo real
@@ -50,7 +56,7 @@ const ReferenciaProductos = () => {
         return () => {
             supabase.removeChannel(channel); 
         };
-    }, []);
+    }, [currentPage]);
 
     const showAlert = (message, type = 'info') => {
         setAlertMessage({ message, type });
@@ -111,6 +117,16 @@ const ReferenciaProductos = () => {
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                         onAlert={showAlert}
+                    />
+                    <Paginacion
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        totalItems={totalItems}
+                        setTotalItems={setTotalItems}
+                        itemsPerPage={itemsPerPage}
+                        tableName="referencias_productos" // Nombre de la tabla en Supabase
+                        columns="*" // Columnas a seleccionar (puedes personalizar si lo deseas)
+                        processData={(data) => data} // Procesar los datos (si es necesario)
                     />
                 </MenuPrincipal>
             </div>

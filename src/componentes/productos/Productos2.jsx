@@ -8,6 +8,7 @@ import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
 import SearchBar from "../SearchBar";
+import Paginacion from '../Busqueda_Filtrado_Paginacion/Paginacion';
 
 const auth = getAuth(appFirebase);
 
@@ -22,6 +23,9 @@ const Productos2 = () => {
     const [referenciasProductos, setReferenciasProductos] = useState([]);
     const [marcasProductos, setMarcasProductos] = useState([]);
     const [proveedorProductos, setProveedorProductos] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);  // Página actual
+    const [totalItems, setTotalItems] = useState(0);  // Total de elementos
+    const itemsPerPage = 1;  // Número de elementos por página
 
     const fetchReferenciasProductos = async () => {
         try {
@@ -70,7 +74,7 @@ const Productos2 = () => {
 
     const fetchData = async () => {
         try {
-            const { data, error } = await supabase
+            const { data, error, count } = await supabase
                 .from('productos')  
                 .select(`
                     id,
@@ -84,7 +88,8 @@ const Productos2 = () => {
                     marcas_productos( id, nombre ),
                     proveedores( id, nombre_proveedor ),
                     referencias_productos( id,codigo )
-                `); 
+                `, { count: 'exact' })
+                .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Paginación 
 
             if (error) {
                 throw error;
@@ -102,6 +107,7 @@ const Productos2 = () => {
 
             setColumnas(Object.keys(referenciasProductos[0]));
             setDatos(referenciasProductos);
+            setTotalItems(count);  // Actualizar total de elementos
             console.log("PRODUCTOS")
         } catch (error) {
             console.error('Error al obtener los productos:', error);
@@ -128,7 +134,7 @@ const Productos2 = () => {
         return () => {
             supabase.removeChannel(channel); 
         };
-    }, []);
+    }, [currentPage]);
 
     const showAlert = (message, type = 'info') => {
         setAlertMessage({ message, type });
@@ -196,6 +202,16 @@ const Productos2 = () => {
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                         onAlert={showAlert}
+                    />
+                    <Paginacion
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        totalItems={totalItems}
+                        setTotalItems={setTotalItems}
+                        itemsPerPage={itemsPerPage}
+                        tableName="productos" // Nombre de la tabla en Supabase
+                        columns="*" // Columnas a seleccionar (puedes personalizar si lo deseas)
+                        processData={(data) => data} // Procesar los datos (si es necesario)
                     />
                 </MenuPrincipal>
             </div>

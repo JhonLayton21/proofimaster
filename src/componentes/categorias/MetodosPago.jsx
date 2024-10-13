@@ -8,6 +8,7 @@ import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
 import SearchBar from "../SearchBar";
+import Paginacion from "../Busqueda_Filtrado_Paginacion/Paginacion";
 
 const auth = getAuth(appFirebase);
 
@@ -19,6 +20,9 @@ const MetodosPago = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const [alertMessage, setAlertMessage] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);  // Página actual
+    const [totalItems, setTotalItems] = useState(0);  // Total de elementos
+    const itemsPerPage = 5;  // Número de elementos por página
 
     // Actualizaciones en tiempo real
     useEffect(() => {
@@ -37,18 +41,20 @@ const MetodosPago = () => {
         return () => {
             supabase.removeChannel(channel); 
         };
-    }, []);
+    }, [currentPage]);
 
     const fetchData = async () => {
-        const { data, error } = await supabase
+        const { data, error, count } = await supabase
                 .from('metodo_pago')  
-                .select('*');  
+                .select('*', { count: 'exact' })
+                .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Paginación   
 
             if (error) {
                 throw error;
             }
         setColumnas(Object.keys(data[0]));
         setDatos(data);
+        setTotalItems(count);  // Actualizar total de elementos
     };
 
     const showAlert = (message, type = 'info') => {
@@ -108,6 +114,16 @@ const MetodosPago = () => {
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                         onAlert={showAlert}
+                    />
+                    <Paginacion
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        totalItems={totalItems}
+                        setTotalItems={setTotalItems}
+                        itemsPerPage={itemsPerPage}
+                        tableName="metodo_pago" // Nombre de la tabla en Supabase
+                        columns="*" // Columnas a seleccionar (puedes personalizar si lo deseas)
+                        processData={(data) => data} // Procesar los datos (si es necesario)
                     />
                 </MenuPrincipal>
             </div>

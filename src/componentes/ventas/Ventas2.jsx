@@ -11,6 +11,7 @@ import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
 import SearchBar from "../SearchBar";
+import Paginacion from '../Busqueda_Filtrado_Paginacion/Paginacion';
 
 const auth = getAuth(appFirebase);
 
@@ -21,7 +22,10 @@ const Ventas2 = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [editingItem, setEditingItem] = useState(null)
+    const [editingItem, setEditingItem] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);  // Página actual
+    const [totalItems, setTotalItems] = useState(0);  // Total de elementos
+    const itemsPerPage = 2;  // Número de elementos por página
 
     useEffect(() => {
         fetchData();
@@ -30,7 +34,7 @@ const Ventas2 = () => {
     // Info base de datos
     const fetchData = async () => {
         try {
-            const { data, error } = await supabase
+            const { data, error, count } = await supabase
                 .from('ventas')
                 .select(`
                     id,
@@ -46,7 +50,8 @@ const Ventas2 = () => {
                     venta_productos (
                         productos (nombre)
                     )
-                `);
+                `, { count: 'exact' })
+                .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Paginación
 
             if (error) {
                 throw error;
@@ -63,6 +68,7 @@ const Ventas2 = () => {
 
             setColumnas(Object.keys(referenciasVentas[0]));
             setDatos(referenciasVentas);
+            setTotalItems(count);  // Actualizar total de elementos
         } catch (error) {
             console.error('Error al obtener las ventas:', error);
         }
@@ -85,7 +91,7 @@ const Ventas2 = () => {
         return () => {
             supabase.removeChannel(channel); 
         };
-    }, []);
+    }, [currentPage]);
 
     // Alerta segun el caso
     const showAlert = (message, type = 'info') => {
@@ -157,6 +163,16 @@ const Ventas2 = () => {
                         onDelete={handleDelete}
                         onAlert={showAlert}
                         disableEdit={true}
+                    />
+                    <Paginacion
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        totalItems={totalItems}
+                        setTotalItems={setTotalItems}
+                        itemsPerPage={itemsPerPage}
+                        tableName="ventas" // Nombre de la tabla en Supabase
+                        columns="*" // Columnas a seleccionar (puedes personalizar si lo deseas)
+                        processData={(data) => data} // Procesar los datos (si es necesario)
                     />
                 </MenuPrincipal>
             </div>
