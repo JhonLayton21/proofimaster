@@ -8,7 +8,6 @@ import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
 import SearchBar from '../SearchBar';
-import Filter from './Filter';
 import Paginacion from '../Busqueda_Filtrado_Paginacion/Paginacion';  
 
 const auth = getAuth(appFirebase);
@@ -151,7 +150,6 @@ const Clientes = () => {
                         columns={["nombre_cliente", "email_cliente", "telefono_cliente", "direccion_cliente"]} 
                         onSearchResults={handleSearchResults}
                     />
-                    <Filter />
                     <TablaGenerica
                         columnas={columnas}
                         datos={datos}
