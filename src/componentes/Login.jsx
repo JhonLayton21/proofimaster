@@ -1,31 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import Proofisillas2 from '../../public/proofisillas2.svg';
-import '../App.css';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { useAuth } from '../UseAuth'; 
-import { supabase } from '../../supabase';
+import React, { useState, useEffect } from "react";
+import Proofisillas2 from "../../public/proofisillas2.svg"; // Logo de la empresa
+import "../App.css";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useAuth } from "../UseAuth"; 
+import { supabase } from "../../supabase";
 
 const Login = () => {
   const [error, setError] = useState(null);
-  const { usuario, rol, loading } = useAuth(); // Desestructurar usuario y rol del contexto
+  const { usuario, rol, loading } = useAuth(); 
   const navigate = useNavigate();
 
-  const redirectTo = process.env.NODE_ENV === 'development'
-    ? 'http://localhost:5173/'
-    : 'https://proofimaster.vercel.app/';
+  const redirectTo = process.env.NODE_ENV === "development"
+    ? "http://localhost:5173/"
+    : "https://proofimaster.vercel.app/";
 
   useEffect(() => {
-    // Redirigir según el rol una vez que se haya verificado
     if (!loading) {
       if (usuario) {
-        if (rol === 'admin') {
-          navigate('/configuracion');
-        } else if (rol === 'user') {
-          navigate('/');
-        } else if (rol === 'sin_permiso') {
-          navigate('/solicitar-permiso');
+        if (rol === "admin") {
+          navigate("/configuracion");
+        } else if (rol === "user") {
+          navigate("/");
+        } else if (rol === "sin_permiso") {
+          navigate("/solicitar-permiso");
         } else {
-          navigate('/login');
+          navigate("/login");
         }
       }
     }
@@ -34,41 +33,103 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo
-        }
+        provider: "google",
+        options: { redirectTo },
       });
 
       if (error) throw error;
-      
-      // No es necesario navegar manualmente aquí
     } catch (error) {
       setError(error.message);
     }
   };
 
-  // Si está cargando, no renderizar nada o mostrar un loader
   if (loading) {
-    return <div>Cargando...</div>; // O algún spinner
+    return <div>Cargando...</div>;
   }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 h-full">
-      <div className="bg-gradient-to-b from-yellow-500 to-orange-500 p-6 flex flex-col items-center justify-center lg:rounded-bl-3xl lg:rounded-tl-3xl relative overflow-hidden">
-        <h1 className="text-center text-slate-50 font-semibold text-3xl lg:text-left">Bienvenido a PROOFIMASTER</h1>
-        <p className="text-center text-slate-50 font-medium italic my-3 lg:text-left">Gestiona tu negocio fácilmente y enfócate en la productividad</p>
-        <img src={Proofisillas2} alt="" className="h-32 w-32 lg:h-auto lg:w-auto lg:absolute lg:relative bottom-8 right-8 lg:bottom-0 lg:right-0 lg:h-[480px] lg:w-[480px] object-contain lg:object-scale-down mx-auto lg:mx-0" />
-      </div>
+      {/* Lado izquierdo vacío */}
+      <div className="bg-gradient-to-b from-yellow-500 to-orange-500 p-6 lg:rounded-bl-3xl lg:rounded-tl-3xl"></div>
 
-      <div className="dark:bg-[#242424] bg-[#D3D3D3] lg:col-span-1 p-6 flex flex-col justify-center items-center lg:rounded-bl-3xl lg:rounded-tl-3xl lg:h-full">
-        <button onClick={handleGoogleLogin} className="bg-[#DB4437] text-white font-bold py-2 px-4 rounded-xl w-full text-2xl btnLogin mt-4">
-          Iniciar sesión con Google
-        </button>
+      {/* Lado derecho con el formulario de inicio de sesión */}
+      <div className="dark:bg-[#242424] bg-[#242424] lg:col-span-1 p-6 flex flex-col justify-center items-center lg:rounded-bl-3xl lg:rounded-tl-3xl lg:h-full">
+        {/* Mensaje de bienvenida centrado en la parte superior */}
+        <h2 className="text-white text-3xl font-bold mb-8 absolute top-8 text-center w-full">
+          ¡Bienvenido a Proofisillas!
+        </h2>
 
-        <div className="flex flex-col lg:flex-row justify-between w-full mt-4 text-xs dark:text-slate-50 text-[#757575] lg:mt-auto">
-          <p className="mb-2 lg:mb-0">Eres cliente de Proofisillas? <a href="https://proofisillas.com/" className="text-[#E06D00] font-bold">Accede aquí</a></p>
-          <p>Olvidaste tu contraseña? <a href="https://proofisillas.com/" className="text-[#E06D00] font-bold">Recupera tu cuenta aquí</a></p>
+        {/* Logo de la empresa */}
+        <img
+          src={Proofisillas2} // Logo de la empresa
+          alt="Logo de Proofisillas"
+          className="h-auto w-auto lg:h-[120px] lg:w-[120px] object-contain mb-8"
+        />
+
+        <h3 className="text-white text-3xl font-extrabold mb-8">Iniciar sesión</h3>
+
+        <div className="space-y-4 w-full">
+          <div>
+            <input
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              className="bg-[#333] text-white w-full text-sm px-4 py-2.5 rounded-md outline-blue-600 focus:bg-transparent"
+              placeholder="Correo electrónico"
+            />
+          </div>
+          <div>
+            <input
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              className="bg-[#333] text-white w-full text-sm px-4 py-2.5 rounded-md outline-blue-600 focus:bg-transparent"
+              placeholder="Contraseña"
+            />
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center">
+              <input
+                id="remember-me"
+                name="remember-me"
+                type="checkbox"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label htmlFor="remember-me" className="ml-3 block text-sm text-white">
+                Recordarme
+              </label>
+            </div>
+            <div className="text-sm">
+              <a href="javascript:void(0);" className="text-blue-600 hover:text-blue-500 font-semibold">
+                Olvidaste tu contraseña?
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="!mt-8 w-full">
+          <button
+            type="button"
+            className="w-full shadow-xl py-3 px-4 text-sm font-semibold rounded text-white bg-[#4CAF50] hover:bg-green-600 focus:outline-none"
+          >
+            Iniciar sesión
+          </button>
+        </div>
+
+        <div className="space-x-6 flex justify-center mt-8">
+          <button 
+            onClick={handleGoogleLogin} 
+            className="border-none outline-none bg-transparent p-0"
+          >
+            {/* Logo de Google - solo la "G" */}
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png"
+              alt="Google logo"
+              className="w-10 h-10"
+            />
+          </button>
         </div>
       </div>
     </div>
@@ -76,15 +137,3 @@ const Login = () => {
 };
 
 export default Login;
-
-
-
-
-
-
-
-
-
-
-
-
