@@ -151,8 +151,9 @@ const Ventas2 = () => {
                     <Alert message={alertMessage.message} type={alertMessage.type} />
                     <SearchBar
                         placeholder="Buscar ventas..."
-                        table="ventas" // El nombre de tu tabla en Supabase
-                        columns={["nota_venta"]} // Las columnas donde quieres realizar la búsqueda
+                        rpcFunctionAll="obtener_ventas"
+                        rpcFunctionSearch="buscar_ventas"
+                        searchParams="search_query"
                         onSearchResults={handleSearchResults}
                     />
                     <TablaGenerica

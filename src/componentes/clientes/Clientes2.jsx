@@ -8,7 +8,7 @@ import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
 import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
 import SearchBar from '../SearchBar';
-import Paginacion from '../Busqueda_Filtrado_Paginacion/Paginacion';  
+import Paginacion from '../Busqueda_Filtrado_Paginacion/Paginacion';
 
 const auth = getAuth(appFirebase);
 
@@ -64,7 +64,7 @@ const Clientes = () => {
             const clientesConTipoCliente = data.map(({ tipo_clientes, ...resto }) => ({
                 ...resto,
                 tipo_cliente_id: tipo_clientes.id,
-                tipo_cliente: tipo_clientes.tipo
+                tipo: tipo_clientes.tipo
             }));
 
             setColumnas(Object.keys(clientesConTipoCliente[0] || {}));
@@ -146,10 +146,12 @@ const Clientes = () => {
                     <Alert message={alertMessage.message} type={alertMessage.type} />
                     <SearchBar
                         placeholder="Buscar clientes..."
-                        table="clientes" 
-                        columns={["nombre_cliente", "email_cliente", "telefono_cliente", "direccion_cliente"]} 
+                        rpcFunctionAll="obtener_clientes"
+                        rpcFunctionSearch="buscar_clientes"
+                        searchParams="search_query"
                         onSearchResults={handleSearchResults}
                     />
+
                     <TablaGenerica
                         columnas={columnas}
                         datos={datos}

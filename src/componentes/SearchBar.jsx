@@ -3,7 +3,7 @@ import { supabase } from "../../supabase";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
-const SearchBar = ({ placeholder, table, columns, onSearchResults }) => {
+const SearchBar = ({ placeholder, rpcFunctionAll, rpcFunctionSearch, searchParams, onSearchResults }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -13,23 +13,20 @@ const SearchBar = ({ placeholder, table, columns, onSearchResults }) => {
 
     try {
       if (!query) {
-        // Si no hay texto en la búsqueda, obtener todos los datos
-        const { data, error } = await supabase.from(table).select("*");
+        // Si no hay texto en la búsqueda, obtener todos los datos usando la función RPC genérica
+        const { data, error } = await supabase.rpc(rpcFunctionAll);
 
         if (error) {
-          console.error("Error mostrando todos los datos:", error);
+          console.error(`Error obteniendo todos los datos con ${rpcFunctionAll}:`, error);
         } else {
           onSearchResults(data); // Pasar todos los resultados
         }
       } else {
-        // Realizar búsqueda con la consulta
-        const { data, error } = await supabase
-          .from(table)
-          .select("*")
-          .or(columns.map(column => `${column}.ilike.%${query}%`).join(','));
+        // Consulta personalizada utilizando rpc y la función SQL genérica pasada por props
+        const { data, error } = await supabase.rpc(rpcFunctionSearch, { [searchParams]: query });
 
         if (error) {
-          console.error("Error mostrando resultados:", error);
+          console.error(`Error mostrando resultados con ${rpcFunctionSearch}:`, error);
         } else {
           onSearchResults(data); // Pasar resultados filtrados
         }
@@ -69,6 +66,8 @@ const SearchBar = ({ placeholder, table, columns, onSearchResults }) => {
 };
 
 export default SearchBar;
+
+
 
 
 
