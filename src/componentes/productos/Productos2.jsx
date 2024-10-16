@@ -98,11 +98,11 @@ const Productos2 = () => {
             const referenciasProductos = data.map(({ marcas_productos, proveedores, referencias_productos, ...resto }) => ({
                 ...resto,
                 marca_id: marcas_productos.id,
-                marca_productos: marcas_productos.nombre,
+                marca: marcas_productos.nombre,
                 proveedor_id: proveedores.id,
                 proveedor: proveedores.nombre_proveedor,
                 referencia_id: referencias_productos.id,
-                referencia_productos: referencias_productos.codigo
+                referencia: referencias_productos.codigo
             }));
 
             setColumnas(Object.keys(referenciasProductos[0]));
@@ -191,8 +191,9 @@ const Productos2 = () => {
                     <Alert message={alertMessage.message} type={alertMessage.type} />
                     <SearchBar
                         placeholder="Buscar productos..."
-                        table="productos" // El nombre de tu tabla en Supabase
-                        columns={["nombre", "descripcion"]} // Las columnas donde quieres realizar la búsqueda
+                        rpcFunctionAll="obtener_productos"
+                        rpcFunctionSearch="buscar_productos"
+                        searchParams="search_query"
                         onSearchResults={handleSearchResults}
                     />
                     <TablaGenerica

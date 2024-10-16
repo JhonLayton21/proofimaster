@@ -23,27 +23,9 @@ const Proveedores2 = () => {
     const [metodosPago, setMetodosPago] = useState([]);
     const [currentPage, setCurrentPage] = useState(1); // Estado para la página actual
     const [totalItems, setTotalItems] = useState(0); // Estado para el total de proveedores
-    const itemsPerPage = 2; // Número de elementos por página
+    const itemsPerPage = 3; // Número de elementos por página
 
-    // Actualizaciones en tiempo real
-    useEffect(() => {
-        fetchData();
-        fetchMetodosPago();
-
-        const channel = supabase
-            .channel('custom-all-channel')
-            .on('postgres_changes',
-                { event: '*', schema: 'public', table: 'proveedores' },
-                (payload) => {
-                    fetchData();
-                }
-            )
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(channel);
-        };
-    }, [currentPage]); // Ejecutar fetchData al cambiar de página
+    
 
     const fetchMetodosPago = async () => {
         try {
@@ -84,7 +66,7 @@ const Proveedores2 = () => {
             const proveedoresConMetodo = data.map(({ metodo_pago, ...resto }) => ({
                 ...resto,
                 metodo_pago_id: metodo_pago.id,
-                metodo_pago: metodo_pago.metodo
+                metodo: metodo_pago.metodo
             }));
 
             // Actualizamos el estado con los datos ya modificados
@@ -95,6 +77,26 @@ const Proveedores2 = () => {
             console.error('Error al obtener los proveedores:', error);
         }
     };
+
+    // Actualizaciones en tiempo real
+    useEffect(() => {
+        fetchData();
+        fetchMetodosPago();
+
+        const channel = supabase
+            .channel('custom-all-channel')
+            .on('postgres_changes',
+                { event: '*', schema: 'public', table: 'proveedores' },
+                (payload) => {
+                    fetchData();
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [currentPage]); // Ejecutar fetchData al cambiar de página
 
 
     const showAlert = (message, type = 'info') => {
@@ -144,8 +146,9 @@ const Proveedores2 = () => {
                     <Alert message={alertMessage.message} type={alertMessage.type} />
                     <SearchBar
                         placeholder="Buscar proveedores..."
-                        table="proveedores" // El nombre de tu tabla en Supabase
-                        columns={["contacto_proveedor", "direccion_proveedor", "email_proveedor", "nombre_proveedor", "telefono_proveedor"]} // Las columnas donde quieres realizar la búsqueda
+                        rpcFunctionAll="obtener_provedores"
+                        rpcFunctionSearch="buscar_proveedores"
+                        searchParams="search_query"
                         onSearchResults={handleSearchResults}
                     />
                     <TablaGenerica
