@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Proofisillas2 from "../../public/proofisillas2.svg"; // Logo de la empresa
+import LoginImg from "../../public/login.svg";
 import "../App.css";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../UseAuth";
 import { supabase } from "../../supabase";
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAt, faLock } from '@fortawesome/free-solid-svg-icons';
 
 const Login = () => {
   const [error, setError] = useState(null);
@@ -49,49 +52,62 @@ const Login = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 h-full">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 h-full overflow-auto">
       {/* Lado izquierdo vacío, oculto en pantallas pequeñas */}
-      <div className="hidden md:block bg-gradient-to-b from-yellow-500 to-orange-500 p-6"></div>
+      <div className="hidden lg:flex items-center justify-center bg-gradient-to-b from-yellow-500 to-orange-500 p-6 h-screen">
+        <img
+          src={LoginImg} // Logo de la empresa
+          alt="Logo de Proofisillas"
+          className="h-auto w-auto m-auto object-contain mb-8"
+        />
+      </div>
 
       {/* Lado derecho con el formulario de inicio de sesión */}
-      <div className="dark:bg-[#242424] bg-[#242424] lg:col-span-1 p-6 flex flex-col justify-center items-center lg:h-full">
+      <div className="dark:bg-[#242424] bg-white lg:col-span-1 p-6 flex flex-col justify-center items-center lg:h-full">
 
         {/* Logo de la empresa */}
         <img
           src={Proofisillas2} // Logo de la empresa
           alt="Logo de Proofisillas"
-          className="h-auto w-auto lg:h-[120px] lg:w-[120px] object-contain mb-8"
+          className="h-auto w-auto max-w-[500px] object-contain mb-8"
         />
 
-        <h3 className="text-white text-3xl font-extrabold mb-8">Iniciar sesión</h3>
+        <h3 className="dark:text-white text-[#292929] text-3xl font-extrabold mb-8">Iniciar sesión</h3>
 
         {/* Formulario inicio sesión */}
         <div className="space-y-4 w-full">
-          <div>
-            <input
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              className="bg-[#333] text-white w-full text-sm px-4 py-2.5 rounded-md border-solid border-1 focus:outline-none focus:ring focus:ring-orange-500 border-slate-500"
-              placeholder="Correo electrónico"
-            />
+          <div className="bg-slate-100 dark:bg-[#292929]">
+            <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
+              <FontAwesomeIcon icon={faAt} className="text-slate-400 ml-4" />
+              <input
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="bg-transparent border-none text-sm px-4 py-2.5 w-full focus:outline-none"
+                placeholder="Correo electrónico"
+              />
+            </div>
           </div>
-          <div>
-            <input
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              className="bg-[#333] text-white w-full text-sm px-4 py-2.5 rounded-md border-solid border-1 focus:outline-none focus:ring focus:ring-orange-500 border-slate-500"
-              placeholder="Contraseña"
-            />
+
+          <div className="bg-slate-100 dark:bg-[#292929]">
+            <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
+              <FontAwesomeIcon icon={faLock} className="text-slate-400 ml-4" />
+              <input
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="bg-transparent border-none text-sm px-4 py-2.5 w-full focus:outline-none"
+                placeholder="Contraseña"
+              />
+            </div>
           </div>
+
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="text-sm">
-              <a href="javascript:void(0);" className="text-orange-600 hover:text-orange-500 font-semibold">
-                <span className="text-slate-400">Olvidaste tu contraseña? </span>Recuperala aquí
-              </a>
+              <span className="text-slate-400 font-normal">Olvidaste tu contraseña? </span>
+              <a href="javascript:void(0);" className="text-orange-600 hover:text-orange-500 font-semibold">Recuperala aquí</a>
             </div>
           </div>
         </div>
@@ -108,9 +124,8 @@ const Login = () => {
 
         {/* link crear cuenta */}
         <div className="text-sm pt-3">
-          <Link to="/signup" className="text-orange-600 hover:text-orange-500 font-semibold">
-            <span className="text-slate-400">No tienes cuenta? </span>Registrate aquí
-          </Link>
+          <span className="text-slate-400 font-normal">No tienes cuenta? </span>
+          <Link to="/signup" className="text-orange-600 hover:text-orange-500 font-semibold">Registrate aquí</Link>
         </div>
 
         {/* Separador "OR" */}
@@ -131,7 +146,7 @@ const Login = () => {
                 alt="Google logo"
                 className="w-5 h-5"
               />
-              <span className="text-slate-900 font-light">Iniciar sesión con Google</span>
+              <span className="text-[#292929] font-light">Iniciar sesión con Google</span>
             </button>
           </div>
         </div>
