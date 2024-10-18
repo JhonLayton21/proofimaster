@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './rutas/App.jsx';
+import SignUp from './componentes/SignUp.jsx';
 import Login from './componentes/Login.jsx';
 import ErrorPage from './paginaError.jsx';
 import Configuracion from './componentes/Configuracion.jsx';
@@ -37,6 +38,11 @@ const router = createBrowserRouter([
   {
     path: 'solicitar-permiso',
     element: <SolicitarPermiso />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: 'signup',
+    element: <SignUp />,
     errorElement: <ErrorPage />,
   },
   {
