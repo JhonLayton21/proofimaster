@@ -50,6 +50,7 @@ const router = createBrowserRouter([
     element: <Login />,
     errorElement: <ErrorPage />,
   },
+  // RUTAS PROTEGIDAS POR PrivateRoute
   {
     path: 'configuracion',
     element: (
@@ -61,57 +62,101 @@ const router = createBrowserRouter([
   },
   {
     path: 'productos',
-    element: <Productos2 />,
-    errorElement: <ErrorPage />
+    element: (
+      <PrivateRoute>
+        <Productos2 />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />,
   },
   {
     path: 'ventas',
-    element: <Ventas2 />,
+    element: (
+      <PrivateRoute>
+        <Ventas2 />
+      </PrivateRoute>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: 'proveedores',
-    element: <Proveedores2 />,
+    element: (
+      <PrivateRoute>
+        <Proveedores2 />
+      </PrivateRoute>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: 'clientes',
-    element: <Clientes2 />,
+    element: (
+      <PrivateRoute>
+        <Clientes2 />
+      </PrivateRoute>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: 'metodos-pago',
-    element: <MetodosPago />,
+    element: (
+      <PrivateRoute>
+        <MetodosPago />
+      </PrivateRoute>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: 'marca-productos',
-    element: <MarcaProductos />,
+    element: (
+      <PrivateRoute>
+        <MarcaProductos />
+      </PrivateRoute>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: 'referencia-productos',
-    element: <ReferenciaProductos />,
+    element: (
+      <PrivateRoute>
+        <ReferenciaProductos />
+      </PrivateRoute>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: 'tipo-clientes',
-    element: <TipoClientes />,
+    element: (
+      <PrivateRoute>
+        <TipoClientes />
+      </PrivateRoute>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: 'estados-venta',
-    element: <EstadosVenta />,
+    element: (
+      <PrivateRoute>
+        <EstadosVenta />
+      </PrivateRoute>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: 'metodo-envio-venta',
-    element: <MetodoEnvioVenta />,
+    element: (
+      <PrivateRoute>
+        <MetodoEnvioVenta />
+      </PrivateRoute>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: 'informes',
-    element: <Informes />,
+    element: (
+      <PrivateRoute>
+        <Informes />
+      </PrivateRoute>
+    ),
     errorElement: <ErrorPage />,
   },
 ]);
