@@ -6,10 +6,17 @@ const PrivateRoute = ({ children }) => {
   const location = useLocation(); // Obtiene la ruta actual
 
   if (loading) {
+    // Puedes mostrar un spinner o un mensaje de carga mientras se obtiene el usuario y rol
     return <div>Cargando...</div>;
   }
 
   if (!usuario) {
+    alert("No posees permisos suficientes para acceder, contacta al administrador.");
+    return <Navigate to="/login" />;
+  }
+
+  if (rol === null) {
+    alert("Tu rol no ha sido asignado, por favor inicia sesión de nuevo o contacta al administrador");
     return <Navigate to="/login" />;
   }
 
@@ -33,5 +40,6 @@ const PrivateRoute = ({ children }) => {
 };
 
 export default PrivateRoute;
+
 
 

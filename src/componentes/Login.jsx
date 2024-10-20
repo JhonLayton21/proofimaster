@@ -10,6 +10,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAt, faLock } from '@fortawesome/free-solid-svg-icons';
 
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const { usuario, rol, loading } = useAuth();
   const navigate = useNavigate();
@@ -28,11 +30,39 @@ const Login = () => {
         } else if (rol === "sin_permiso") {
           navigate("/solicitar-permiso");
         } else {
+          alert("No posees permisos para acceder, contacta al administrador.");
           navigate("/login");
         }
       }
     }
   }, [usuario, rol, loading, navigate]);
+
+  const handleLogin = async () => {
+    try {
+      console.log('Intentando iniciar sesión con:', { email, password });
+  
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+  
+      // Verifica si hay un error de la API
+      if (error) {
+        console.error('Error de Supabase durante el inicio de sesión:', error);
+        setError(error.message); // Muestra el mensaje de error en el UI
+      } else if (data) {
+        console.log('Inicio de sesión con éxito:', data);
+        // Aquí puedes redirigir al usuario o realizar alguna acción adicional
+      } else {
+        console.warn('No se ha recibido ni error ni datos. Posible fallo desconocido.');
+        setError('No se pudo completar la solicitud. Inténtalo más tarde.');
+      }
+    } catch (err) {
+      console.error('Excepción capturada durante el inicio de sesión:', err);
+      setError('Error inesperado iniciando sesión');
+    }
+  };
+  
 
   const handleGoogleLogin = async () => {
     try {
@@ -82,6 +112,8 @@ const Login = () => {
               <input
                 name="email"
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
                 required
                 className="bg-transparent border-none text-sm px-4 py-2.5 w-full focus:outline-none"
@@ -96,6 +128,8 @@ const Login = () => {
               <input
                 name="password"
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
                 required
                 className="bg-transparent border-none text-sm px-4 py-2.5 w-full focus:outline-none"
@@ -116,6 +150,7 @@ const Login = () => {
         <div className="!mt-8 w-full">
           <button
             type="button"
+            onClick={handleLogin}
             className="w-full shadow-xl py-3 px-4 text-sm font-semibold rounded text-white bg-orange-600 hover:bg-orange-500 focus:outline-none"
           >
             <span className="text-xl font-bold">Iniciar sesión</span>
@@ -150,6 +185,7 @@ const Login = () => {
             </button>
           </div>
         </div>
+        {error && <p>{error}</p>}
       </div>
     </div>
 
