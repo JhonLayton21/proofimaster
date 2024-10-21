@@ -57,7 +57,7 @@ const SignUp = () => {
 
                 <div className="space-y-4 w-full">
                     <div className="bg-slate-100 dark:bg-[#292929]">
-                        <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
+                        <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-slate-700 dark:text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
                             <FontAwesomeIcon icon={faSignature} className="text-slate-400 ml-4" />
                             <input
                                 name="firstName"
@@ -72,7 +72,7 @@ const SignUp = () => {
                     </div>
 
                     <div className="bg-slate-100 dark:bg-[#292929]">
-                        <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
+                        <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-slate-700 dark:text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
                             <FontAwesomeIcon icon={faSignature} className="text-slate-400 ml-4" />
                             <input
                                 name="lastName"
@@ -87,7 +87,7 @@ const SignUp = () => {
                     </div>
 
                     <div className="bg-slate-100 dark:bg-[#292929]">
-                        <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
+                        <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-slate-700 dark:text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
                             <FontAwesomeIcon icon={faAt} className="text-slate-400 ml-4" />
                             <input
                                 name="email"
@@ -103,7 +103,7 @@ const SignUp = () => {
                     </div>
 
                     <div className="bg-slate-100 dark:bg-[#292929]">
-                        <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
+                        <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-slate-700 dark:text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
                             <FontAwesomeIcon icon={faLock} className="text-slate-400 ml-4" />
                             <input
                                 name="password"
