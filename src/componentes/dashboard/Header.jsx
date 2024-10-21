@@ -62,8 +62,8 @@ const Header = ({ isDrawerOpen, openDrawer }) => {
                 )}
             </IconButton>
 
-            <div className="text-[#ff6f00] font-bold text-2xl md:text-3xl text-left">
-                <h3>Bienvenido de nuevo, {nombreUsuario}</h3> {/* Mostrar nombre del usuario */}
+            <div className="text-[#ff6f00] font-bold text-2xl md:text-3xl text-left px-4">
+                <h3>Bienvenido, {nombreUsuario}</h3> {/* Mostrar nombre del usuario */}
             </div>
 
             <div className="flex flex-col md:flex-row items-center justify-end space-x-0 md:space-x-8 space-y-4 md:space-y-0 w-full md:w-auto">

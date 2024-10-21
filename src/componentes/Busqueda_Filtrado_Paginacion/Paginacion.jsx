@@ -97,10 +97,10 @@ const Paginacion = ({
             </span>
             {/* Botones de paginación */}
             <div className="inline-flex mt-2 xs:mt-0">
-              <button onClick={prevPage} disabled={currentPage === 1} className="flex items-center justify-center px-3 m-2 h-8 text-sm font-medium bg-orange-500 ">
+              <button onClick={prevPage} disabled={currentPage === 1} className="flex items-center justify-center px-3 m-2 h-8 text-sm font-medium bg-orange-500 text-white hover:border-white">
                 Anterior
               </button>
-              <button onClick={nextPage} disabled={currentPage === totalPages} className="flex items-center justify-center px-3 m-2 h-8 text-sm font-medium bg-orange-500 ">
+              <button onClick={nextPage} disabled={currentPage === totalPages} className="flex items-center justify-center px-3 m-2 h-8 text-sm font-medium bg-orange-500 text-white hover:border-white">
                 Siguiente
               </button>
             </div>

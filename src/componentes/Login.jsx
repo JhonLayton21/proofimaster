@@ -107,7 +107,7 @@ const Login = () => {
         {/* Formulario inicio sesión */}
         <div className="space-y-4 w-full">
           <div className="bg-slate-100 dark:bg-[#292929]">
-            <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
+            <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-slate-700 dark:text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
               <FontAwesomeIcon icon={faAt} className="text-slate-400 ml-4" />
               <input
                 name="email"
@@ -123,7 +123,7 @@ const Login = () => {
           </div>
 
           <div className="bg-slate-100 dark:bg-[#292929]">
-            <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
+            <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-slate-700 dark:text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
               <FontAwesomeIcon icon={faLock} className="text-slate-400 ml-4" />
               <input
                 name="password"
@@ -171,7 +171,7 @@ const Login = () => {
         </div>
 
         {/* Inicio sesión Google */}
-        <div className="space-x-6 flex justify-center p-1 rounded-3xl bg-gradient-to-r from-[#4285F4] via-[#34A853] via-[#FBBC05] to-[#EA4335] bg-clip-border" onClick={handleGoogleLogin}>
+        <div className="space-x-6 flex justify-center p-1 rounded-3xl bg-gradient-to-r from-[#4285F4] via-[#34A853] via-[#FBBC05] to-[#EA4335] bg-clip-border cursor-pointer" onClick={handleGoogleLogin}>
           <div className="p-2 bg-white rounded-3xl">
             <button
               className="border-none outline-none bg-transparent p-0 flex items-center space-x-2"

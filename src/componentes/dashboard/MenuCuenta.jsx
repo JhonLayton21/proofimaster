@@ -8,7 +8,7 @@ export default function MenuCuenta() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userName, setUserName] = useState("Usuario");
   const [userEmail, setUserEmail] = useState("No disponible");
-  const [userRole, setUserRole] = useState("Cargando..."); 
+  const [userRole, setUserRole] = useState("Cargando...");
   const navigate = useNavigate();
   const trigger = useRef(null);
   const dropdown = useRef(null);
@@ -28,7 +28,7 @@ export default function MenuCuenta() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       const { data: { user }, error } = await supabase.auth.getUser();
-      
+
       if (error) {
         console.error("Error al obtener el usuario:", error);
         return;
@@ -42,13 +42,13 @@ export default function MenuCuenta() {
         const { data: userRoleData, error: roleError } = await supabase
           .from('permisos_usuarios')
           .select('rol')
-          .eq('user_id', user.id)  
-          .single();  
+          .eq('user_id', user.id)
+          .single();
 
         if (roleError) {
           console.error("Error al obtener el rol:", roleError);
         } else if (userRoleData) {
-          setUserRole(userRoleData.rol); 
+          setUserRole(userRoleData.rol);
         }
       }
     };
@@ -121,16 +121,16 @@ export default function MenuCuenta() {
                   <FontAwesomeIcon icon={faCircleUser} className="text-slate-800 dark:text-slate-50 fa-2xl" />
                   <span className="absolute -right-0.5 -top-0.5 block h-3.5 w-3.5 rounded-full border-2 border-white bg-green-500 dark:border-dark"></span>
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-slate-800 text-dark dark:text-white">
+                <div className="max-w-[180px] overflow-hidden">
+                  <p className="text-sm font-semibold text-slate-800 text-dark dark:text-white truncate">
                     {userName}
                   </p>
-                  <p className="text-sm text-body-color text-[#757575] dark:text-dark-6">
+                  <p className="text-sm text-body-color text-[#757575] dark:text-dark-6 truncate">
                     {userEmail}
                   </p>
                   <p className="text-sm text-body-color text-[#757575] dark:text-dark-6">
                     Rol: {userRole}
-                  </p> 
+                  </p>
                 </div>
               </div>
               <div>
@@ -160,6 +160,7 @@ export default function MenuCuenta() {
         </div>
       </div>
     </section>
+
   );
 }
 
