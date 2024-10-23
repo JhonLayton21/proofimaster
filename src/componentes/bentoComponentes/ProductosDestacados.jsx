@@ -11,7 +11,7 @@ const ProductosDestacados = ({ productosPrincipales }) => {
                 <div className="bg-[#ff6f00] text-white p-4 flex items-center justify-center rounded-lg h-1/2">
                     <div className="flex flex-col sm:flex-row items-center">
                         <FontAwesomeIcon icon={faStar} className="mb-2 sm:mb-0 fa-2x" />
-                        <h2 className="text-center sm:text-left mx-4 md:text-4xl text-xl font-bold">Productos destacados</h2>
+                        <h2 className="text-center sm:text-left mx-4 md:text-4xl text-xl font-bold">Productos recientes</h2>
                     </div>
                 </div>
 

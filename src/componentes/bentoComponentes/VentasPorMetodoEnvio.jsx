@@ -48,7 +48,7 @@ const VentasPorMetodoEnvio = ({ }) => {
         labels: nombresMetodoEnvio,
         datasets: [
             {
-                label: 'Métodos de Envio',
+                label: 'Ventas',
                 data: VentasPorMetodoEnvio,
                 backgroundColor: 'rgba(255, 0, 0, 0.2)', // Color de las barras
                 borderColor: 'rgba(255, 0, 0, 1)', // Color de los bordes
