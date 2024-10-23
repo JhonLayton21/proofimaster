@@ -77,6 +77,28 @@ const Login = () => {
     }
   };
 
+  const handlePasswordReset = async () => {
+    if (!email) {
+      setError('Por favor ingresa un correo electrónico.');
+      return;
+    }
+  
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectTo + 'restablecer-contraseña', // Redirige a una página donde el usuario podrá actualizar su contraseña
+      });
+      
+      if (error) {
+        setError('Error al enviar el correo de recuperación: ' + error.message);
+      } else {
+        setError('Correo de recuperación enviado. Revisa tu bandeja de entrada.');
+      }
+    } catch (err) {
+      setError('Error inesperado al intentar recuperar la contraseña.');
+    }
+  };
+  
+
   if (loading) {
     return <div>Cargando...</div>;
   }
@@ -141,7 +163,7 @@ const Login = () => {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="text-sm">
               <span className="text-slate-400 font-normal">Olvidaste tu contraseña? </span>
-              <a href="javascript:void(0);" className="text-orange-600 hover:text-orange-500 font-semibold">Recuperala aquí</a>
+              <a onClick={handlePasswordReset} className="text-orange-600 hover:text-orange-500 font-semibold cursor-pointer">Recuperala aquí</a>
             </div>
           </div>
         </div>
