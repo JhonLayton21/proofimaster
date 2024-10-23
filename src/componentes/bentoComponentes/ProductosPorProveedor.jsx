@@ -48,7 +48,7 @@ const ProductosPorProveedor = ({ }) => {
         labels: nombresProveedores,
         datasets: [
             {
-                label: 'Productos',
+                label: 'Entradas de productos',
                 data: ProductosPorProveedor,
                 backgroundColor: 'rgba(255, 60, 130, 0.2)', // Color de las barras
                 borderColor: 'rgba(255, 60, 130, 1)', // Color de los bordes
@@ -77,7 +77,7 @@ const ProductosPorProveedor = ({ }) => {
             <Link to="/ventas">
                 {/* Título y subtítulo */}
                 <div className="m-4 lg:mb-0 lg:mr-4">
-                    <h2 className="pl-6 sm:pl-0 text-lg font-semibold">Productos por Proveedor</h2>
+                    <h2 className="pl-6 sm:pl-0 text-lg font-semibold">Entrada de productos por Proveedor</h2>
                     <p className="pl-6 sm:pl-0 text-sm text-gray-600 dark:text-gray-400">Consulta los proveedores principales</p>
                 </div>
                 {/* Gráfico de barras */}

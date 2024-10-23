@@ -44,7 +44,7 @@ const VentasPorFecha = ({ }) => {
         labels: fechasVentas,
         datasets: [
             {
-                label: 'Fechas',
+                label: 'Ventas',
                 data: VentasPorFecha,
                 backgroundColor: 'rgba(230, 200, 200, 0.2)', // Color de las barras
                 borderColor: 'rgba(230, 200, 200, 1)', // Color de los bordes

@@ -52,7 +52,7 @@ const GraficoStockPorMarca = () => {
         labels: nombresMarcas,
         datasets: [
             {
-                label: 'Stock por marca',
+                label: 'Stock',
                 data: stockPorMarcaData,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
@@ -90,7 +90,7 @@ const GraficoStockPorMarca = () => {
                 {/* Título y subtítulo */}
                 <div className="m-4 lg:mb-0 lg:mr-4">
                     <h2 className="pl-6 sm:pl-0 text-lg font-semibold">Stock por Marca</h2>
-                    <p className="pl-6 sm:pl-0 text-sm text-gray-600 dark:text-gray-400">Consulta el stock de productos por cada marca</p>
+                    <p className="pl-6 sm:pl-0 text-sm text-gray-600 dark:text-gray-400">Consulta el stock de productos según su marca</p>
                 </div>
                 {/* Gráfico de torta */}
                 <div className="w-full flex justify-center items-center">

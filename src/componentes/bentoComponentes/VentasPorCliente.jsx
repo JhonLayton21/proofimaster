@@ -48,7 +48,7 @@ const VentasPorCliente = ({ }) => {
         labels: nombresClientes,
         datasets: [
             {
-                label: 'Clientes',
+                label: 'Compras realizadas',
                 data: VentasPorCliente,
                 backgroundColor: 'rgba(255, 0, 255, 0.2)', // Color de las barras
                 borderColor: 'rgba(255, 0, 255, 1)', // Color de los bordes
