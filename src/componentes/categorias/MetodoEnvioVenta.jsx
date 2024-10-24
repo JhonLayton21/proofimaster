@@ -107,8 +107,9 @@ const MetodoEnvioVenta = () => {
                     <Alert message={alertMessage.message} type={alertMessage.type} />
                     <SearchBar
                         placeholder="Buscar métodos de envío..."
-                        table="metodo_envio_venta" // El nombre de tu tabla en Supabase
-                        columns={["metodo"]} // Las columnas donde quieres realizar la búsqueda
+                        rpcFunctionAll="obtener_metodo_envio_venta"
+                        rpcFunctionSearch="buscar_metodo_envio_venta"
+                        searchParams="search_query"
                         onSearchResults={handleSearchResults}
                     />
                     <TablaGenerica 

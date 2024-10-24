@@ -146,7 +146,7 @@ const Proveedores2 = () => {
                     <Alert message={alertMessage.message} type={alertMessage.type} />
                     <SearchBar
                         placeholder="Buscar proveedores..."
-                        rpcFunctionAll="obtener_provedores"
+                        rpcFunctionAll="obtener_proveedores"
                         rpcFunctionSearch="buscar_proveedores"
                         searchParams="search_query"
                         onSearchResults={handleSearchResults}

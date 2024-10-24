@@ -107,8 +107,9 @@ const MarcaProductos = () => {
                     <Alert message={alertMessage.message} type={alertMessage.type} />
                     <SearchBar
                         placeholder="Buscar marcas..."
-                        table="marcas_productos" // El nombre de tu tabla en Supabase
-                        columns={["nombre"]} // Las columnas donde quieres realizar la búsqueda
+                        rpcFunctionAll="obtener_marcas_productos"
+                        rpcFunctionSearch="buscar_marcas_productos"
+                        searchParams="search_query"
                         onSearchResults={handleSearchResults}
                     />
                     <TablaGenerica

@@ -102,9 +102,10 @@ const MetodosPago = () => {
                 >
                     <Alert message={alertMessage.message} type={alertMessage.type} />
                     <SearchBar
-                        placeholder="Buscar métodos..."
-                        table="metodo_pago" // El nombre de tu tabla en Supabase
-                        columns={["metodo"]} // Las columnas donde quieres realizar la búsqueda
+                        placeholder="Buscar métodos de pago..."
+                        rpcFunctionAll="obtener_metodos_pago"
+                        rpcFunctionSearch="buscar_metodos_pago"
+                        searchParams="search_query"
                         onSearchResults={handleSearchResults}
                     />
                     <TablaGenerica 

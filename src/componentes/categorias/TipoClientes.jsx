@@ -107,9 +107,10 @@ const TipoClientes = () => {
                 >
                     <Alert message={alertMessage.message} type={alertMessage.type} />
                     <SearchBar
-                        placeholder="Buscar tipos cliente..."
-                        table="tipo_clientes" // El nombre de tu tabla en Supabase
-                        columns={["tipo"]} // Las columnas donde quieres realizar la búsqueda
+                        placeholder="Buscar tipos de cliente..."
+                        rpcFunctionAll="obtener_tipo_clientes"
+                        rpcFunctionSearch="buscar_tipo_clientes"
+                        searchParams="search_query"
                         onSearchResults={handleSearchResults}
                     />
                     <TablaGenerica
