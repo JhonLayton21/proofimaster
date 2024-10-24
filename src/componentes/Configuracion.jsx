@@ -77,9 +77,9 @@ export default function Configuracion() {
                             onChange={(e) => handleUpdatePermisos(usuario.user_id, e.target.value)}
                             className="block w-full px-4 py-2 text-sm text-gray-900 bg-white border rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:!bg-[#292929] dark:border-orange-600 dark:!placeholder-[#202020] dark:text-white dark:focus:ring-orange-500 dark:focus:border-orange-500"
                           >
-                            <option value="admin">Admin</option>
-                            <option value="user">User</option>
-                            <option value="sin_permiso">Sin Permiso</option>
+                            <option value="administrador">Administrador</option>
+                            <option value="usuario básico">Usuario básico</option>
+                            <option value="sin permisos">Sin Permisos</option>
                           </select>
                         </td>
                       </tr>
