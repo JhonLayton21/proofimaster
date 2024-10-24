@@ -106,8 +106,9 @@ const ReferenciaProductos = () => {
                     <Alert message={alertMessage.message} type={alertMessage.type} />
                     <SearchBar
                         placeholder="Buscar referencias..."
-                        table="referencias_productos" // El nombre de tu tabla en Supabase
-                        columns={["codigo"]} // Las columnas donde quieres realizar la búsqueda
+                        rpcFunctionAll="obtener_referencias_productos"
+                        rpcFunctionSearch="buscar_referencias_productos"
+                        searchParams="search_query"
                         onSearchResults={handleSearchResults}
                     />
                     <TablaGenerica

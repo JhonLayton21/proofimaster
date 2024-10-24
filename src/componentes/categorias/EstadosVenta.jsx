@@ -106,8 +106,9 @@ const EstadosVenta = () => {
                     <Alert message={alertMessage.message} type={alertMessage.type} />
                     <SearchBar
                         placeholder="Buscar estados de venta..."
-                        table="estado_venta" // El nombre de tu tabla en Supabase
-                        columns={["estado"]} // Las columnas donde quieres realizar la búsqueda
+                        rpcFunctionAll="obtener_estado_venta"
+                        rpcFunctionSearch="buscar_estado_venta"
+                        searchParams="search_query"
                         onSearchResults={handleSearchResults}
                     />
                     <TablaGenerica
