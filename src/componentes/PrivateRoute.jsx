@@ -21,17 +21,17 @@ const PrivateRoute = ({ children }) => {
   }
 
   // Si el usuario es admin, tiene acceso a todas las rutas
-  if (rol === 'admin') {
+  if (rol === 'administrador') {
     return children;
   }
 
   // Si el usuario es de tipo 'user' y está intentando acceder a 'configuracion'
-  if (rol === 'user' && location.pathname === '/configuracion') {
+  if (rol === 'usuario básico' && location.pathname === '/configuracion') {
     return <Navigate to="/" />;
   }
 
   // Si es 'user' y no intenta acceder a 'configuracion', permite el acceso
-  if (rol === 'user') {
+  if (rol === 'usuario básico') {
     return children;
   }
 

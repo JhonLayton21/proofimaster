@@ -23,11 +23,11 @@ const Login = () => {
   useEffect(() => {
     if (!loading) {
       if (usuario) {
-        if (rol === "admin") {
+        if (rol === "administrador") {
           navigate("/configuracion");
-        } else if (rol === "user") {
+        } else if (rol === "usuario básico") {
           navigate("/");
-        } else if (rol === "sin_permiso") {
+        } else if (rol === "sin permisos") {
           navigate("/solicitar-permiso");
         } else {
           alert("No posees permisos para acceder, contacta al administrador.");
