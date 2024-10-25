@@ -46,6 +46,7 @@ const PrivateRoute = ({ children }) => {
 
   // Si el usuario es de tipo 'user' y está intentando acceder a 'configuracion'
   if (rol === 'usuario básico' && location.pathname === '/configuracion') {
+    alert("No posees permisos suficientes para acceder, contacta al administrador");
     return <Navigate to="/" />;
   }
 
@@ -54,8 +55,14 @@ const PrivateRoute = ({ children }) => {
     return children;
   }
 
-  // En caso de roles no identificados, redirige a 'solicitar-permiso'
-  return <Navigate to="/solicitar-permiso" />;
+  if (rol === 'sin permisos') {
+    alert("No tienes permisos, por favor contacta al administrador e intenta iniciar sesión de nuevo");
+    return <Navigate to="/login" />;
+  }
+
+  // En caso de roles no identificados, redirigir a login
+  alert("Tu rol no ha sido asignado, por favor contacta al administrador e intenta iniciar sesión de nuevo");
+  return <Navigate to="/login" />;
 };
 
 export default PrivateRoute;
