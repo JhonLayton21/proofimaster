@@ -9,6 +9,8 @@ import Alert from "../componentesTablasDatos/Alert";
 import { supabase } from '../../../supabase';
 import SearchBar from "../SearchBar";
 import Paginacion from '../Busqueda_Filtrado_Paginacion/Paginacion';
+import { jsPDF } from "jspdf";
+import { addFooter } from '../informes/PDFUtils';
 
 const auth = getAuth(appFirebase);
 
@@ -25,13 +27,13 @@ const Productos2 = () => {
     const [proveedorProductos, setProveedorProductos] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);  // Página actual
     const [totalItems, setTotalItems] = useState(0);  // Total de elementos
-    const itemsPerPage = 1;  // Número de elementos por página
+    const itemsPerPage = 5;  // Número de elementos por página
 
     const fetchReferenciasProductos = async () => {
         try {
             const { data, error } = await supabase
-                .from('referencias_productos')  
-                .select('*');  
+                .from('referencias_productos')
+                .select('*');
 
             if (error) {
                 throw error;
@@ -45,8 +47,8 @@ const Productos2 = () => {
     const fetchMarcasProductos = async () => {
         try {
             const { data, error } = await supabase
-                .from('marcas_productos')  
-                .select('*');  
+                .from('marcas_productos')
+                .select('*');
 
             if (error) {
                 throw error;
@@ -60,8 +62,8 @@ const Productos2 = () => {
     const fetchProveedorProductos = async () => {
         try {
             const { data, error } = await supabase
-                .from('proveedores')  
-                .select('*');  
+                .from('proveedores')
+                .select('*');
 
             if (error) {
                 throw error;
@@ -75,7 +77,7 @@ const Productos2 = () => {
     const fetchData = async () => {
         try {
             const { data, error, count } = await supabase
-                .from('productos')  
+                .from('productos')
                 .select(`
                     id,
                     nombre,
@@ -122,17 +124,17 @@ const Productos2 = () => {
         fetchProveedorProductos();
 
         const channel = supabase
-            .channel('custom-all-channel') 
-            .on('postgres_changes', 
-                { event: '*', schema: 'public', table: 'productos' }, 
+            .channel('custom-all-channel')
+            .on('postgres_changes',
+                { event: '*', schema: 'public', table: 'productos' },
                 (payload) => {
-                    fetchData(); 
+                    fetchData();
                 }
             )
             .subscribe();
 
         return () => {
-            supabase.removeChannel(channel); 
+            supabase.removeChannel(channel);
         };
     }, [currentPage]);
 
@@ -151,15 +153,15 @@ const Productos2 = () => {
     const handleDelete = async (id) => {
         try {
             const { error } = await supabase
-                .from('productos')  
+                .from('productos')
                 .delete()
-                .eq('id', id);  
+                .eq('id', id);
 
             if (error) {
                 throw error;
             }
 
-            fetchData();  
+            fetchData();
             showAlert('Producto eliminado exitosamente', 'delete');
         } catch (error) {
             console.error('Error al eliminar el producto:', error);
@@ -178,7 +180,147 @@ const Productos2 = () => {
     const handleSearchResults = (resultados) => {
         setDatos(resultados); // Actualizar los datos con los resultados de la búsqueda
     };
+
+    // Función para generar el PDF de factura
+    const generatePDF = (data) => {
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+        });
     
+        // Fecha y hora actual
+        const fechaActual = new Date().toLocaleString("es-ES", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+        });
+    
+        // Configuración de estilos
+        doc.setFont("helvetica");
+        doc.setFontSize(20);
+        doc.setTextColor(255, 128, 0);
+    
+        // Título principal
+        doc.setFont("helvetica", "bold");
+        doc.text(`Factura ${data.nombre} ${new Date().toLocaleDateString()}`, 10, 20);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+    
+        // Secciones de la factura
+        doc.text("NOMBRE PRODUCTO", 10, 35);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(0, 0, 0);
+        doc.text(`${data.nombre}`, 10, 40);
+        
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(255, 128, 0);
+        doc.text("DESCRIPCIÓN PRODUCTO", 10, 45);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(0, 0, 0);
+        doc.text(`${data.descripcion}`, 10, 50);
+        
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(255, 128, 0);
+        doc.text("FECHA ENTRADA PRODUCTO", 10, 55);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(0, 0, 0);
+        doc.text(`${data.fecha_entrada}`, 10, 60);
+    
+        // Información adicional
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(255, 128, 0);
+        doc.text("ID FACTURA PRODUCTO", 120, 35);
+        doc.setTextColor(0, 0, 0);
+        doc.setFont("helvetica", "normal");
+        doc.text(`${data.id}`, 197, 35);
+        
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(255, 128, 0);
+        doc.text("FECHA FACTURA", 120, 45);
+        doc.setTextColor(0, 0, 0);
+        doc.setFont("helvetica", "normal");
+        doc.text(`${fechaActual}`, 160, 45);
+
+         // Información de la factura
+         doc.setTextColor(0, 0, 0);
+         doc.setFontSize(12);
+         doc.setFont("helvetica", "bold");
+         doc.setTextColor(255, 128, 0);
+         doc.text("EMPRESA", 10, 75);
+         
+         doc.setFont("helvetica", "bold");
+         doc.setTextColor(255, 128, 0);
+         doc.text("NIT", 10, 85);
+         
+         doc.setFont("helvetica", "bold");
+         doc.setTextColor(255, 128, 0);
+         doc.text("DIRECCIÓN", 10, 95);
+         
+         doc.setFont("helvetica", "bold");
+         doc.setTextColor(255, 128, 0);
+         doc.text("NÚMERO TELEFÓNICO", 10, 105);
+         
+         doc.setFont("helvetica", "normal");
+         doc.setTextColor(0, 0, 0);
+         doc.text("Proofisilas", 10, 80);
+         doc.text("1234567890", 10, 90);
+         doc.text("Calle 48 A No. 28-26 Sur", 10, 100);
+         doc.text("313 345 37 96", 10, 110);
+    
+        // Tabla de productos
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.5);
+        doc.line(10, 130, 200, 130);
+        doc.setFont("helvetica", "bold");
+        doc.text("CANT.", 10, 135);
+        doc.text("MARCA", 30, 135);
+        doc.text("REFERENCIA", 60, 135);
+        doc.text("PROVEEDOR", 100, 135);
+        doc.text("PRECIO C/U", 140, 135);
+        doc.text("TOTAL", 175, 135);
+        doc.line(10, 138, 200, 138);
+        doc.setFont("helvetica", "normal");
+    
+        // Ajuste de ancho máximo para columnas
+        const maxWidth = 30;
+    
+        // Obtener y ajustar texto en columnas
+        const cantText = doc.splitTextToSize(`${data.stock}`, maxWidth);
+        const marcaText = doc.splitTextToSize(`${data.marca}`, maxWidth);
+        const referenciaText = doc.splitTextToSize(`${data.referencia}`, maxWidth);
+        const proveedorText = doc.splitTextToSize(`${data.proveedor}`, maxWidth);
+        const precioCompraText = doc.splitTextToSize(
+            `${data.precio_compra.toLocaleString("es-ES", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} COP`,
+            maxWidth
+        );
+        const totalText = doc.splitTextToSize(
+            `${(data.stock * data.precio_compra).toLocaleString("es-ES", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} COP`,
+            maxWidth
+        );
+    
+        // Añadir filas de productos
+        let y = 145;
+        doc.text(cantText, 10, y);
+        doc.text(marcaText, 30, y);
+        doc.text(referenciaText, 60, y);
+        doc.text(proveedorText, 100, y);
+        doc.text(precioCompraText, 140, y);
+        doc.text(totalText, 175, y);
+
+        addFooter(doc);
+    
+        // Guardar el archivo PDF
+        doc.save(`Factura_${data.nombre}.pdf`);
+    };
+    
+
+
 
     return (
         <div className="grid grid-cols-12 gap-0 h-full overflow-auto">
@@ -203,6 +345,8 @@ const Productos2 = () => {
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                         onAlert={showAlert}
+                        generatePDF={generatePDF}
+                        showDownloadButton={true}
                     />
                     <Paginacion
                         currentPage={currentPage}
@@ -237,7 +381,7 @@ const Productos2 = () => {
                             type: 'date',
                             placeholder: 'Seleccione la fecha de entrada del producto',
                             value: formatDate(editingItem?.fecha_entrada)
-                        },                        
+                        },
                         {
                             name: 'marca_id',
                             label: 'Marca',
@@ -287,7 +431,7 @@ const Productos2 = () => {
                             type: 'date',
                             placeholder: 'Seleccione la fecha de entrada del producto',
                             value: formatDate(editingItem?.fecha_entrada)
-                        },                        
+                        },
                         {
                             name: 'marca_id',
                             label: 'Marca',

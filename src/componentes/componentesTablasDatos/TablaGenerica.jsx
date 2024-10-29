@@ -1,9 +1,9 @@
 import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faPlus, faTrashCan, faFileArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { format } from 'date-fns';
 
-const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert, disableEdit = false }) => (
+const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, generatePDF, onAlert, disableEdit = false, showDownloadButton = false }) => (
     <div>
         <div className="flex justify-end m-2">
             <button
@@ -42,6 +42,15 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, onAlert, disa
                                 </td>
                             ))}
                             <td className="px-6 py-4 text-right">
+                                {showDownloadButton && (
+                                    <button
+                                        className="text-yellow-600 dark:bg-[#242424] m-1 hover:underline"
+                                        onClick={() => generatePDF(fila)}
+                                    >
+                                        Descargar
+                                        <FontAwesomeIcon icon={faFileArrowDown} className="ml-1" />
+                                    </button>
+                                )}
                                 {!disableEdit && (
                                     <button
                                         className="text-blue-600 dark:bg-[#242424] m-1 hover:underline"
