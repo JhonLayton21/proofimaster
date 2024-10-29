@@ -63,10 +63,20 @@ const Informes = () => {
       format: 'a4'
     });
 
+    const fechaActual = new Date().toLocaleString("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+  });
+
     switch (tipoInforme) {
       case 'productos':
         // Informe de productos
-        generatePDFBase(doc, "INFORME DE PRODUCTOS", "17/09/2024");
+        generatePDFBase(doc, "INFORME DE PRODUCTOS", `${fechaActual}`);
         generateTable(doc, ['ID', 'NOMBRE', 'DESCRIPCIÓN', 'FECHA', 'MIN. STOCK', 'COMPRA', 'VENTA', 'STOCK', 'MARCA', 'PROVEEDOR', 'REFERENCIA'], productos.map((producto) => [
           producto.id,
           producto.nombre,
@@ -84,7 +94,7 @@ const Informes = () => {
 
       case 'ventas':
         // Informe de ventas
-        generatePDFBase(doc, "INFORME DE VENTAS", "17/09/2024");
+        generatePDFBase(doc, "INFORME DE VENTAS", `${fechaActual}`);
         generateTable(doc, ['ID', 'FECHA', 'DESCUENTO', 'NOTA', 'SUBTOTAL', 'TOTAL', 'CLIENTE', 'ESTADO', 'METODO PAGO', 'METODO ENVIO', 'PRODUCTOS'], ventas.map((venta) => [
           venta.id,
           venta.fecha_venta,
@@ -102,7 +112,7 @@ const Informes = () => {
 
       case 'clientes':
         // Informe de clientes
-        generatePDFBase(doc, "INFORME DE CLIENTES", "17/09/2024");
+        generatePDFBase(doc, "INFORME DE CLIENTES", `${fechaActual}`);
         generateTable(doc, ['ID', 'NOMBRE', 'DIRECCIÓN', 'EMAIL', 'TELEFONO', 'TIPO'], clientes.map((cliente) => [
           cliente.id,
           cliente.nombre_cliente,
@@ -115,7 +125,7 @@ const Informes = () => {
 
       case 'proveedores':
         // Informe de proveedores
-        generatePDFBase(doc, "INFORME DE PROVEEDORES", "17/09/2024");
+        generatePDFBase(doc, "INFORME DE PROVEEDORES", `${fechaActual}`);
         generateTable(doc, ['ID', 'NOMBRE', 'CONTACTO', 'DIRECCIÓN', 'EMAIL', 'TELEFONO', 'METODO PAGO'], proveedores.map((proveedor) => [
           proveedor.id,
           proveedor.nombre_proveedor,
