@@ -20,6 +20,11 @@ import VentasPorCliente from "../bentoComponentes/VentasPorCliente";
 import ProductosPorProveedor from "../bentoComponentes/ProductosPorProveedor";
 import VentasPorFecha from "../bentoComponentes/VentasPorFecha";
 import { supabase } from '../../../supabase';
+import { jsPDF } from "jspdf";
+import html2canvas from 'html2canvas';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClockRotateLeft, faSquarePollVertical } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 
 const BentoGrid = ({ correoUsuario }) => {
     const [productosConAlertas, setProductosConAlertas] = useState([]);
@@ -309,45 +314,79 @@ const BentoGrid = ({ correoUsuario }) => {
         return () => clearInterval(timer);
     }, [isAnimatingCantidadVentas, cantidadVentas]);
 
+    const generatePDF = async () => {
+        const pdf = new jsPDF("p", "pt", "a4", true);
+        const elementosGraficos = document.querySelectorAll('.grafico'); // Clase para identificar los gráficos
+
+        for (let i = 0; i < elementosGraficos.length; i++) {
+            const grafico = elementosGraficos[i];
+
+            // Capturar el elemento como una imagen
+            const canvas = await html2canvas(grafico);
+            const imgData = canvas.toDataURL('image/png');
+
+            // Añadir la imagen al PDF
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+            if (i > 0) {
+                pdf.addPage();
+            }
+
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        }
+
+        // Generar el nombre del archivo
+        const nombreArchivo = `InformeGráficas_${new Date().toISOString().slice(0, 10)}_${new Date().toLocaleTimeString().replace(/:/g, '-')}.pdf`;
+
+        pdf.save(nombreArchivo);
+    };
+
+
 
     return (
         <MenuPrincipal correoUsuario={correoUsuario} titulo={"MENÚ PRINCIPAL"} subtitulo={"Ingresa rápidamente al contenido en Proofimaster"}>
-            <div className="grid grid-cols-12 grid-rows-6 gap-2 mt-8 px-2 md:px-0">
+            <div className="flex flex-col justify-end items-end space-y-2">
+                <button
+                    onClick={generatePDF}
+                    className="bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-white hover:text-orange-500 group transition duration-300 ease-in-out">
+                    <FontAwesomeIcon
+                        icon={faSquarePollVertical}
+                        className="text-white group-hover:text-orange-500 mx-2 transition duration-300 ease-in-out" />
+                    Generar informe gráficas
+                </button>
 
+                <Link
+                    to="/historial"
+                    className="bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-white hover:text-orange-500 group transition duration-300 ease-in-out">
+                    <FontAwesomeIcon
+                        icon={faClockRotateLeft}
+                        className="text-white group-hover:text-orange-500 mx-2 transition duration-300 ease-in-out" />
+                    Visualizar historial modificaciones
+                </Link>
+            </div>
+
+            <div className="grid grid-cols-12 grid-rows-6 gap-2 mt-8 px-2 md:px-0 grafico">
                 <DatosPrincipales displayedCantidadVentas={displayedCantidadVentas} displayedTotalVentas={displayedTotalVentas} displayedStockValue={displayedStockValue} displayedTotal={displayedTotal} />
-
                 <ProductosDestacados productosPrincipales={productosPrincipales} />
-
                 <AlertasStock productosConAlertas={productosConAlertas} />
-
                 <GraficoStock />
-
                 <GraficoTotalInventario />
-
                 <GraficoStockPorMarca />
-
                 <VentasPorEstado />
-
                 <VentasPorMetodoPago />
-
                 <VentasPorMetodoEnvio />
-
                 <VentasPorCliente />
-
                 <ProductosPorProveedor />
-
                 <VentasPorFecha />
-
                 <Proveedores proveedores={proveedores} />
-
                 <Clientes clientes={clientes} />
-
                 <Documentacion />
-
                 <Configuracion />
             </div>
         </MenuPrincipal>
     );
+
 }
 
 export default BentoGrid;

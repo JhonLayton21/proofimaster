@@ -21,6 +21,7 @@ import './index.css';
 import './credenciales.js';
 import PrivateRoute from './componentes/PrivateRoute.jsx';
 import UpdatePassword from './componentes/UpdatePassword.jsx';
+import HistorialCambios from './componentes/auditoriaCambios/HistorialCambios.jsx';
 
 // IMPORTAR ENRUTAMIENTO
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -62,6 +63,15 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute>
         <Configuracion />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: 'historial',
+    element: (
+      <PrivateRoute>
+        <HistorialCambios />
       </PrivateRoute>
     ),
     errorElement: <ErrorPage />,
