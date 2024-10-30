@@ -3,7 +3,7 @@ import { faCircleUser, faFileLines, faBell, faEnvelope, faGear, faImagePortrait 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { supabase } from '../../../supabase';
 
-const ModalAgregarVenta = ({ isOpen, onClose }) => {
+const ModalAgregarVenta = ({ isOpen, onClose, onSubmit }) => {
     const [newSale, setNewSale] = useState({
         productoId: 0,
         clienteId: 0,
@@ -326,6 +326,8 @@ const ModalAgregarVenta = ({ isOpen, onClose }) => {
                 venta: ventaData,
                 productos: productosFiltrados
             });
+
+            onSubmit({ venta: ventaData[0], productos: productosFiltrados });
     
             // Cierra el modal
             onClose();
@@ -587,7 +589,3 @@ const ModalAgregarVenta = ({ isOpen, onClose }) => {
 };
 
 export default ModalAgregarVenta;
-
-
-
-

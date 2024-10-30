@@ -351,6 +351,9 @@ const Ventas2 = () => {
                 <ModalAgregarVenta
                     isOpen={isAddModalOpen}
                     onClose={() => { setIsAddModalOpen(false); fetchData(); }}
+                    onSubmit={() => {
+                        showAlert('Venta agregada exitosamente', 'add');
+                    }}
                 />
             )}
             {isEditModalOpen && (
@@ -368,4 +371,3 @@ const Ventas2 = () => {
 };
 
 export default Ventas2;
-
