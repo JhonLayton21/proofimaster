@@ -130,9 +130,25 @@ const Login = () => {
           className="h-auto w-auto m-auto object-contain mb-8"
         />
       </div>
+      
 
       {/* Lado derecho con el formulario de inicio de sesión */}
       <div className="dark:bg-[#242424] bg-white lg:col-span-1 p-6 flex flex-col justify-center items-center lg:h-full">
+      <div className="flex justify-end items-center w-full">
+  <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="text-sm">
+      <span className="text-slate-400 font-normal">¿Ya nos conoces? </span>
+      <a 
+        href="https://proofisillas.com/" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="text-orange-600 hover:text-orange-500 font-semibold cursor-pointer"
+      >
+        Haz clic aquí
+      </a>
+    </div>
+  </div>
+</div>
 
         {/* Logo de la empresa */}
         <img
@@ -184,6 +200,7 @@ const Login = () => {
             </div>
           </div>
         </div>
+        
 
         {/* Botón inicio sesión */}
         <div className="!mt-8 w-full">
