@@ -145,9 +145,9 @@ const MetodoEnvioVenta = () => {
                     }}
                     titulo="Agregar Método de Envío"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'metodo', label: 'metodo', type: 'text', placeholder: 'Ingrese el método' },
-                        { name: 'precio', label: 'precio', type: 'text', placeholder: 'Ingrese el precio' }
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'metodo', label: 'Método envío', type: 'text', placeholder: 'Ej: Envío express, estándar', required: true },
+                        { name: 'precio', label: 'Precio método envío (COP)', type: 'text', placeholder: 'Ej: 30000', required: true },
                     ]}
                     endpoint="metodo_envio_venta"
                     disabledFields={['id']}
@@ -163,9 +163,9 @@ const MetodoEnvioVenta = () => {
                     editingItem={editingItem}
                     titulo="Editar Método de Envío"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'metodo', label: 'metodo', type: 'text', placeholder: 'Ingrese el método' },
-                        { name: 'precio', label: 'precio', type: 'text', placeholder: 'Ingrese el precio' }
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'metodo', label: 'Método envío', type: 'text', placeholder: 'Ej: Envío express, estándar', required: true },
+                        { name: 'precio', label: 'Precio método envío (COP)', type: 'text', placeholder: 'Ej: 30000', required: true },
                     ]}
                     initialData={editingItem}
                     onSubmit={(updatedItem) => {

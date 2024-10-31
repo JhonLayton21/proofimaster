@@ -144,8 +144,8 @@ const EstadosVenta = () => {
                     }}
                     titulo="Agregar Estado de Venta"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'estado', label: 'estado', type: 'text', placeholder: 'Ingrese el estado' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'estado', label: 'Estado venta', type: 'text', placeholder: 'Ej: Completado, en progreso', required: true },
                     ]}
                     endpoint="estado_venta"
                     disabledFields={['id']}
@@ -161,8 +161,8 @@ const EstadosVenta = () => {
                     editingItem={editingItem}
                     titulo="Editar Estado de Venta"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'estado', label: 'estado', type: 'text', placeholder: 'Ingrese el estado' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'estado', label: 'Estado venta', type: 'text', placeholder: 'Ej: Completado, en progreso', required: true },
                     ]}
                     initialData={editingItem}
                     onSubmit={(updatedItem) => {

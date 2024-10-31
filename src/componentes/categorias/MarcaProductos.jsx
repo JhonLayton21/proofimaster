@@ -145,8 +145,8 @@ const MarcaProductos = () => {
                     }}
                     titulo="Agregar Marca de Producto"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'nombre', label: 'nombre', type: 'text', placeholder: 'Ingrese el nombre' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'nombre', label: 'Nombre marca', type: 'text', placeholder: 'Ej: Sydney, Barcelona, etc', required: true },
                     ]}
                     endpoint="marcas_productos"
                     disabledFields={['id']}
@@ -162,8 +162,8 @@ const MarcaProductos = () => {
                     editingItem={editingItem}
                     titulo="Editar Marca de Producto"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'nombre', label: 'nombre', type: 'text', placeholder: 'Ingrese el nombre' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'nombre', label: 'Nombre marca', type: 'text', placeholder: 'Ej: Sydney, Barcelona, etc', required: true },
                     ]}
                     initialData={editingItem}
                     disabledFields={['id']}

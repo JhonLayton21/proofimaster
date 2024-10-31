@@ -145,7 +145,7 @@ const ReferenciaProductos = () => {
                     titulo="Agregar Referencia de Producto"
                     campos={[
                         { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'codigo', label: 'codigo', type: 'text', placeholder: 'Ingrese el codigo' },
+                        { name: 'codigo', label: 'Código referencia', type: 'text', placeholder: 'Ej: Silla operativa, gerencial', required: true },
                     ]}
                     endpoint="referencias_productos"
                     disabledFields={['id']}
@@ -162,7 +162,7 @@ const ReferenciaProductos = () => {
                     titulo="Editar Referencia de Producto"
                     campos={[
                         { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'codigo', label: 'codigo', type: 'text', placeholder: 'Ingrese el codigo' },
+                        { name: 'codigo', label: 'Código referencia', type: 'text', placeholder: 'Ej: Silla operativa, gerencial', required: true },
                     ]}
                     initialData={editingItem}
                     onSubmit={(updatedItem) => {

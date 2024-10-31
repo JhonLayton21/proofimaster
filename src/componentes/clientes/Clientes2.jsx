@@ -184,18 +184,20 @@ const Clientes = () => {
                     }}
                     titulo="Agregar Cliente"
                     campos={[
-                        { name: 'id', label: 'Id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'nombre_cliente', label: 'Nombre cliente', type: 'text', placeholder: 'Ingrese el nombre del cliente' },
-                        { name: 'direccion_cliente', label: 'Dirección cliente', type: 'text', placeholder: 'Ingrese la dirección del cliente' },
-                        { name: 'email_cliente', label: 'Email cliente', type: 'email', placeholder: 'Ingrese el correo del cliente' },
-                        { name: 'telefono_cliente', label: 'Teléfono cliente', type: 'text', placeholder: 'Ingrese el teléfono del cliente' },
+                        { name: 'id', label: 'Id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'nombre_cliente', label: 'Nombre cliente', type: 'text', placeholder: 'Ej: Juan Gutierrez', required: true },
+                        { name: 'direccion_cliente', label: 'Dirección cliente', type: 'text', placeholder: 'Ej: Carrera 123, calle 321', required: true },
+                        { name: 'email_cliente', label: 'Email cliente', type: 'email', placeholder: 'Ej: Juanguti@outlook.com', required: true },
+                        { name: 'telefono_cliente', label: 'Teléfono cliente', type: 'text', placeholder: 'Ej: 312789654', required: true },
                         {
                             name: 'tipo_cliente_id',
                             label: 'Tipo cliente',
                             type: 'select',
                             options: tiposClientes.map(tipo => ({ value: tipo.id, label: tipo.tipo })),
-                            placeholder: 'Seleccione el tipo de cliente'
+                            placeholder: 'Seleccione el tipo de cliente',
+                            required: true
                         },
+
                     ]}
                     endpoint="clientes"
                     disabledFields={['id']}
@@ -211,17 +213,18 @@ const Clientes = () => {
                     editingItem={editingItem}
                     titulo="Editar Cliente"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'nombre_cliente', label: 'Nombre cliente', type: 'text', placeholder: 'Ingrese el nombre del cliente' },
-                        { name: 'direccion_cliente', label: 'Dirección cliente', type: 'text', placeholder: 'Ingrese la dirección del cliente' },
-                        { name: 'email_cliente', label: 'Email cliente', type: 'email', placeholder: 'Ingrese el correo del cliente' },
-                        { name: 'telefono_cliente', label: 'Teléfono cliente', type: 'text', placeholder: 'Ingrese el teléfono del cliente' },
+                        { name: 'id', label: 'Id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'nombre_cliente', label: 'Nombre cliente', type: 'text', placeholder: 'Ej: Juan Gutierrez', required: true },
+                        { name: 'direccion_cliente', label: 'Dirección cliente', type: 'text', placeholder: 'Ej: Carrera 123, calle 321', required: true },
+                        { name: 'email_cliente', label: 'Email cliente', type: 'email', placeholder: 'Ej: Juanguti@outlook.com', required: true },
+                        { name: 'telefono_cliente', label: 'Teléfono cliente', type: 'text', placeholder: 'Ej: 312789654', required: true },
                         {
                             name: 'tipo_cliente_id',
                             label: 'Tipo cliente',
                             type: 'select',
                             options: tiposClientes.map(tipo => ({ value: tipo.id, label: tipo.tipo })),
                             placeholder: 'Seleccione el tipo de cliente',
+                            required: true
                         },
                     ]}
                     initialData={editingItem}
