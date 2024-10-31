@@ -188,7 +188,7 @@ const Productos2 = () => {
             unit: 'mm',
             format: 'a4',
         });
-    
+
         // Fecha y hora actual
         const fechaActual = new Date().toLocaleString("es-ES", {
             day: "2-digit",
@@ -199,39 +199,39 @@ const Productos2 = () => {
             second: "2-digit",
             hour12: false,
         });
-    
+
         // Configuración de estilos
         doc.setFont("helvetica");
         doc.setFontSize(20);
         doc.setTextColor(255, 128, 0);
-    
+
         // Título principal
         doc.setFont("helvetica", "bold");
         doc.text(`Factura ${data.nombre} ${new Date().toLocaleDateString()}`, 10, 20);
         doc.setFont("helvetica", "normal");
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
-    
+
         // Secciones de la factura
         doc.text("NOMBRE PRODUCTO", 10, 35);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(0, 0, 0);
         doc.text(`${data.nombre}`, 10, 40);
-        
+
         doc.setFont("helvetica", "bold");
         doc.setTextColor(255, 128, 0);
         doc.text("DESCRIPCIÓN PRODUCTO", 10, 45);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(0, 0, 0);
         doc.text(`${data.descripcion}`, 10, 50);
-        
+
         doc.setFont("helvetica", "bold");
         doc.setTextColor(255, 128, 0);
         doc.text("FECHA ENTRADA PRODUCTO", 10, 55);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(0, 0, 0);
         doc.text(`${data.fecha_entrada}`, 10, 60);
-    
+
         // Información adicional
         doc.setFont("helvetica", "bold");
         doc.setTextColor(255, 128, 0);
@@ -239,7 +239,7 @@ const Productos2 = () => {
         doc.setTextColor(0, 0, 0);
         doc.setFont("helvetica", "normal");
         doc.text(`${data.id}`, 197, 35);
-        
+
         doc.setFont("helvetica", "bold");
         doc.setTextColor(255, 128, 0);
         doc.text("FECHA FACTURA", 120, 45);
@@ -247,32 +247,32 @@ const Productos2 = () => {
         doc.setFont("helvetica", "normal");
         doc.text(`${fechaActual}`, 160, 45);
 
-         // Información de la factura
-         doc.setTextColor(0, 0, 0);
-         doc.setFontSize(12);
-         doc.setFont("helvetica", "bold");
-         doc.setTextColor(255, 128, 0);
-         doc.text("EMPRESA", 10, 75);
-         
-         doc.setFont("helvetica", "bold");
-         doc.setTextColor(255, 128, 0);
-         doc.text("NIT", 10, 85);
-         
-         doc.setFont("helvetica", "bold");
-         doc.setTextColor(255, 128, 0);
-         doc.text("DIRECCIÓN", 10, 95);
-         
-         doc.setFont("helvetica", "bold");
-         doc.setTextColor(255, 128, 0);
-         doc.text("NÚMERO TELEFÓNICO", 10, 105);
-         
-         doc.setFont("helvetica", "normal");
-         doc.setTextColor(0, 0, 0);
-         doc.text("Proofisilas", 10, 80);
-         doc.text("1234567890", 10, 90);
-         doc.text("Calle 48 A No. 28-26 Sur", 10, 100);
-         doc.text("313 345 37 96", 10, 110);
-    
+        // Información de la factura
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(255, 128, 0);
+        doc.text("EMPRESA", 10, 75);
+
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(255, 128, 0);
+        doc.text("NIT", 10, 85);
+
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(255, 128, 0);
+        doc.text("DIRECCIÓN", 10, 95);
+
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(255, 128, 0);
+        doc.text("NÚMERO TELEFÓNICO", 10, 105);
+
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(0, 0, 0);
+        doc.text("Proofisilas", 10, 80);
+        doc.text("1234567890", 10, 90);
+        doc.text("Calle 48 A No. 28-26 Sur", 10, 100);
+        doc.text("313 345 37 96", 10, 110);
+
         // Tabla de productos
         doc.setDrawColor(0, 0, 0);
         doc.setLineWidth(0.5);
@@ -286,10 +286,10 @@ const Productos2 = () => {
         doc.text("TOTAL", 175, 135);
         doc.line(10, 138, 200, 138);
         doc.setFont("helvetica", "normal");
-    
+
         // Ajuste de ancho máximo para columnas
         const maxWidth = 30;
-    
+
         // Obtener y ajustar texto en columnas
         const cantText = doc.splitTextToSize(`${data.stock}`, maxWidth);
         const marcaText = doc.splitTextToSize(`${data.marca}`, maxWidth);
@@ -303,7 +303,7 @@ const Productos2 = () => {
             `${(data.stock * data.precio_compra).toLocaleString("es-ES", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} COP`,
             maxWidth
         );
-    
+
         // Añadir filas de productos
         let y = 145;
         doc.text(cantText, 10, y);
@@ -314,11 +314,11 @@ const Productos2 = () => {
         doc.text(totalText, 175, y);
 
         addFooter(doc);
-    
+
         // Guardar el archivo PDF
         doc.save(`Factura_${data.nombre}.pdf`);
     };
-    
+
 
 
 
@@ -372,42 +372,47 @@ const Productos2 = () => {
                     }}
                     titulo="Agregar producto"
                     campos={[
-                        { name: 'id', label: 'Id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'nombre', label: 'Nombre producto', type: 'text', placeholder: 'Ingrese el nombre del producto' },
-                        { name: 'descripcion', label: 'Descripción', type: 'text', placeholder: 'Ingrese la descripción del producto' },
+                        { name: 'id', label: 'Id', type: 'number', placeholder: 'Identificador automático', required: false },
+                        { name: 'nombre', label: 'Nombre producto', type: 'text', placeholder: 'Ej: Silla ergonómica', required: true },
+                        { name: 'descripcion', label: 'Descripción', type: 'text', placeholder: 'Detalles (material, uso, etc.)', required: false },
                         {
                             name: 'fecha_entrada',
-                            label: 'Fecha de entrada',
+                            label: 'Fecha de entrada producto',
                             type: 'date',
-                            placeholder: 'Seleccione la fecha de entrada del producto',
-                            value: formatDate(editingItem?.fecha_entrada)
+                            placeholder: 'Seleccione la fecha en que ingresó el producto',
+                            value: formatDate(editingItem?.fecha_entrada),
+                            required: true
                         },
                         {
                             name: 'marca_id',
                             label: 'Marca',
                             type: 'select',
                             options: marcasProductos.map(marca => ({ value: marca.id, label: marca.nombre })),
-                            placeholder: 'Seleccione la marca del producto'
+                            placeholder: 'Marca del producto',
+                            required: true
                         },
-                        { name: 'nivel_minimo_stock', label: 'Nivel mínimo de stock', type: 'number', placeholder: 'Ingrese el nivel mínimo de stock' },
-                        { name: 'precio_compra', label: 'Precio de compra', type: 'number', placeholder: 'Ingrese el precio de compra' },
-                        { name: 'precio_venta', label: 'Precio de venta', type: 'number', placeholder: 'Ingrese el precio de venta' },
+                        { name: 'nivel_minimo_stock', label: 'Nivel mínimo de stock', type: 'number', placeholder: 'Ej: 5', required: true },
+                        { name: 'precio_compra', label: 'Precio de compra (COP) (c/u)', type: 'number', placeholder: 'Ej: 30000', required: true },
+                        { name: 'precio_venta', label: 'Precio de venta (COP) (c/u)', type: 'number', placeholder: 'Ej: 65000', required: true },
                         {
                             name: 'proveedor_id',
                             label: 'Proveedor',
                             type: 'select',
                             options: proveedorProductos.map(proveedor => ({ value: proveedor.id, label: proveedor.nombre_proveedor })),
-                            placeholder: 'Seleccione el proveedor del producto'
+                            placeholder: 'Ej: Proveedor ABC S.A.',
+                            required: true
                         },
                         {
                             name: 'referencia_id',
                             label: 'Referencia',
                             type: 'select',
                             options: referenciasProductos.map(referencia => ({ value: referencia.id, label: referencia.codigo })),
-                            placeholder: 'Seleccione la referencia del producto'
+                            placeholder: 'Referencia del producto',
+                            required: true
                         },
-                        { name: 'stock', label: 'Stock', type: 'number', placeholder: 'Ingrese la cantidad en stock' },
+                        { name: 'stock', label: 'Stock', type: 'number', placeholder: 'Ej: 15', required: true }
                     ]}
+
                     endpoint="productos"
                     disabledFields={['id']}
                 />
@@ -422,41 +427,45 @@ const Productos2 = () => {
                     editingItem={editingItem}
                     titulo="Editar producto"
                     campos={[
-                        { name: 'id', label: 'Id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'nombre', label: 'Nombre producto', type: 'text', placeholder: 'Ingrese el nombre del producto' },
-                        { name: 'descripcion', label: 'Descripción', type: 'text', placeholder: 'Ingrese la descripción del producto' },
+                        { name: 'id', label: 'Id', type: 'number', placeholder: 'Identificador automático', required: false },
+                        { name: 'nombre', label: 'Nombre producto', type: 'text', placeholder: 'Ej: Silla ergonómica', required: true },
+                        { name: 'descripcion', label: 'Descripción', type: 'text', placeholder: 'Detalles (material, uso, etc.)', required: false },
                         {
                             name: 'fecha_entrada',
-                            label: 'Fecha de entrada',
+                            label: 'Fecha de entrada producto',
                             type: 'date',
-                            placeholder: 'Seleccione la fecha de entrada del producto',
-                            value: formatDate(editingItem?.fecha_entrada)
+                            placeholder: 'Seleccione la fecha en que ingresó el producto',
+                            value: formatDate(editingItem?.fecha_entrada),
+                            required: true
                         },
                         {
                             name: 'marca_id',
                             label: 'Marca',
                             type: 'select',
                             options: marcasProductos.map(marca => ({ value: marca.id, label: marca.nombre })),
-                            placeholder: 'Seleccione la marca del producto'
+                            placeholder: 'Marca del producto',
+                            required: true
                         },
-                        { name: 'nivel_minimo_stock', label: 'Nivel mínimo de stock', type: 'number', placeholder: 'Ingrese el nivel mínimo de stock' },
-                        { name: 'precio_compra', label: 'Precio de compra', type: 'number', placeholder: 'Ingrese el precio de compra' },
-                        { name: 'precio_venta', label: 'Precio de venta', type: 'number', placeholder: 'Ingrese el precio de venta' },
+                        { name: 'nivel_minimo_stock', label: 'Nivel mínimo de stock', type: 'number', placeholder: 'Ej: 5', required: true },
+                        { name: 'precio_compra', label: 'Precio de compra (COP) (c/u)', type: 'number', placeholder: 'Ej: 30000', required: true },
+                        { name: 'precio_venta', label: 'Precio de venta (COP) (c/u)', type: 'number', placeholder: 'Ej: 65000', required: true },
                         {
                             name: 'proveedor_id',
                             label: 'Proveedor',
                             type: 'select',
                             options: proveedorProductos.map(proveedor => ({ value: proveedor.id, label: proveedor.nombre_proveedor })),
-                            placeholder: 'Seleccione el proveedor del producto'
+                            placeholder: 'Ej: Proveedor ABC S.A.',
+                            required: true
                         },
                         {
                             name: 'referencia_id',
                             label: 'Referencia',
                             type: 'select',
                             options: referenciasProductos.map(referencia => ({ value: referencia.id, label: referencia.codigo })),
-                            placeholder: 'Seleccione la referencia del producto'
+                            placeholder: 'Referencia del producto',
+                            required: true
                         },
-                        { name: 'stock', label: 'Stock', type: 'number', placeholder: 'Ingrese la cantidad en stock' },
+                        { name: 'stock', label: 'Stock', type: 'number', placeholder: 'Ej: 15', required: true }
                     ]}
                     initialData={editingItem}
                     onSubmit={(updatedItem) => {

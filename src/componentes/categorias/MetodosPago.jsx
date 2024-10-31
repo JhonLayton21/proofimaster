@@ -140,8 +140,8 @@ const MetodosPago = () => {
                     }}
                     titulo="Agregar Método de Pago"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'metodo', label: 'metodo', type: 'text', placeholder: 'Ingrese el método' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'metodo', label: 'metodo', type: 'text', placeholder: 'Ej: Crédito, débito, etc', required: true },
                     ]}
                     endpoint="metodo_pago"
                     disabledFields={['id']}
@@ -157,8 +157,8 @@ const MetodosPago = () => {
                     editingItem={editingItem}
                     titulo="Editar Método de Pago"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'metodo', label: 'metodo', type: 'text', placeholder: 'Ingrese el método' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'metodo', label: 'metodo', type: 'text', placeholder: 'Ej: Crédito, débito, etc', required: true },
                     ]}
                     initialData={editingItem}
                     onSubmit={(updatedItem) => {

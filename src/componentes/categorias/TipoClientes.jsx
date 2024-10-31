@@ -146,8 +146,8 @@ const TipoClientes = () => {
                     }}
                     titulo="Agregar Tipo de Cliente"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'tipo', label: 'tipo', type: 'text', placeholder: 'Ingrese el tipo' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'tipo', label: 'Tipo cliente', type: 'text', placeholder: 'Ej: Mayorista, minorista', required: true },
                     ]}
                     endpoint="tipo_clientes"
                     disabledFields={['id']}
@@ -163,8 +163,8 @@ const TipoClientes = () => {
                     editingItem={editingItem}
                     titulo="Editar Tipo de Cliente"
                     campos={[
-                        { name: 'id', label: 'id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'tipo', label: 'tipo', type: 'text', placeholder: 'Ingrese el tipo' },
+                        { name: 'id', label: 'id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'tipo', label: 'Tipo cliente', type: 'text', placeholder: 'Ej: Mayorista, minorista', required: true },
                     ]}
                     initialData={editingItem}
                     onSubmit={(updatedItem) => {

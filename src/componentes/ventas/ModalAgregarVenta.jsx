@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { faCircleUser, faFileLines, faBell, faEnvelope, faGear, faImagePortrait } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { supabase } from '../../../supabase';
@@ -231,6 +231,12 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
     
+        // Verificar si hay productos seleccionados
+        if (Object.keys(productosSeleccionados).length === 0) {
+            alert("No hay productos seleccionados, selecciona mínimo uno");
+            return;
+        }
+    
         // Muestra los productos seleccionados para depuración
         console.log("Productos seleccionados:", productosSeleccionados);
     
@@ -242,11 +248,9 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit }) => {
                 precio: detalles.precio
             }));
     
-        // Muestra los productos filtrados que se insertarán
         console.log("Productos filtrados para la venta:", productosFiltrados);
     
         try {
-            // Muestra los datos de la venta antes de la inserción
             console.log("Datos de la venta a insertar:", {
                 cliente_id: newSale.clienteId,
                 fecha_venta: newSale.fechaVenta,
@@ -259,14 +263,12 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit }) => {
                 total: total,
             });
     
-            // Verificar cantidad de stock antes de procesar la venta
             const stockDisponible = await verificarStockDisponible(productosSeleccionados);
             if (!stockDisponible) {
                 alert("Stock insuficiente para uno o más productos.");
                 return;
             }
     
-            // Inserta la venta en Supabase
             const { data: ventaData, error: ventaError } = await supabase
                 .from('ventas')
                 .insert([{
@@ -296,7 +298,6 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit }) => {
     
             console.log("ID de la venta insertada:", ventaData[0].id);
     
-            // Inserta los productos de la venta en Supabase
             const { error: productosError } = await supabase
                 .from('venta_productos')
                 .insert(productosFiltrados.map(producto => ({
@@ -311,25 +312,21 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit }) => {
                 throw new Error("Error al agregar los productos de la venta");
             }
     
-            // Solo actualiza el stock si el estado de la venta es "Completado"
-            const estadoVentaCompletadoId = 1; // Reemplaza con el ID real de "Completado"
+            const estadoVentaCompletadoId = 1;
             if (parseInt(newSale.estadoVentaId, 10) === estadoVentaCompletadoId) {
-                // Actualizar stock productos
                 await actualizarStockProductos(productosSeleccionados);
                 console.log("Stock de productos actualizado.");
             } else {
                 console.log("La venta no está completada, el stock no se ha actualizado.");
             }
     
-            // Si todo fue exitoso, muestra los datos completos
             console.log("Venta y productos agregados exitosamente:", {
                 venta: ventaData,
                 productos: productosFiltrados
             });
-
+    
             onSubmit({ venta: ventaData[0], productos: productosFiltrados });
     
-            // Cierra el modal
             onClose();
         } catch (err) {
             console.error("Error al agregar la venta:", err);
@@ -337,12 +334,29 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit }) => {
     };
     
 
+    const modalRef = useRef(null); // Referencia para el contenedor del modal
+
+    // Manejar cierre al hacer clic fuera del modal
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (modalRef.current && !modalRef.current.contains(event.target)) {
+                onClose(); // Cierra el modal si el clic es fuera del contenedor del modal
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        // Limpia el event listener cuando el modal se desmonte
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [onClose]);
+    
+
     if (!isOpen) return null;
 
     return (
         <>
             <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none min-h-screen">
-                <div className="relative w-auto my-6 mx-auto max-w-3xl max-h-screen">
+                <div ref={modalRef} className="relative w-auto my-6 mx-auto max-w-3xl max-h-screen">
                     <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none overflow-y-auto">
                         <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t dark:bg-[#242424] bg-[#eeeeee]">
                             <h3 className="text-3xl font-semibold text-[#f97316]">
@@ -362,7 +376,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit }) => {
 
                                 {/* DATOS PRODUCTOS */}
                                 <div className="bg-white rounded-lg p-4 dark:bg-[#292929] flex flex-col">
-                                    <h3 className="text-xl font-semibold text-[#f97316] mb-2">Datos Productos</h3>
+                                    <h3 className="text-xl font-semibold text-[#f97316] mb-2">Datos Productos <span className="text-orange-600">*</span></h3>
                                     <div className="grid grid-cols-1 gap-4">
                                         {productos.map(producto => (
                                             <div key={producto.id} className="flex items-center">
@@ -394,8 +408,8 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit }) => {
 
                                 {/* DATOS CLIENTE */}
                                 <div className="bg-white rounded-lg p-4 dark:bg-[#292929]">
-                                    <h3 className="text-xl font-semibold text-[#f97316] mb-2">Datos Cliente</h3>
-                                    <select className="w-full p-2 my-4 border rounded-md text-[#757575]" onChange={manejarCambioCliente} name="clienteId" value={newSale.cliente_id}>
+                                    <h3 className="text-xl font-semibold text-[#f97316] mb-2">Datos Cliente <span className="text-orange-600">*</span></h3>
+                                    <select className="w-full p-2 my-4 border rounded-md text-[#757575]" required onChange={manejarCambioCliente} name="clienteId" value={newSale.cliente_id}>
                                         <option value="">Seleccione un cliente</option>
                                         {clientes.map(cliente => (
                                             <option key={cliente.id} value={cliente.id}>{cliente.nombre_cliente}</option>
@@ -452,17 +466,18 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit }) => {
                                     <h3 className="text-xl font-semibold text-[#f97316] mb-2">Datos Venta</h3>
                                     <div className="grid grid-cols-1 gap-4">
                                         <div className="flex items-center">
-                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Fecha venta</label>
+                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Fecha venta <span className="text-orange-600">*</span></label>
                                             <input
                                                 name="fechaVenta"
                                                 value={newSale.fecha_venta}
                                                 onChange={handleInputChange}
                                                 type="date"
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
+                                                required
                                             />
                                         </div>
                                         <div className="flex items-center">
-                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Estado de venta</label>
+                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Estado de venta <span className="text-orange-600">*</span></label>
                                             <select
                                                 name="estadoVentaId"
                                                 value={newSale.estadoVentaId}
@@ -479,7 +494,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit }) => {
                                             </select>
                                         </div>
                                         <div className="flex items-center">
-                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Método de pago</label>
+                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Método de pago <span className="text-orange-600">*</span></label>
                                             <select
                                                 name="metodoPagoId"
                                                 onChange={handleInputChange}
@@ -505,6 +520,7 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit }) => {
                                                 min={0}
                                                 max={100}
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
+                                                placeholder="Ej: 50"
                                             />
                                         </div>
                                     </div>
@@ -518,14 +534,14 @@ const ModalAgregarVenta = ({ isOpen, onClose, onSubmit }) => {
                                             <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Nota (si aplica)</label>
                                             <textarea
                                                 name="notaVenta"
-                                                placeholder="Nota Venta"
+                                                placeholder="Detalles (Dirección, hora, etc)"
                                                 value={newSale.nota_venta}
                                                 onChange={handleInputChange}
                                                 className="w-2/3 p-2 border rounded-md bg-gray-200 dark:bg-gray-600 text-[#757575]"
                                             />
                                         </div>
                                         <div className="flex items-center">
-                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Método de envío</label>
+                                            <label className="w-1/3 text-left text-[#757575] dark:text-[#757575]">Método de envío <span className="text-orange-600 flex">*</span></label>
                                             <select
                                                 name="metodoEnvioVentaId"
                                                 onChange={handleInputChange}

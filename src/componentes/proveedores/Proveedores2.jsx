@@ -25,7 +25,7 @@ const Proveedores2 = () => {
     const [totalItems, setTotalItems] = useState(0); // Estado para el total de proveedores
     const itemsPerPage = 3; // Número de elementos por página
 
-    
+
 
     const fetchMetodosPago = async () => {
         try {
@@ -183,18 +183,19 @@ const Proveedores2 = () => {
                     }}
                     titulo="Agregar Proveedor"
                     campos={[
-                        { name: 'id', label: 'Id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'nombre_proveedor', label: 'Nombre proveedor', type: 'text', placeholder: 'Nombre proveedor' },
-                        { name: 'contacto_proveedor', label: 'Contacto proveedor', type: 'text', placeholder: 'Ingrese el contacto del proveedor' },
-                        { name: 'direccion_proveedor', label: 'Dirección proveedor', type: 'text', placeholder: 'Ingrese la dirección del proveedor' },
-                        { name: 'email_proveedor', label: 'Email proveedor', type: 'email', placeholder: 'Ingrese el correo del proveedor' },
-                        { name: 'telefono_proveedor', label: 'Teléfono proveedor', type: 'text', placeholder: 'Ingrese el teléfono del proveedor' },
+                        { name: 'id', label: 'Id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'nombre_proveedor', label: 'Nombre proveedor', type: 'text', placeholder: 'Ej: Proveedor ABC S.A.', required: true },
+                        { name: 'contacto_proveedor', label: 'Contacto proveedor', type: 'text', placeholder: 'Ej: Carlos Gúzman', required: false },
+                        { name: 'direccion_proveedor', label: 'Dirección proveedor', type: 'text', placeholder: 'Ej: Carrera 123, Calle 321', required: false },
+                        { name: 'email_proveedor', label: 'Email proveedor', type: 'email', placeholder: 'Ej: proveedorabc@gmail.com', required: true },
+                        { name: 'telefono_proveedor', label: 'Teléfono proveedor', type: 'text', placeholder: 'Ej: 312789654', required: true },
                         {
                             name: 'metodo_pago_id',
                             label: 'Método pago proveedor',
                             type: 'select',
                             options: metodosPago.map(metodo => ({ value: metodo.id, label: metodo.metodo })),
-                            placeholder: 'Seleccione el método de pago de proveedor'
+                            placeholder: 'Seleccione el método de pago de proveedor',
+                            required: true
                         },
                     ]}
                     endpoint="proveedores"
@@ -211,18 +212,19 @@ const Proveedores2 = () => {
                     editingItem={editingItem}
                     titulo="Editar proveedor"
                     campos={[
-                        { name: 'id', label: 'Id', type: 'number', placeholder: 'Id automático' },
-                        { name: 'nombre_proveedor', label: 'Nombre proveedor', type: 'text', placeholder: 'Nombre proveedor' },
-                        { name: 'contacto_proveedor', label: 'Contacto proveedor', type: 'text', placeholder: 'Ingrese el contacto del proveedor' },
-                        { name: 'direccion_proveedor', label: 'Dirección proveedor', type: 'text', placeholder: 'Ingrese la dirección del proveedor' },
-                        { name: 'email_proveedor', label: 'Email proveedor', type: 'email', placeholder: 'Ingrese el correo del proveedor' },
-                        { name: 'telefono_proveedor', label: 'Teléfono proveedor', type: 'text', placeholder: 'Ingrese el teléfono del proveedor' },
+                        { name: 'id', label: 'Id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'nombre_proveedor', label: 'Nombre proveedor', type: 'text', placeholder: 'Ej: Proveedor ABC S.A.', required: true },
+                        { name: 'contacto_proveedor', label: 'Contacto proveedor', type: 'text', placeholder: 'Ej: Carlos Gúzman', required: false },
+                        { name: 'direccion_proveedor', label: 'Dirección proveedor', type: 'text', placeholder: 'Ej: Carrera 123, Calle 321', required: false },
+                        { name: 'email_proveedor', label: 'Email proveedor', type: 'email', placeholder: 'Ej: proveedorabc@gmail.com', required: true },
+                        { name: 'telefono_proveedor', label: 'Teléfono proveedor', type: 'text', placeholder: 'Ej: 312789654', required: true },
                         {
                             name: 'metodo_pago_id',
                             label: 'Método pago proveedor',
                             type: 'select',
                             options: metodosPago.map(metodo => ({ value: metodo.id, label: metodo.metodo })),
-                            placeholder: 'Seleccione el método de pago de proveedor'
+                            placeholder: 'Seleccione el método de pago de proveedor',
+                            required: true
                         },
                     ]}
                     initialData={editingItem}
