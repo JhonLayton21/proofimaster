@@ -48,9 +48,10 @@ const Clientes = () => {
                 .from('clientes')
                 .select(` 
                     id, 
+                    numero_identificacion,
                     nombre_cliente,
                     direccion_cliente,
-                    email_cliente,
+                    ciudad,
                     telefono_cliente,
                     tipo_clientes( id,tipo )
                 `, { count: 'exact' })
@@ -185,9 +186,10 @@ const Clientes = () => {
                     titulo="Agregar Cliente"
                     campos={[
                         { name: 'id', label: 'Id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'numero_identificacion', label: 'Numero identificación (NIT/CÉDULA)', type: 'text', placeholder: 'Ej: 100.200.300-2', required: true },
                         { name: 'nombre_cliente', label: 'Nombre cliente', type: 'text', placeholder: 'Ej: Juan Gutierrez', required: true },
                         { name: 'direccion_cliente', label: 'Dirección cliente', type: 'text', placeholder: 'Ej: Carrera 123, calle 321', required: true },
-                        { name: 'email_cliente', label: 'Email cliente', type: 'email', placeholder: 'Ej: Juanguti@outlook.com', required: true },
+                        { name: 'ciudad', label: 'Ciudad', type: 'text', placeholder: 'Ej: Bogotá', required: true },
                         { name: 'telefono_cliente', label: 'Teléfono cliente', type: 'text', placeholder: 'Ej: 312789654', required: true },
                         {
                             name: 'tipo_cliente_id',
@@ -197,7 +199,6 @@ const Clientes = () => {
                             placeholder: 'Seleccione el tipo de cliente',
                             required: true
                         },
-
                     ]}
                     endpoint="clientes"
                     disabledFields={['id']}
@@ -214,9 +215,10 @@ const Clientes = () => {
                     titulo="Editar Cliente"
                     campos={[
                         { name: 'id', label: 'Id', type: 'number', placeholder: 'Identificador automático' },
+                        { name: 'numero_identificacion', label: 'Numero identificación (NIT/CÉDULA)', type: 'text', placeholder: 'Ej: 100.200.300-2', required: true },
                         { name: 'nombre_cliente', label: 'Nombre cliente', type: 'text', placeholder: 'Ej: Juan Gutierrez', required: true },
                         { name: 'direccion_cliente', label: 'Dirección cliente', type: 'text', placeholder: 'Ej: Carrera 123, calle 321', required: true },
-                        { name: 'email_cliente', label: 'Email cliente', type: 'email', placeholder: 'Ej: Juanguti@outlook.com', required: true },
+                        { name: 'ciudad', label: 'Ciudad', type: 'text', placeholder: 'Ej: Bogotá', required: true },
                         { name: 'telefono_cliente', label: 'Teléfono cliente', type: 'text', placeholder: 'Ej: 312789654', required: true },
                         {
                             name: 'tipo_cliente_id',
