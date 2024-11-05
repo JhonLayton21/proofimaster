@@ -33,7 +33,7 @@ const Sidebar = ({ isDrawerOpen, closeDrawer, open, handleOpen, isActive }) => {
                         <Link to="/">PROOFIMASTER</Link>
                     </h1>
                     <h2 className="text-left text-[#242424] font-semibold text-base pt-2">Proofisillas LTDA.</h2>
-                    <h3 className="text-left text-[#242424] font-semibold text-base">NIT: 1234567890</h3>
+                    <h3 className="text-left text-[#242424] font-semibold text-base">NIT: 900.255.452-5</h3>
                 </div>
 
                 {/* MENU */}

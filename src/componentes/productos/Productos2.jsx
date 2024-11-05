@@ -269,7 +269,7 @@ const Productos2 = () => {
         doc.setFont("helvetica", "normal");
         doc.setTextColor(0, 0, 0);
         doc.text("Proofisilas", 10, 80);
-        doc.text("1234567890", 10, 90);
+        doc.text("900.255.452-5", 10, 90);
         doc.text("Calle 48 A No. 28-26 Sur", 10, 100);
         doc.text("313 345 37 96", 10, 110);
 
@@ -318,9 +318,6 @@ const Productos2 = () => {
         // Guardar el archivo PDF
         doc.save(`Factura_${data.nombre}.pdf`);
     };
-
-
-
 
     return (
         <div className="grid grid-cols-12 gap-0 h-full overflow-auto">

@@ -36,7 +36,7 @@ export const generatePDFBase = (doc, title, creationDate) => {
     doc.setFontSize(10);
     doc.setTextColor(0);
     doc.text("proofisillas ltda.", 20, 60);
-    doc.text("NIT: 1234567890", 20, 65);
+    doc.text("NIT: 900.255.452-5", 20, 65);
 };
 
 // Definir generateTable
