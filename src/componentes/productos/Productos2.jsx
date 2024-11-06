@@ -83,20 +83,21 @@ const Productos2 = () => {
                     nombre,
                     descripcion,
                     fecha_entrada,
-                    nivel_minimo_stock,
                     precio_compra,
                     precio_venta,
-                    stock,
-                    marcas_productos( id, nombre ),
-                    proveedores( id, nombre_proveedor ),
-                    referencias_productos( id,codigo )
+                    marcas_productos(id, nombre),
+                    proveedores(id, nombre_proveedor),
+                    referencias_productos(id, codigo),
+                    nivel_minimo_stock,
+                    stock
                 `, { count: 'exact' })
+                .order('id', { ascending: false })
                 .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Paginación 
-
+    
             if (error) {
                 throw error;
             }
-
+    
             const referenciasProductos = data.map(({ marcas_productos, proveedores, referencias_productos, ...resto }) => ({
                 ...resto,
                 marca_id: marcas_productos.id,
@@ -106,15 +107,24 @@ const Productos2 = () => {
                 referencia_id: referencias_productos.id,
                 referencia: referencias_productos.codigo
             }));
-
-            setColumnas(Object.keys(referenciasProductos[0]));
+    
+            // Definir el orden de las columnas manualmente
+            const columnasOrdenadas = [
+                'id', 'nombre', 'descripcion', 'fecha_entrada', 
+                'precio_compra', 'precio_venta', 'marca_id', 'marca', 
+                'proveedor_id', 'proveedor', 'referencia_id', 'referencia', 
+                'nivel_minimo_stock', 'stock'
+            ];
+    
+            setColumnas(columnasOrdenadas);
             setDatos(referenciasProductos);
             setTotalItems(count);  // Actualizar total de elementos
-            console.log("PRODUCTOS")
+            console.log("PRODUCTOS");
         } catch (error) {
             console.error('Error al obtener los productos:', error);
         }
     };
+    
 
     // Actualizaciones en tiempo real
     useEffect(() => {
@@ -344,6 +354,7 @@ const Productos2 = () => {
                         onAlert={showAlert}
                         generatePDF={generatePDF}
                         showDownloadButton={true}
+                        semaforoStock={true}
                     />
                     <Paginacion
                         currentPage={currentPage}

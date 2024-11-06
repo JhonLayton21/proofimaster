@@ -16,6 +16,7 @@ const Login = () => {
   const { usuario, rol, loading } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [alerta, setAlerta] = useState({ mostrar: false, mensaje: '', tipo: '' });
 
   // Verificar el estado de carga y los datos del usuario al montar el componente
   useEffect(() => {
@@ -44,31 +45,106 @@ const Login = () => {
   }, [usuario, rol, loading, navigate]);
 
   const handleLogin = async () => {
+    // Validación en el cliente para verificar que todos los campos estén llenos
+    if (!email || !password) {
+      setAlerta({
+        mostrar: true,
+        mensaje: 'Por favor, completa todos los campos.',
+        tipo: 'error'
+      });
+      return; // Detener la ejecución si la validación falla
+    }
+
+    // Validación para evitar espacios en blanco en el email o la contraseña
+    if (/\s/.test(email) || /\s/.test(password)) {
+      setAlerta({
+        mostrar: true,
+        mensaje: 'El correo y la contraseña no deben contener espacios en blanco.',
+        tipo: 'error'
+      });
+      return;
+    }
+
+    // Validación de formato del correo
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setAlerta({
+        mostrar: true,
+        mensaje: 'Por favor, introduce un correo electrónico válido.',
+        tipo: 'error'
+      });
+      return; // Detener la ejecución si la validación falla
+    }
+
+    // Validación de longitud de la contraseña
+    if (password.length < 6) {
+      setAlerta({
+        mostrar: true,
+        mensaje: 'La contraseña debe tener al menos 6 caracteres.',
+        tipo: 'error'
+      });
+      return; // Detener la ejecución si la validación falla
+    }
+
     try {
       console.log('Intentando iniciar sesión con:', { email, password });
-  
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-  
+
       // Verifica si hay un error de la API
       if (error) {
+        let mensajeError = 'Error desconocido durante el inicio de sesión.';
+        if (error.message.includes('Invalid login credentials')) {
+          mensajeError = 'Credenciales de inicio de sesión inválidas.';
+        } else if (error.message.includes('User not confirmed')) {
+          mensajeError = 'Usuario no confirmado. Verifica tu correo electrónico.';
+        } else if (error.message.includes('Email not verified')) {
+          mensajeError = 'Correo electrónico no verificado. Por favor, verifica tu cuenta.';
+        } else if (error.message.includes('Invalid email or password')) {
+          mensajeError = 'Correo electrónico o contraseña incorrectos.';
+        }
+
         console.error('Error de Supabase durante el inicio de sesión:', error);
-        setError(error.message); // Muestra el mensaje de error en el UI
+        setAlerta({
+          mostrar: true,
+          mensaje: mensajeError,
+          tipo: 'error'
+        });
       } else if (data) {
         console.log('Inicio de sesión con éxito:', data);
-        // Aquí puedes redirigir al usuario o realizar alguna acción adicional
+        setAlerta({
+          mostrar: true,
+          mensaje: 'Inicio de sesión exitoso.',
+          tipo: 'exito'
+        });
+        // Redirigir al usuario o realizar alguna acción adicional
+        navigate('/'); // Reemplaza con la ruta deseada
       } else {
         console.warn('No se ha recibido ni error ni datos. Posible fallo desconocido.');
-        setError('No se pudo completar la solicitud. Inténtalo más tarde.');
+        setAlerta({
+          mostrar: true,
+          mensaje: 'No se pudo completar la solicitud. Inténtalo más tarde.',
+          tipo: 'error'
+        });
       }
     } catch (err) {
       console.error('Excepción capturada durante el inicio de sesión:', err);
-      setError('Error inesperado iniciando sesión');
+      setAlerta({
+        mostrar: true,
+        mensaje: 'Error inesperado iniciando sesión.',
+        tipo: 'error'
+      });
+    } finally {
+      // Ocultar la alerta después de 5 segundos
+      setTimeout(() => {
+        setAlerta({ mostrar: false, mensaje: '', tipo: '' });
+      }, 5000);
     }
   };
-  
+
 
   const handleGoogleLogin = async () => {
     try {
@@ -88,12 +164,12 @@ const Login = () => {
       setError('Por favor ingresa un correo electrónico.');
       return;
     }
-  
+
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectTo + 'restablecer-contraseña', // Redirige a una página donde el usuario podrá actualizar su contraseña
       });
-      
+
       if (error) {
         setError('Error al enviar el correo de recuperación: ' + error.message);
       } else {
@@ -103,7 +179,7 @@ const Login = () => {
       setError('Error inesperado al intentar recuperar la contraseña.');
     }
   };
-  
+
 
   // Mostrar spinner mientras `loading` es true
   if (isLoading) {
@@ -130,25 +206,25 @@ const Login = () => {
           className="h-auto w-auto m-auto object-contain mb-8"
         />
       </div>
-      
+
 
       {/* Lado derecho con el formulario de inicio de sesión */}
       <div className="dark:bg-[#242424] bg-white lg:col-span-1 p-6 flex flex-col justify-center items-center lg:h-full">
-      <div className="flex justify-end items-center w-full">
-  <div className="flex flex-wrap items-center justify-between gap-4">
-    <div className="text-sm">
-      <span className="text-slate-400 font-normal">¿Ya nos conoces? </span>
-      <a 
-        href="https://proofisillas.com/" 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="text-orange-600 hover:text-orange-500 font-semibold cursor-pointer"
-      >
-        Haz clic aquí
-      </a>
-    </div>
-  </div>
-</div>
+        <div className="flex justify-end items-center w-full">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="text-sm">
+              <span className="text-slate-400 font-normal">¿Ya nos conoces? </span>
+              <a
+                href="https://proofisillas.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-orange-600 hover:text-orange-500 font-semibold cursor-pointer"
+              >
+                Haz clic aquí
+              </a>
+            </div>
+          </div>
+        </div>
 
         {/* Logo de la empresa */}
         <img
@@ -158,7 +234,12 @@ const Login = () => {
         />
 
         <h3 className="dark:text-white text-[#292929] text-3xl font-extrabold mb-8">Iniciar sesión</h3>
-
+        {/* Alerta */}
+        {alerta.mostrar && (
+          <div className={`p-4 mb-4 text-sm rounded-lg ${alerta.tipo === 'error' ? 'text-red-600 bg-red-100 border-2 border-red-600' : 'text-green-600 bg-green-100 border-2 border-green-600'}`} role="alert">
+            <span className="font-medium">{alerta.tipo === 'error' ? 'Error' : 'Éxito'}:</span> {alerta.mensaje}
+          </div>
+        )}
         {/* Formulario inicio sesión */}
         <div className="space-y-4 w-full">
           <div className="bg-slate-100 dark:bg-[#292929]">
@@ -200,7 +281,7 @@ const Login = () => {
             </div>
           </div>
         </div>
-        
+
 
         {/* Botón inicio sesión */}
         <div className="!mt-8 w-full">
@@ -227,7 +308,7 @@ const Login = () => {
         </div>
 
         {/* Inicio sesión Google */}
-        <div className="space-x-6 flex justify-center p-1 rounded-3xl bg-gradient-to-r from-[#4285F4] via-[#34A853] via-[#FBBC05] to-[#EA4335] bg-clip-border cursor-pointer" onClick={handleGoogleLogin}>
+        <div className="space-x-6 flex justify-center p-1 mb-2 rounded-3xl bg-gradient-to-r from-[#4285F4] via-[#34A853] via-[#FBBC05] to-[#EA4335] bg-clip-border cursor-pointer" onClick={handleGoogleLogin}>
           <div className="p-2 bg-white rounded-3xl">
             <button
               className="border-none outline-none bg-transparent p-0 flex items-center space-x-2"
@@ -241,7 +322,6 @@ const Login = () => {
             </button>
           </div>
         </div>
-        {error && <p>{error}</p>}
       </div>
     </div>
 

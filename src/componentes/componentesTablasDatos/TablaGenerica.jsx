@@ -3,7 +3,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faPlus, faTrashCan, faFileArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { format } from 'date-fns';
 
-const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, generatePDF, onAlert, disableEdit = false, showDownloadButton = false }) => (
+const indicadorStock = (stock, nivel_minimo_stock) => {
+    console.log(`Stock: ${stock}, Nivel mínimo de stock: ${nivel_minimo_stock}`);
+
+    if (stock >= nivel_minimo_stock * 2) {
+        return { color: 'border-2 border-green-500 bg-green-700', message: 'Stock Alto' };
+    }
+    if (stock > nivel_minimo_stock) {
+        return { color: 'border-2 border-yellow-500 bg-yellow-700', message: 'Stock Medio' };
+    }
+    return { color: 'border-2 border-red-500 bg-red-700', message: 'Stock Bajo' };
+};
+
+
+const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, generatePDF, onAlert, disableEdit = false, showDownloadButton = false, semaforoStock = false }) => (
     <div>
         <div className="flex justify-end m-2">
             <button
@@ -23,6 +36,7 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, generatePDF, 
                                 {columna}
                             </th>
                         ))}
+                        {semaforoStock && <th className="px-6 py-3">ESTADO STOCK</th>}
                         <th className="px-6 py-3 text-right">Acciones</th>
                     </tr>
                 </thead>
@@ -41,6 +55,26 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, generatePDF, 
                                     }
                                 </td>
                             ))}
+                            {semaforoStock && (
+                                <td className="px-6 py-4">
+                                    <div className="flex items-center">
+                                        {(() => {
+                                            const { color, message } = indicadorStock(fila.stock, fila.nivel_minimo_stock);
+                                            return (
+                                                <>
+                                                    <button
+                                                        className={` px-2 py-2 shadow-2xl ${color} text-white font-semibold cursor-default pointer-events-none`}
+                                                        disabled
+                                                    >
+                                                        <span className="text-white">{message}</span>
+                                                    </button>
+                                                </>
+                                            );
+                                        })()}
+                                    </div>
+                                </td>
+                            )}
+
                             <td className="px-6 py-4 text-right">
                                 {showDownloadButton && (
                                     <button

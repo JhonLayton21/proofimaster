@@ -55,19 +55,20 @@ const Clientes = () => {
                     telefono_cliente,
                     tipo_clientes( id,tipo )
                 `, { count: 'exact' })
+                .order('id', { ascending: false }) // Ordenar por id en orden descendente
                 .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Paginación
-
+    
             if (error) {
                 throw error;
             }
-
+    
             // Configurar tipo_clientes
             const clientesConTipoCliente = data.map(({ tipo_clientes, ...resto }) => ({
                 ...resto,
                 tipo_cliente_id: tipo_clientes.id,
                 tipo: tipo_clientes.tipo
             }));
-
+    
             setColumnas(Object.keys(clientesConTipoCliente[0] || {}));
             setDatos(clientesConTipoCliente);
             setTotalItems(count);  // Actualizar total de elementos
@@ -75,6 +76,7 @@ const Clientes = () => {
             console.error('Error al obtener los clientes:', error);
         }
     };
+    
 
     // Actualizaciones en tiempo real
     useEffect(() => {

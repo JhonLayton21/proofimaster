@@ -47,6 +47,7 @@ const MetodosPago = () => {
         const { data, error, count } = await supabase
                 .from('metodo_pago')  
                 .select('*', { count: 'exact' })
+                .order('id', { ascending: false })
                 .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Paginación   
 
             if (error) {
