@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import MenuPrincipal from '../MenuPrincipal';
 import { supabase } from '../../../supabase';
-import { getAuth } from 'firebase/auth';
-import appFirebase from '../../credenciales';
-
-const auth = getAuth(appFirebase);
 
 const HistorialCambios = () => {
-    const userEmail = auth.currentUser ? auth.currentUser.email : '';
     const [auditoriaCambios, setAuditoriaCambios] = useState([]);
     const [limit, setLimit] = useState(5); // Estado para el límite de registros
+    const [userEmail, setUserEmail] = useState("");
+
+    // Obtener el correo electrónico del usuario
+    useEffect(() => {
+        const fetchUserEmail = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                setUserEmail(user.email);
+            }
+        };
+        fetchUserEmail();
+    }, []);
 
     const fetchAuditoriaCambios = async (limit) => {
         try {

@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import MenuPrincipal from "../MenuPrincipal";
 import ModalAgregarVenta from "./ModalAgregarVenta";
 import EditarVenta from "./EditarVenta";
-import { getAuth } from 'firebase/auth';
-import appFirebase from '../../credenciales';
 import ModalEditarVenta from "./ModalEditarVenta";
 import TablaGenerica from "../componentesTablasDatos/TablaGenerica";
 import ModalEditar from "../componentesTablasDatos/ModalEditar";
@@ -15,10 +13,7 @@ import Paginacion from '../Busqueda_Filtrado_Paginacion/Paginacion';
 import { jsPDF } from "jspdf";
 import { addFooter } from '../informes/PDFUtils';
 
-const auth = getAuth(appFirebase);
-
 const Ventas2 = () => {
-    const userEmail = auth.currentUser ? auth.currentUser.email : '';
     const [datos, setDatos] = useState([]);
     const [columnas, setColumnas] = useState([]);
     const [alertMessage, setAlertMessage] = useState('');
@@ -28,6 +23,18 @@ const Ventas2 = () => {
     const [currentPage, setCurrentPage] = useState(1);  // Página actual
     const [totalItems, setTotalItems] = useState(0);  // Total de elementos
     const itemsPerPage = 5;  // Número de elementos por página
+    const [userEmail, setUserEmail] = useState("");
+
+    // Obtener el correo electrónico del usuario
+    useEffect(() => {
+        const fetchUserEmail = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                setUserEmail(user.email);
+            }
+        };
+        fetchUserEmail();
+    }, []);
 
     useEffect(() => {
         fetchData();

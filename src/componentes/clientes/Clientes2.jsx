@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import MenuPrincipal from "../MenuPrincipal";
-import { getAuth } from 'firebase/auth';
-import appFirebase from '../../credenciales';
 import TablaGenerica from "../componentesTablasDatos/TablaGenerica";
 import ModalEditar from "../componentesTablasDatos/ModalEditar";
 import ModalAgregar from "../componentesTablasDatos/ModalAgregar";
@@ -10,10 +8,7 @@ import { supabase } from '../../../supabase';
 import SearchBar from '../SearchBar';
 import Paginacion from '../Busqueda_Filtrado_Paginacion/Paginacion';
 
-const auth = getAuth(appFirebase);
-
 const Clientes = () => {
-    const userEmail = auth.currentUser ? auth.currentUser.email : '';
     const [datos, setDatos] = useState([]);
     const [columnas, setColumnas] = useState([]);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -24,7 +19,19 @@ const Clientes = () => {
     const [currentPage, setCurrentPage] = useState(1);  // Página actual
     const [totalItems, setTotalItems] = useState(0);  // Total de elementos
     const itemsPerPage = 5;  // Número de elementos por página
+    const [userEmail, setUserEmail] = useState("");
 
+    // Obtener el correo electrónico del usuario
+    useEffect(() => {
+        const fetchUserEmail = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                setUserEmail(user.email);
+            }
+        };
+        fetchUserEmail();
+    }, []);
+    
     // Fetch de tipos de clientes
     const fetchTipoClientes = async () => {
         try {

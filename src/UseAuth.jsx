@@ -39,34 +39,48 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const verificarSesion = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
+      setLoading(true); // Asegúrate de que el estado "loading" esté activo mientras verificas la sesión
 
-        if (session?.user) {
-          setUsuario(session.user);
-          localStorage.setItem('usuario', JSON.stringify(session.user));
-          await cargarPermisos(session.user.id);
-        } else {
+      // Intentamos recuperar la sesión del localStorage primero
+      const storedUsuario = JSON.parse(localStorage.getItem('usuario'));
+      const storedRol = localStorage.getItem('rol');
+
+      if (storedUsuario) {
+        setUsuario(storedUsuario);
+        setRol(storedRol);
+        await cargarPermisos(storedUsuario.id);
+      } else {
+        // Si no hay sesión en el almacenamiento local, verificamos con Supabase
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+
+          if (session?.user) {
+            setUsuario(session.user);
+            localStorage.setItem('usuario', JSON.stringify(session.user));
+            await cargarPermisos(session.user.id);
+          } else {
+            setUsuario(null);
+            setRol(null);
+            localStorage.removeItem('usuario');
+            localStorage.removeItem('rol');
+          }
+        } catch (error) {
+          console.error("Error al verificar la sesión: ", error);
           setUsuario(null);
           setRol(null);
           localStorage.removeItem('usuario');
           localStorage.removeItem('rol');
         }
-      } catch (error) {
-        console.error("Error al verificar la sesión: ", error);
-        setUsuario(null);
-        setRol(null);
-        localStorage.removeItem('usuario');
-        localStorage.removeItem('rol');
-      } finally {
-        setLoading(false);
       }
+
+      setLoading(false); // Deja de mostrar el cargando
     };
 
     verificarSesion();
 
     const { data: subscription } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setLoading(true);
+
       if (session?.user) {
         setUsuario(session.user);
         localStorage.setItem('usuario', JSON.stringify(session.user));
@@ -77,6 +91,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('usuario');
         localStorage.removeItem('rol');
       }
+
       setLoading(false);
     });
 

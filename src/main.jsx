@@ -18,7 +18,6 @@ import TipoClientes from './componentes/categorias/TipoClientes.jsx';
 import Informes from './componentes/informes/Informes.jsx';
 import SolicitarPermiso from './componentes/SolicitarPermiso.jsx';
 import './index.css';
-import './credenciales.js';
 import PrivateRoute from './componentes/PrivateRoute.jsx';
 import UpdatePassword from './componentes/UpdatePassword.jsx';
 import HistorialCambios from './componentes/auditoriaCambios/HistorialCambios.jsx';

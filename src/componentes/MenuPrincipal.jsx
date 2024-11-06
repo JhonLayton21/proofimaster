@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { getAuth } from 'firebase/auth';
 import Sidebar from './dashboard/Sidebar';
 import Header from './dashboard/Header';
 import MainContent from "./dashboard/MainContent";
-import appFirebase from '../credenciales';
-
-const auth = getAuth(appFirebase);
+import { supabase } from '../../supabase';
 
 const MenuPrincipal = ({ correoUsuario, titulo, subtitulo, children }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -25,10 +22,13 @@ const MenuPrincipal = ({ correoUsuario, titulo, subtitulo, children }) => {
     const [userName, setUserName] = useState("");
 
     useEffect(() => {
-        const user = auth.currentUser;
-        if (user) {
-            setUserName(user.displayName || user.email);
-        }
+        const fetchUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                setUserName(user.user_metadata.full_name || user.email);
+            }
+        };
+        fetchUser();
     }, []);
     
     return (
