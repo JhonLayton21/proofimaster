@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { getFirestore, collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import MenuPrincipal from "../MenuPrincipal";
 import ProductosDestacados from "../bentoComponentes/ProductosDestacados";
 import DatosPrincipales from "../bentoComponentes/DatosPrincipales";
@@ -46,13 +45,6 @@ const BentoGrid = ({ correoUsuario }) => {
     const [usuariosActivos, setUsuariosActivos] = useState([]);
 
     useEffect(() => {
-        const db = getFirestore();
-
-        // Referencias
-        const productosRef = collection(db, 'productos');
-        const proveedoresRef = collection(db, 'proveedores');
-        const clientesRef = collection(db, 'clientes');
-        const ventasRef = collection(db, 'ventas');
 
         // Consulta para productos con alertas
         const fetchProductosStock = async () => {

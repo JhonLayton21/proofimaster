@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import MenuPrincipal from '../MenuPrincipal';
-import { getAuth } from 'firebase/auth';
-import appFirebase from '../../credenciales';
 import GenerarInformesBoton from './GenerarInformesBoton';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable';
@@ -11,8 +9,6 @@ import { faAddressBook, faList, faCartShopping, faChartSimple, faHouse, faMoneyC
 import { supabase } from '../../../supabase';
 import SearchBar from "../SearchBar";
 
-const auth = getAuth(appFirebase);
-
 const Informes = () => {
   const [productos, setProductos] = useState([]);
   const [ventas, setVentas] = useState([]);
@@ -21,6 +17,18 @@ const Informes = () => {
   const [informes, setInformes] = useState([]);
   const [alerta, setAlerta] = useState({ mostrar: false, mensaje: '', tipo: '' });
   const [limit, setLimit] = useState(10); // Estado para el límite de registros
+  const [userEmail, setUserEmail] = useState("");
+
+    // Obtener el correo electrónico del usuario
+    useEffect(() => {
+        const fetchUserEmail = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                setUserEmail(user.email);
+            }
+        };
+        fetchUserEmail();
+    }, []);
 
   const fetchData = async (limit) => {
     try {
@@ -228,8 +236,6 @@ const Informes = () => {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
     return date.toLocaleString('es-ES', options); // Cambia 'es-ES' por tu localización preferida
   };
-
-  const userEmail = auth.currentUser ? auth.currentUser.email : '';
 
   useEffect(() => {
     fetchData(limit);

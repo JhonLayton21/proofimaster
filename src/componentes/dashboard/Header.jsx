@@ -14,11 +14,8 @@ const Header = ({ isDrawerOpen, openDrawer }) => {
     // Fetch del email, nombre y rol del usuario autenticado
     useEffect(() => {
         const fetchUserInfo = async () => {
-            // Obtener el usuario autenticado
-            const {
-                data: { user },
-                error,
-            } = await supabase.auth.getUser();
+            // Obtener el usuario autenticado desde supabase
+            const { data: { user }, error } = await supabase.auth.getUser();
 
             if (error) {
                 console.error("Error al obtener el usuario:", error);
@@ -44,7 +41,42 @@ const Header = ({ isDrawerOpen, openDrawer }) => {
             }
         };
 
+        // Llamada inicial para obtener la información del usuario al cargar el componente
         fetchUserInfo();
+
+        // Suscripción a cambios de estado de la autenticación
+        const authListener = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (session?.user) {
+                // Si hay un usuario autenticado, obtiene los datos
+                setCorreoUsuario(session.user.email);
+                setNombreUsuario(session.user.user_metadata?.name || "Usuario");
+
+                // Obtiene el rol del usuario
+                const { data: rolData, error: rolError } = await supabase
+                    .from('permisos_usuarios')
+                    .select('rol')
+                    .eq('user_id', session.user.id)
+                    .single();
+
+                if (rolError) {
+                    console.error("Error al obtener el rol del usuario:", rolError);
+                } else if (rolData) {
+                    setRolUsuario(rolData.rol);
+                }
+            } else {
+                // Si no hay usuario autenticado, restablece los valores
+                setCorreoUsuario(null);
+                setNombreUsuario(null);
+                setRolUsuario('Cargando...');
+            }
+        });
+
+        // Cleanup del listener cuando el componente se desmonte
+        return () => {
+            if (authListener?.unsubscribe) {
+                authListener.unsubscribe(); // Asegúrate de que unsubscribe sea una función
+            }
+        };
     }, []);
 
     return (
@@ -96,6 +128,8 @@ const Header = ({ isDrawerOpen, openDrawer }) => {
 };
 
 export default Header;
+
+
 
 
 
