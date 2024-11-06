@@ -29,6 +29,7 @@ const EstadosVenta = () => {
         const { data, error, count } = await supabase
                 .from('estado_venta')  
                 .select('*', {count: 'exact' })
+                .order('id', { ascending: false })
                 .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Paginación   
 
             if (error) {

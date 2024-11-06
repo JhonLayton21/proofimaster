@@ -53,6 +53,7 @@ const Ventas2 = () => {
                         productos (nombre)
                     )
                 `, { count: 'exact' })
+                .order('id', { ascending: false })
                 .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Paginación
 
             if (error) {

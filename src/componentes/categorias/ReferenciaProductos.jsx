@@ -29,6 +29,7 @@ const ReferenciaProductos = () => {
         const { data, error, count } = await supabase
                 .from('referencias_productos')  
                 .select('*', { count: 'exact' })
+                .order('id', { ascending: false })
                 .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Paginación  
 
             if (error) {

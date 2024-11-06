@@ -14,8 +14,65 @@ const SignUp = () => {
     const [lastName, setLastName] = useState('');
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const [alerta, setAlerta] = useState({ mostrar: false, mensaje: '', tipo: '' });
 
     const handleSignup = async () => {
+        if (!email || !password || !firstName || !lastName) {
+            setAlerta({
+                mostrar: true,
+                mensaje: 'Error, por favor rellena todos los campos.',
+                tipo: 'error'
+            });
+            return;
+        }
+    
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setAlerta({
+                mostrar: true,
+                mensaje: 'Por favor, introduce un correo electrónico válido.',
+                tipo: 'error'
+            });
+            return;
+        }
+    
+        if (password.length < 6) {
+            setAlerta({
+                mostrar: true,
+                mensaje: 'La contraseña debe tener al menos 6 caracteres.',
+                tipo: 'error'
+            });
+            return;
+        }
+    
+        if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*-_]/.test(password)) {
+            setAlerta({
+                mostrar: true,
+                mensaje: 'La contraseña debe contener al menos una letra mayúscula, una minúscula, un número y un carácter especial.',
+                tipo: 'error'
+            });
+            return;
+        }
+    
+        const nameRegex = /^[a-zA-Z\s]+$/;
+        if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
+            setAlerta({
+                mostrar: true,
+                mensaje: 'El nombre y el apellido solo deben contener letras.',
+                tipo: 'error'
+            });
+            return;
+        }
+
+        if (/\s/.test(email) || /\s/.test(password)) {
+            setAlerta({
+                mostrar: true,
+                mensaje: 'El correo y la contraseña no deben contener espacios en blanco.',
+                tipo: 'error'
+            });
+            return;
+        }        
+    
         try {
             const { data, error } = await supabase.auth.signUp({
                 email,
@@ -29,16 +86,41 @@ const SignUp = () => {
             });
     
             if (error) {
-                setError(error.message);
+                let mensajeError = 'Error desconocido.';
+                if (error.message.includes('Invalid email')) {
+                    mensajeError = 'El correo electrónico no es válido.';
+                } else if (error.message.includes('Password should be at least')) {
+                    mensajeError = 'La contraseña debe tener al menos 6 caracteres.';
+                } else if (error.message.includes('Email already in use')) {
+                    mensajeError = 'El correo electrónico ya está registrado.';
+                }
+    
+                setAlerta({
+                    mostrar: true,
+                    mensaje: mensajeError,
+                    tipo: 'error'
+                });
             } else {
+                setAlerta({
+                    mostrar: true,
+                    mensaje: 'Usuario creado con éxito. Por favor, verifica tu correo electrónico.',
+                    tipo: 'exito'
+                });
                 console.log('Usuario creado con éxito:', data);
                 navigate('/login');
             }
         } catch (err) {
-            setError('Error creando usuario');
+            setAlerta({
+                mostrar: true,
+                mensaje: 'Ocurrió un error al intentar crear la cuenta.',
+                tipo: 'error'
+            });
+        } finally {
+            setTimeout(() => {
+                setAlerta({ mostrar: false, mensaje: '', tipo: '' });
+            }, 5000);
         }
     };
-    
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 h-full overflow-auto">
@@ -54,7 +136,12 @@ const SignUp = () => {
                 />
 
                 <h3 className="dark:text-white text-[#292929] text-3xl font-extrabold mb-8">Crear cuenta</h3>
-
+                {/* Alerta */}
+                {alerta.mostrar && (
+                    <div className={`p-4 mb-4 text-sm rounded-lg ${alerta.tipo === 'error' ? 'text-red-600 bg-red-100 border-2 border-red-600' : 'text-green-600 bg-green-100 border-2 border-green-600'}`} role="alert">
+                        <span className="font-medium">{alerta.tipo === 'error' ? 'Error' : 'Éxito'}:</span> {alerta.mensaje}
+                    </div>
+                )}
                 <div className="space-y-4 w-full">
                     <div className="bg-slate-100 dark:bg-[#292929]">
                         <div className="flex items-center bg-slate-100 dark:bg-[#292929] text-slate-700 dark:text-white w-full rounded-md border-solid border-1 border-slate-500 focus-within:ring focus-within:ring-orange-500">
@@ -129,11 +216,10 @@ const SignUp = () => {
                     </button>
                 </div>
 
-                <div className="text-sm pt-3">
+                <div className="text-sm py-3">
                     <span className="text-slate-400 font-normal">Tienes cuenta? </span>
                     <Link to="/login" className="text-orange-600 hover:text-orange-500 font-semibold">Inicia sesión acá</Link>
                 </div>
-                {error && <p>{error}</p>}
             </div>
 
             {/* Lado derecho vacío, oculto en pantallas pequeñas */}

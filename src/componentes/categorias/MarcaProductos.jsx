@@ -22,13 +22,14 @@ const MarcaProductos = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [currentPage, setCurrentPage] = useState(1);  // Página actual
     const [totalItems, setTotalItems] = useState(0);  // Total de elementos
-    const itemsPerPage = 5;  // Número de elementos por página
+    const itemsPerPage = 10;  // Número de elementos por página
 
     // DATOS MARCA PRODUCTOS
     const fetchData = async () => {
         const { data, error, count } = await supabase
                 .from('marcas_productos')  
                 .select('*', { count: 'exact' })
+                .order('id', { ascending: false })
                 .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Paginación   
 
             if (error) {

@@ -23,7 +23,7 @@ const Proveedores2 = () => {
     const [metodosPago, setMetodosPago] = useState([]);
     const [currentPage, setCurrentPage] = useState(1); // Estado para la página actual
     const [totalItems, setTotalItems] = useState(0); // Estado para el total de proveedores
-    const itemsPerPage = 3; // Número de elementos por página
+    const itemsPerPage = 5; // Número de elementos por página
 
 
 
@@ -56,6 +56,7 @@ const Proveedores2 = () => {
                     telefono_proveedor,
                     metodo_pago (id, metodo)
                 `, { count: 'exact' })
+                .order('id', { ascending: false })
                 .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);
 
             if (error) {
