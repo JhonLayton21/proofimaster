@@ -45,6 +45,11 @@ export const AuthProvider = ({ children }) => {
       const storedUsuario = JSON.parse(localStorage.getItem('usuario'));
       const storedRol = localStorage.getItem('rol');
 
+      console.log("Verificando sesión...");
+      console.log("Usuario desde localStorage:", storedUsuario);
+      console.log("Rol desde localStorage:", storedRol);
+
+
       if (storedUsuario) {
         setUsuario(storedUsuario);
         setRol(storedRol);
@@ -80,6 +85,10 @@ export const AuthProvider = ({ children }) => {
 
     const { data: subscription } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setLoading(true);
+
+      console.log("Evento de cambio de sesión", _event);
+      console.log("Nuevo usuario o sesión", session?.user);
+
 
       if (session?.user) {
         setUsuario(session.user);

@@ -31,13 +31,10 @@ const Ventas2 = () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 setUserEmail(user.email);
+                console.log("user: " + user.email);
             }
         };
         fetchUserEmail();
-    }, []);
-
-    useEffect(() => {
-        fetchData();
     }, []);
 
     // Info base de datos

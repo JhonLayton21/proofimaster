@@ -19,16 +19,16 @@ const Informes = () => {
   const [limit, setLimit] = useState(10); // Estado para el límite de registros
   const [userEmail, setUserEmail] = useState("");
 
-    // Obtener el correo electrónico del usuario
-    useEffect(() => {
-        const fetchUserEmail = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                setUserEmail(user.email);
-            }
-        };
-        fetchUserEmail();
-    }, []);
+  // Obtener el correo electrónico del usuario
+  useEffect(() => {
+    const fetchUserEmail = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserEmail(user.email);
+      }
+    };
+    fetchUserEmail();
+  }, []);
 
   const fetchData = async (limit) => {
     try {
@@ -193,6 +193,10 @@ const Informes = () => {
         mensaje: 'Informe generado y guardado exitosamente. Consulta la tabla de informes.',
         tipo: 'exito'
       });
+
+      // Actualizar los datos sin recargar la página
+    fetchData(limit);
+
     } catch (error) {
       // Alerta de error
       setAlerta({
@@ -206,8 +210,7 @@ const Informes = () => {
         setAlerta({ mostrar: false, mensaje: '', tipo: '' });
       }, 5000);
     }
-};
-
+  };
 
   const handleSearchResults = (resultados) => {
     setInformes(resultados); // Actualizar los datos con los resultados de la búsqueda
@@ -340,14 +343,16 @@ const Informes = () => {
                       {/* Botón de descarga usando la url_archivo */}
                       <a
                         href={informe.url_archivo} // La URL del archivo
-                        download // Atributo para forzar la descarga
+                        download // Forzar la descarga
                         className="text-orange-600 hover:underline m-1 cursor-pointer"
                         target='_blank'
-                        rel="noopener noreferrer" // Add this for security
+                        rel="noopener noreferrer" // Seguridad adicional
+                        onClick={() => window.location.reload()} // Recargar la página al hacer clic
                       >
                         Descargar
                         <FontAwesomeIcon icon={faDownload} className="ml-1" />
                       </a>
+
                     </td>
                   </tr>
                 ))}

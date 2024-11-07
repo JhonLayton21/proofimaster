@@ -79,11 +79,17 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, generatePDF, 
                                 {showDownloadButton && (
                                     <button
                                         className="text-yellow-600 dark:bg-[#242424] m-1 hover:underline"
-                                        onClick={() => generatePDF(fila)}
+                                        onClick={() => {
+                                            generatePDF(fila);  // Genera el PDF
+                                            setTimeout(() => {
+                                                window.location.reload();  // Recarga la página después de un breve retardo
+                                            }, 100);  // Espera 500 ms antes de recargar
+                                        }}
                                     >
                                         Descargar
                                         <FontAwesomeIcon icon={faFileArrowDown} className="ml-1" />
                                     </button>
+
                                 )}
                                 {!disableEdit && (
                                     <button
@@ -107,6 +113,7 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, generatePDF, 
                                     <FontAwesomeIcon icon={faTrashCan} className="ml-1" />
                                 </button>
                             </td>
+
                         </tr>
                     ))}
                 </tbody>
