@@ -9,6 +9,7 @@ export default function MenuCuenta() {
   const [userName, setUserName] = useState("Usuario");
   const [userEmail, setUserEmail] = useState("No disponible");
   const [userRole, setUserRole] = useState("Cargando...");
+  const [mailPlatformUrl, setMailPlatformUrl] = useState("#");
   const navigate = useNavigate();
   const trigger = useRef(null);
   const dropdown = useRef(null);
@@ -16,56 +17,63 @@ export default function MenuCuenta() {
   // Cerrar sesión
   const logout = async () => {
     const { error } = await supabase.auth.signOut();
-
     if (error) {
       console.log(error);
     }
-
     navigate("/login");
   };
 
   // Obtener información del usuario y su rol desde Supabase
   useEffect(() => {
     const fetchUserInfo = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      try {
+        // Obtén el usuario y el rol en paralelo
+        const [{ data: { user }, error: userError }, { data: userRoleData, error: roleError }] = await Promise.all([
+          supabase.auth.getUser(),
+          supabase.from('permisos_usuarios').select('rol').eq('user_id', (await supabase.auth.getUser()).data.user?.id).single()
+        ]);
 
-      if (error) {
-        console.error("Error al obtener el usuario:", error);
-        return;
-      }
+        if (userError) {
+          console.error("Error al obtener el usuario:", userError);
+          return;
+        }
 
-      if (user) {
-        setUserName(user.user_metadata?.name || "Usuario");
-        setUserEmail(user.email || "No disponible");
+        if (user) {
+          setUserName(user.user_metadata?.name || "Usuario");
+          setUserEmail(user.email || "No disponible");
 
-        // Obtener el rol desde la tabla permisos_usuarios
-        const { data: userRoleData, error: roleError } = await supabase
-          .from('permisos_usuarios')
-          .select('rol')
-          .eq('user_id', user.id)
-          .single();
+          // Establece la URL de la plataforma de correo según el dominio del correo electrónico
+          const emailDomain = user.email.split("@")[1];
+          if (emailDomain.includes("gmail") || emailDomain.includes("uniagustiniana")) {
+            setMailPlatformUrl("https://mail.google.com/");
+          } else if (emailDomain.includes("outlook") || emailDomain.includes("hotmail")) {
+            setMailPlatformUrl("https://outlook.live.com/");
+          } else if (emailDomain.includes("yahoo")) {
+            setMailPlatformUrl("https://mail.yahoo.com/");
+          } else {
+            setMailPlatformUrl("#");
+          }
+        }
 
         if (roleError) {
           console.error("Error al obtener el rol:", roleError);
         } else if (userRoleData) {
           setUserRole(userRoleData.rol);
         }
+      } catch (error) {
+        console.error("Error en fetchUserInfo:", error);
       }
     };
 
     fetchUserInfo();
   }, []);
 
+
   // Cerrar el menú desplegable al hacer clic fuera de él
   useEffect(() => {
     const clickHandler = ({ target }) => {
       if (!dropdown.current) return;
-      if (
-        !dropdownOpen ||
-        dropdown.current.contains(target) ||
-        trigger.current.contains(target)
-      )
-        return;
+      if (!dropdownOpen || dropdown.current.contains(target) || trigger.current.contains(target)) return;
       setDropdownOpen(false);
     };
     document.addEventListener("click", clickHandler);
@@ -93,9 +101,7 @@ export default function MenuCuenta() {
               className="mb-3.5 inline-flex shadow-xl h-12 items-center justify-center gap-2 rounded-lg border border-stroke bg-[#ff6f00] text-slate-100 px-6 py-3 text-base font-bold text-dark dark:border-dark-3 dark:bg-dark-2 dark:text-white"
             >
               Mi cuenta
-              <span
-                className={`duration-100 ${dropdownOpen ? "-scale-y-100" : ""}`}
-              >
+              <span className={`duration-100 ${dropdownOpen ? "-scale-y-100" : ""}`}>
                 <svg
                   width="20"
                   height="20"
@@ -122,7 +128,7 @@ export default function MenuCuenta() {
                   <span className="absolute -right-0.5 -top-0.5 block h-3.5 w-3.5 rounded-full border-2 border-white bg-green-500 dark:border-dark"></span>
                 </div>
                 <div className="max-w-[180px] overflow-hidden">
-                  <p className="text-sm font-semibold text-slate-800 text-dark dark:text-white truncate">
+                  <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">
                     {userName}
                   </p>
                   <p className="text-sm text-body-color text-[#757575] dark:text-dark-6 truncate">
@@ -134,21 +140,28 @@ export default function MenuCuenta() {
                 </div>
               </div>
               <div>
-                <Link to="/configuracion"
+                <a
+                  href={mailPlatformUrl}
+                  target="_blank" // Asegura que se abre en una nueva pestaña
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    // Recargar la página después de hacer clic, pero sin interferir con la apertura en nueva ventana
+                    setTimeout(() => {
+                      window.location.reload();  // Recarga la página después de la redirección
+                    }, 100);
+                  }}
                   className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                 >
+                  Ir a mi plataforma de correo
+                  <FontAwesomeIcon icon={faEnvelope} className="text-slate-800 dark:text-slate-50 fa-lg" />
+                </a>
+
+              </div>
+              <div>
+                <Link to="/configuracion" className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">
                   Configuración
                   <FontAwesomeIcon icon={faGear} className="text-slate-800 dark:text-slate-50 fa-lg" />
                 </Link>
-              </div>
-              <div>
-                <a
-                  href="#0"
-                  className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                >
-                  Documentación
-                  <FontAwesomeIcon icon={faFileLines} className="text-slate-800 dark:text-slate-50 fa-lg" />
-                </a>
               </div>
               <div>
                 <button className="flex w-full rounded-none items-center justify-between px-4 py-2.5 text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5" onClick={logout}>
@@ -160,8 +173,5 @@ export default function MenuCuenta() {
         </div>
       </div>
     </section>
-
   );
 }
-
-
