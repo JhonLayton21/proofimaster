@@ -25,9 +25,13 @@ const Login = () => {
     }
   }, [loading]);
 
-  const redirectTo = process.env.NODE_ENV === "development"
-    ? "http://localhost:5173/"
-    : "https://proofimaster.vercel.app/";
+  const redirectTo =
+    process.env.NODE_ENV === "production"
+      ? "https://proofimaster.vercel.app/" // URL de producción
+      : process.env.NODE_ENV === "development"
+        ? "https://pruebas-proofimaster.vercel.app/" // URL de pruebas en Vercel
+        : "http://localhost:5173/"; // URL de entorno local
+
 
   useEffect(() => {
     if (!loading) {

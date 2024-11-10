@@ -1,23 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import MenuPrincipal from '../MenuPrincipal';
 import { supabase } from '../../../supabase';
+import { useAuth } from '../../UseAuth'; // Asumiendo que tienes el hook useAuth
 
 const HistorialCambios = () => {
     const [auditoriaCambios, setAuditoriaCambios] = useState([]);
     const [limit, setLimit] = useState(5); // Estado para el límite de registros
-    const [userEmail, setUserEmail] = useState("");
+    const { usuario } = useAuth(); // Obtiene el usuario desde el contexto de autenticación
+    const userEmail = usuario?.email || ''; // Si el usuario está autenticado, obtenemos el correo, si no, lo dejamos vacío
 
-    // Obtener el correo electrónico del usuario
-    useEffect(() => {
-        const fetchUserEmail = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                setUserEmail(user.email);
-            }
-        };
-        fetchUserEmail();
-    }, []);
-
+    // Función para obtener los datos de auditoría
     const fetchAuditoriaCambios = async (limit) => {
         try {
             const { data, error } = await supabase
@@ -36,6 +28,7 @@ const HistorialCambios = () => {
         }
     };
 
+    // Función para traducir la acción realizada
     const traducirAccion = (accion) => {
         switch (accion) {
             case 'DELETE':
@@ -49,6 +42,7 @@ const HistorialCambios = () => {
         }
     };
 
+    // Función para formatear los datos
     const formatearDatos = (datos) => {
         if (!datos) return null;
         const datosFiltrados = Object.entries(datos).filter(([_, valor]) => valor !== null);
@@ -64,6 +58,7 @@ const HistorialCambios = () => {
         );
     };
 
+    // Obtener los datos de auditoría al cargar el componente y cuando cambie el límite
     useEffect(() => {
         fetchAuditoriaCambios(limit);
 
@@ -136,6 +131,7 @@ const HistorialCambios = () => {
 };
 
 export default HistorialCambios;
+
 
 
 

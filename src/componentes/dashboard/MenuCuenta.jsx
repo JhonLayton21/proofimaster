@@ -3,6 +3,7 @@ import { faCircleUser, faFileLines, faBell, faEnvelope, faGear, faImagePortrait 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from '../../../supabase';
+import { useAuth } from '../../UseAuth';
 
 export default function MenuCuenta() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -13,6 +14,7 @@ export default function MenuCuenta() {
   const navigate = useNavigate();
   const trigger = useRef(null);
   const dropdown = useRef(null);
+  const { usuario, rol, loading } = useAuth();
 
   // Cerrar sesión
   const logout = async () => {
@@ -129,13 +131,13 @@ export default function MenuCuenta() {
                 </div>
                 <div className="max-w-[180px] overflow-hidden">
                   <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">
-                    {userName}
+                    {usuario?.user_metadata?.name || "Usuario"}
                   </p>
                   <p className="text-sm text-body-color text-[#757575] dark:text-dark-6 truncate">
-                    {userEmail}
+                  {usuario?.email || "Cargando..."}
                   </p>
                   <p className="text-sm text-body-color text-[#757575] dark:text-dark-6">
-                    Rol: {userRole}
+                    Rol: {rol || "Cargando..."}
                   </p>
                 </div>
               </div>

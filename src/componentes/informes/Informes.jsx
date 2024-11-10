@@ -346,8 +346,6 @@ const Informes = () => {
                         download // Forzar la descarga
                         className="text-orange-600 hover:underline m-1 cursor-pointer"
                         target='_blank'
-                        rel="noopener noreferrer" // Seguridad adicional
-                        onClick={() => window.location.reload()} // Recargar la página al hacer clic
                       >
                         Descargar
                         <FontAwesomeIcon icon={faDownload} className="ml-1" />

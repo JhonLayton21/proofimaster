@@ -4,87 +4,15 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import MenuCuenta from "./MenuCuenta";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileLines, faImagePortrait, faBell, faWarning } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../../UseAuth'; 
 import { supabase } from '../../../supabase';
 
 const Header = ({ isDrawerOpen, openDrawer }) => {
-    const [correoUsuario, setCorreoUsuario] = useState(null);
-    const [nombreUsuario, setNombreUsuario] = useState(null);
-    const [rolUsuario, setRolUsuario] = useState('Cargando...');
+    const { usuario, rol, loading } = useAuth(); // Obtiene el usuario y rol del contexto
     const [lowStock, setLowStock] = useState(false);
-    const [showAlertList, setShowAlertList] = useState(false); // Estado para la visibilidad de la lista
-    const [lowStockProducts, setLowStockProducts] = useState([]); // Estado para productos con stock bajo
+    const [showAlertList, setShowAlertList] = useState(false);
+    const [lowStockProducts, setLowStockProducts] = useState([]);
     const alertRef = useRef(null);
-
-    // Obtener datos del usuario
-    useEffect(() => {
-        const fetchUserInfo = async () => {
-            try {
-                // Realiza ambas solicitudes en paralelo
-                const [{ data: { user }, error: userError }, { data: userRoleData, error: roleError }] = await Promise.all([
-                    supabase.auth.getUser(),
-                    supabase.from('permisos_usuarios').select('rol').eq('user_id', (await supabase.auth.getUser()).data.user?.id).single()
-                ]);
-    
-                if (userError) {
-                    console.error("Error al obtener el usuario:", userError);
-                    return;
-                }
-    
-                if (user) {
-                    setCorreoUsuario(user.email);
-                    setNombreUsuario(user.user_metadata?.name || "Usuario");
-                }
-    
-                if (roleError) {
-                    console.error("Error al obtener el rol:", roleError);
-                } else if (userRoleData) {
-                    setRolUsuario(userRoleData.rol);
-                }
-            } catch (error) {
-                console.error("Error en fetchUserInfo:", error);
-            }
-        };
-    
-        fetchUserInfo();
-    
-        // Configuración del listener de autenticación
-        const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-            if (session?.user) {
-                try {
-                    // Obtén el usuario y el rol en paralelo
-                    const [{ data: { user }, error: userError }, { data: userRoleData, error: roleError }] = await Promise.all([
-                        Promise.resolve({ data: { user: session.user }, error: null }),  // Usa el usuario de la sesión
-                        supabase.from('permisos_usuarios').select('rol').eq('user_id', session.user.id).single()
-                    ]);
-    
-                    if (userError) {
-                        console.error("Error al obtener el usuario:", userError);
-                        return;
-                    }
-    
-                    setCorreoUsuario(user.email);
-                    setNombreUsuario(user.user_metadata?.name || "Usuario");
-    
-                    if (roleError) {
-                        console.error("Error al obtener el rol:", roleError);
-                    } else if (userRoleData) {
-                        setRolUsuario(userRoleData.rol);
-                    }
-                } catch (error) {
-                    console.error("Error en onAuthStateChange:", error);
-                }
-            } else {
-                // Resetear datos del usuario si no está autenticado
-                setCorreoUsuario(null);
-                setNombreUsuario(null);
-                setRolUsuario('Cargando...');
-            }
-        });
-    
-        // Cleanup para desuscribir el listener
-        return () => authListener?.unsubscribe && authListener.unsubscribe();
-    }, []);
-    
 
     // Verificar stock bajo
     useEffect(() => {
@@ -102,7 +30,7 @@ const Header = ({ isDrawerOpen, openDrawer }) => {
         };
 
         checkLowStock();
-        const interval = setInterval(checkLowStock, 60000); // Revisión cada minuto
+        const interval = setInterval(checkLowStock, 60000);
         return () => clearInterval(interval);
     }, []);
 
@@ -144,7 +72,7 @@ const Header = ({ isDrawerOpen, openDrawer }) => {
             </IconButton>
 
             <div className="text-[#ff6f00] font-bold text-2xl md:text-3xl text-left px-4">
-                <h3>Bienvenido, {nombreUsuario}</h3>
+                <h3>Bienvenido, {usuario?.user_metadata?.name || "Usuario"}</h3>
             </div>
 
             <div className="flex flex-col md:flex-row items-center justify-end space-x-0 md:space-x-8 space-y-4 md:space-y-0 w-full md:w-auto">
@@ -183,10 +111,10 @@ const Header = ({ isDrawerOpen, openDrawer }) => {
                     <FontAwesomeIcon icon={faImagePortrait} className="text-slate-800 dark:text-slate-50 fa-2xl" />
                     <div className="flex-grow pr-4">
                         <p className="text-sm text-slate-800 dark:text-slate-50 font-bold text-left">
-                            {correoUsuario || "Cargando..."}
+                            {usuario?.email || "Cargando..."}
                         </p>
                         <p className="text-sm font-medium text-[#757575] dark:text-[#757575] text-left">
-                            {rolUsuario || "Cargando..."}
+                            {rol || "Cargando..."}
                         </p>
                     </div>
                 </div>
