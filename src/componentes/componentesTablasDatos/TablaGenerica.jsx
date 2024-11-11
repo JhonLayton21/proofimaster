@@ -81,9 +81,6 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, generatePDF, 
                                         className="text-yellow-600 dark:bg-[#242424] m-1 hover:underline"
                                         onClick={() => {
                                             generatePDF(fila);  // Genera el PDF
-                                            setTimeout(() => {
-                                                window.location.reload();  // Recarga la página después de un breve retardo
-                                            }, 100);  // Espera 500 ms antes de recargar
                                         }}
                                     >
                                         Descargar

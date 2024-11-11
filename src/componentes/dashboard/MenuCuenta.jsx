@@ -144,14 +144,6 @@ export default function MenuCuenta() {
               <div>
                 <a
                   href={mailPlatformUrl}
-                  target="_blank" // Asegura que se abre en una nueva pestaña
-                  rel="noopener noreferrer"
-                  onClick={() => {
-                    // Recargar la página después de hacer clic, pero sin interferir con la apertura en nueva ventana
-                    setTimeout(() => {
-                      window.location.reload();  // Recarga la página después de la redirección
-                    }, 100);
-                  }}
                   className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                 >
                   Ir a mi plataforma de correo
