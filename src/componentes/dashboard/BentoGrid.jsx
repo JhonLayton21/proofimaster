@@ -328,13 +328,13 @@ const BentoGrid = ({ correoUsuario }) => {
             pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
         }
 
-        // Generar el nombre del archivo
-        const nombreArchivo = `InformeGráficas_${new Date().toISOString().slice(0, 10)}_${new Date().toLocaleTimeString().replace(/:/g, '-')}.pdf`;
+        // Convertir el PDF a un Blob
+        const pdfBlob = pdf.output('blob');
 
-        pdf.save(nombreArchivo);
+        // Crear un objeto URL para el PDF y abrirlo en la misma pestaña
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        window.location.href = pdfUrl;
     };
-
-
 
     return (
         <MenuPrincipal correoUsuario={correoUsuario} titulo={"MENÚ PRINCIPAL"} subtitulo={"Ingresa rápidamente al contenido en Proofimaster"}>

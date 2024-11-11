@@ -3,6 +3,7 @@ import { faCircleUser, faFileLines, faBell, faEnvelope, faGear, faImagePortrait 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from '../../../supabase';
+import { useAuth } from '../../UseAuth';
 
 export default function MenuCuenta() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -13,6 +14,7 @@ export default function MenuCuenta() {
   const navigate = useNavigate();
   const trigger = useRef(null);
   const dropdown = useRef(null);
+  const { usuario, rol, loading } = useAuth();
 
   // Cerrar sesión
   const logout = async () => {
@@ -129,27 +131,19 @@ export default function MenuCuenta() {
                 </div>
                 <div className="max-w-[180px] overflow-hidden">
                   <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">
-                    {userName}
+                    {usuario?.user_metadata?.name || "Usuario"}
                   </p>
                   <p className="text-sm text-body-color text-[#757575] dark:text-dark-6 truncate">
-                    {userEmail}
+                  {usuario?.email || "Cargando..."}
                   </p>
                   <p className="text-sm text-body-color text-[#757575] dark:text-dark-6">
-                    Rol: {userRole}
+                    Rol: {rol || "Cargando..."}
                   </p>
                 </div>
               </div>
               <div>
                 <a
                   href={mailPlatformUrl}
-                  target="_blank" // Asegura que se abre en una nueva pestaña
-                  rel="noopener noreferrer"
-                  onClick={() => {
-                    // Recargar la página después de hacer clic, pero sin interferir con la apertura en nueva ventana
-                    setTimeout(() => {
-                      window.location.reload();  // Recarga la página después de la redirección
-                    }, 100);
-                  }}
                   className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                 >
                   Ir a mi plataforma de correo

@@ -69,6 +69,8 @@ const Informes = () => {
 
       if (errorInformes) throw errorInformes;
       setInformes(dataInformes);
+
+      console.log("Datos actualizados:", dataInformes);
     } catch (error) {
       console.error('Error mostrando datos:', error);
     }
@@ -183,9 +185,9 @@ const Informes = () => {
 
       if (insertError) throw insertError;
 
-      // Crear un objeto URL para el PDF y abrirlo en una nueva pestaña
+      // Crear un objeto URL para el PDF y abrirlo en la misma pestaña
       const pdfUrl = URL.createObjectURL(pdfBlob);
-      window.open(pdfUrl, '_blank');
+      window.location.href = pdfUrl;
 
       // Alerta de éxito
       setAlerta({
@@ -195,7 +197,7 @@ const Informes = () => {
       });
 
       // Actualizar los datos sin recargar la página
-    fetchData(limit);
+      fetchData(limit);
 
     } catch (error) {
       // Alerta de error
@@ -214,6 +216,7 @@ const Informes = () => {
 
   const handleSearchResults = (resultados) => {
     setInformes(resultados); // Actualizar los datos con los resultados de la búsqueda
+    fetchData(limit);
   };
 
   // Componentes de iconos
@@ -240,13 +243,14 @@ const Informes = () => {
     return date.toLocaleString('es-ES', options); // Cambia 'es-ES' por tu localización preferida
   };
 
+  // Suscripción en tiempo real para actualizaciones automáticas
   useEffect(() => {
     fetchData(limit);
 
     const channel = supabase
       .channel('custom-all-channel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'informes' },
-        (payload) => fetchData(limit)
+        () => fetchData(limit)
       )
       .subscribe();
 
@@ -330,7 +334,7 @@ const Informes = () => {
                   <th className="px-6 py-3">ID informe</th>
                   <th className="px-6 py-3">Nombre informe</th>
                   <th className="px-6 py-3">Fecha creación</th>
-                  <th className="px-6 py-3">Descargar PDF</th> {/* Nueva columna */}
+                  <th className="px-6 py-3">Descargar PDF</th>
                 </tr>
               </thead>
               <tbody>
@@ -340,27 +344,20 @@ const Informes = () => {
                     <td className="px-6 py-4">{informe.nombre}</td>
                     <td className="px-6 py-4">{formatDate(informe.fecha_creacion)}</td>
                     <td className="px-6 py-4">
-                      {/* Botón de descarga usando la url_archivo */}
                       <a
-                        href={informe.url_archivo} // La URL del archivo
-                        download // Forzar la descarga
+                        href={informe.url_archivo}
+                        download
                         className="text-orange-600 hover:underline m-1 cursor-pointer"
-                        target='_blank'
-                        rel="noopener noreferrer" // Seguridad adicional
-                        onClick={() => window.location.reload()} // Recargar la página al hacer clic
                       >
                         Descargar
                         <FontAwesomeIcon icon={faDownload} className="ml-1" />
                       </a>
-
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-
-
         </MenuPrincipal>
       </div>
     </div>

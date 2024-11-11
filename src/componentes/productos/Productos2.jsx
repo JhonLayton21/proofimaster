@@ -332,8 +332,12 @@ const Productos2 = () => {
 
         addFooter(doc);
 
-        // Guardar el archivo PDF
-        doc.save(`Factura_${data.nombre}.pdf`);
+        // Convertir el doc a un Blob
+        const pdfBlob = doc.output('blob');
+
+        // Crear un objeto URL para el PDF y abrirlo en la misma pestaña
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        window.location.href = pdfUrl;
     };
 
     return (
