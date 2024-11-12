@@ -22,7 +22,7 @@ const Ventas2 = () => {
     const [editingItem, setEditingItem] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);  // Página actual
     const [totalItems, setTotalItems] = useState(0);  // Total de elementos
-    const itemsPerPage = 5;  // Número de elementos por página
+    const itemsPerPage = 10;  // Número de elementos por página
     const [userEmail, setUserEmail] = useState("");
 
     // Obtener el correo electrónico del usuario

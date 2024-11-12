@@ -18,7 +18,7 @@ const Proveedores2 = () => {
     const [metodosPago, setMetodosPago] = useState([]);
     const [currentPage, setCurrentPage] = useState(1); // Estado para la página actual
     const [totalItems, setTotalItems] = useState(0); // Estado para el total de proveedores
-    const itemsPerPage = 5; // Número de elementos por página
+    const itemsPerPage = 10; // Número de elementos por página
     const [userEmail, setUserEmail] = useState("");
 
     // Obtener el correo electrónico del usuario
