@@ -144,6 +144,7 @@ export default function MenuCuenta() {
               <div>
                 <a
                   href={mailPlatformUrl}
+                  target="_blank"
                   className="flex w-full items-center justify-between px-4 py-2.5 text-[#757575] text-sm font-medium text-dark hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                 >
                   Ir a mi plataforma de correo

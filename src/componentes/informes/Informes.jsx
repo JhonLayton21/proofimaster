@@ -185,9 +185,9 @@ const Informes = () => {
 
       if (insertError) throw insertError;
 
-      // Crear un objeto URL para el PDF y abrirlo en la misma pestaña
+      // Crear un objeto URL para el PDF y abrirlo en una nueva pestaña
       const pdfUrl = URL.createObjectURL(pdfBlob);
-      window.location.href = pdfUrl;
+      window.open(pdfUrl, '_blank');
 
       // Alerta de éxito
       setAlerta({
@@ -346,6 +346,7 @@ const Informes = () => {
                     <td className="px-6 py-4">
                       <a
                         href={informe.url_archivo}
+                        target='_blank'
                         download
                         className="text-orange-600 hover:underline m-1 cursor-pointer"
                       >

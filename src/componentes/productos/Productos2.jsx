@@ -100,11 +100,11 @@ const Productos2 = () => {
                 `, { count: 'exact' })
                 .order('id', { ascending: false })
                 .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);  // Paginación 
-    
+
             if (error) {
                 throw error;
             }
-    
+
             const referenciasProductos = data.map(({ marcas_productos, proveedores, referencias_productos, ...resto }) => ({
                 ...resto,
                 marca_id: marcas_productos.id,
@@ -114,15 +114,15 @@ const Productos2 = () => {
                 referencia_id: referencias_productos.id,
                 referencia: referencias_productos.codigo
             }));
-    
+
             // Definir el orden de las columnas manualmente
             const columnasOrdenadas = [
-                'id', 'nombre', 'descripcion', 'fecha_entrada', 
-                'precio_compra', 'precio_venta', 'marca_id', 'marca', 
-                'proveedor_id', 'proveedor', 'referencia_id', 'referencia', 
+                'id', 'nombre', 'descripcion', 'fecha_entrada',
+                'precio_compra', 'precio_venta', 'marca_id', 'marca',
+                'proveedor_id', 'proveedor', 'referencia_id', 'referencia',
                 'nivel_minimo_stock', 'stock'
             ];
-    
+
             setColumnas(columnasOrdenadas);
             setDatos(referenciasProductos);
             setTotalItems(count);  // Actualizar total de elementos
@@ -131,7 +131,7 @@ const Productos2 = () => {
             console.error('Error al obtener los productos:', error);
         }
     };
-    
+
 
     // Actualizaciones en tiempo real
     useEffect(() => {
@@ -335,9 +335,9 @@ const Productos2 = () => {
         // Convertir el doc a un Blob
         const pdfBlob = doc.output('blob');
 
-        // Crear un objeto URL para el PDF y abrirlo en la misma pestaña
+        // Crear un objeto URL para el PDF y abrirlo en una nueva pestaña
         const pdfUrl = URL.createObjectURL(pdfBlob);
-        window.location.href = pdfUrl;
+        window.open(pdfUrl, '_blank');
     };
 
     return (

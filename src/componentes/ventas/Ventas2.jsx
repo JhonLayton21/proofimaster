@@ -312,9 +312,9 @@ const Ventas2 = () => {
         // Convertir el doc a un Blob
         const pdfBlob = doc.output('blob');
 
-        // Crear un objeto URL para el PDF y abrirlo en la misma pestaña
+        // Crear un objeto URL para el PDF y abrirlo en una nueva pestaña
         const pdfUrl = URL.createObjectURL(pdfBlob);
-        window.location.href = pdfUrl;
+      window.open(pdfUrl, '_blank');
     };
 
     return (
