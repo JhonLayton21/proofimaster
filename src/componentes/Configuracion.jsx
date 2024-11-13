@@ -36,6 +36,30 @@ export default function Configuracion() {
     }
   };
 
+  // Función para determinar el color del fondo del rol
+  const getRoleBackground = (rol) => {
+    switch (rol) {
+      case 'administrador':
+        return 'bg-orange-500'; // Fondo naranja para administrador
+      case 'usuario básico':
+        return 'bg-yellow-500'; // Fondo amarillo para usuario básico
+      case 'sin permisos':
+        return 'bg-red-500'; // Fondo rojo para sin permisos
+      default:
+        return 'bg-gray-500'; // Fondo gris para caso por defecto
+    }
+  };
+
+  // Ordenar los usuarios según su rol
+  const ordenadoUsuarios = usuarios.sort((a, b) => {
+    const rolesOrden = {
+      administrador: 1,
+      'usuario básico': 2,
+      'sin permisos': 3,
+    };
+    return rolesOrden[a.rol] - rolesOrden[b.rol];
+  });
+
   return (
     <div className="grid grid-cols-12 gap-0 h-screen overflow-hidden">
       {/* MENU LATERAL */}
@@ -58,19 +82,23 @@ export default function Configuracion() {
                     </tr>
                   </thead>
                   <tbody>
-                    {usuarios.map(usuario => (
+                    {ordenadoUsuarios.map(usuario => (
                       <tr
                         key={usuario.user_id}
                         className="bg-white border-b dark:bg-[#292929] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#202020]"
                       >
                         <th
                           scope="row"
-                          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                          className="px-6 py-4 font-semibold"
                         >
                           {usuario.user_id}
                         </th>
-                        <td className="px-6 py-4">{usuario.email}</td>
-                        <td className="px-6 py-4">{usuario.rol}</td>
+                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{usuario.email}</td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-block px-4 py-2 ${getRoleBackground(usuario.rol)} text-black rounded-md`}>
+                            {usuario.rol}
+                          </span>
+                        </td>
                         <td className="px-6 py-4 text-right">
                           <select
                             value={usuario.rol}
@@ -95,10 +123,3 @@ export default function Configuracion() {
     </div>
   );
 }
-
-
-
-
-
-
-
