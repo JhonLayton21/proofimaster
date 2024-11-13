@@ -13,7 +13,6 @@ const Paginacion = ({
 }) => {
   const [data, setData] = useState([]); // Estado para almacenar los datos
   const [nextPageData, setNextPageData] = useState(null); // Estado para almacenar los datos de la siguiente página
-  const [loading, setLoading] = useState(false); // Estado de carga
 
   // Determinar número total de páginas
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -37,7 +36,6 @@ const Paginacion = ({
 
   // Función para obtener los datos desde Supabase
   const fetchData = async (page) => {
-    setLoading(true); // Iniciar estado de carga
     const start = (page - 1) * itemsPerPage;
     const end = start + itemsPerPage - 1;
 
@@ -52,7 +50,6 @@ const Paginacion = ({
       setData(processData(data)); // Procesar los datos con la función pasada como prop
       setTotalItems(count); // Actualizar el número total de elementos
     }
-    setLoading(false); // Finalizar estado de carga
   };
 
   // Función para prefetch de la siguiente página
@@ -87,9 +84,6 @@ const Paginacion = ({
   return (
     <div>
       <div className="flex flex-col items-center p-1">
-        {loading ? (
-          <div>Cargando...</div> // Mostrar loader mientras se cargan los datos
-        ) : (
           <>
             {/* Texto de ayuda visual */}
             <span className="text-sm text-gray-700 dark:text-gray-400">
@@ -105,7 +99,6 @@ const Paginacion = ({
               </button>
             </div>
           </>
-        )}
       </div>
     </div>
   );

@@ -1,49 +1,42 @@
+// PrivateRoute.jsx
 import React from 'react';
 import { useAuth } from '../UseAuth';
 import { Navigate, useLocation } from 'react-router-dom';
 
 const PrivateRoute = ({ children }) => {
-  const { usuario, rol } = useAuth();
-  const location = useLocation(); // Obtiene la ruta actual
+  const { usuario, rol } = useAuth(); // Obtenemos el usuario y el rol desde el contexto
+  const location = useLocation();
 
-  // Si no hay un usuario autenticado
   if (!usuario) {
-    alert("No posees permisos suficientes para acceder, contacta al administrador.");
-    return <Navigate to="/login" />;
+    // Si no hay un usuario autenticado, redirigir a la página de inicio de sesión
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Si el rol no ha sido asignado
-  if (rol === null) {
-    alert("Tu rol no ha sido asignado, por favor inicia sesión de nuevo o contacta al administrador");
-    return <Navigate to="/login" />;
-  }
-
-  // Redireccionar según el rol del usuario
   if (rol === 'administrador') {
-    return children; // Permite acceso completo
+    // Si el rol es administrador, dejar que acceda a la ruta configuracion
+    return children;
   }
 
   if (rol === 'usuario básico') {
-    // Si el usuario básico intenta acceder a 'configuracion'
+    // Si el rol es usuario básico e intenta acceder a /configuracion
     if (location.pathname === '/configuracion') {
-      alert("No posees permisos suficientes para acceder, contacta al administrador.");
-      return <Navigate to="/" />;
+      // Mostrar una alerta
+      window.alert('No tienes permisos para acceder a esta página. Redirigiendo a la página principal.');
+      // Redirigir a la página principal
+      return <Navigate to="/" replace />;
     }
-    return children; // Permite acceso a otras rutas
+    return children;
   }
 
   if (rol === 'sin permisos') {
-    alert("No tienes permisos, por favor contacta al administrador e intenta iniciar sesión de nuevo");
-    return <Navigate to="/login" />;
+    // Si no tiene permisos, redirigir a login
+    return <Navigate to="/login" replace />;
   }
 
-  // En caso de roles no identificados, redirige a login
-  alert("Tu rol no ha sido asignado, por favor contacta al administrador e intenta iniciar sesión de nuevo");
-  return <Navigate to="/login" />;
+  // Si el usuario tiene permisos, renderizar el componente hijo
+  return children;
 };
 
 export default PrivateRoute;
-
-
 
 

@@ -1,19 +1,14 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+// useAuth.jsx
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 
 // Crear el contexto de autenticación
 const AuthContext = createContext();
 
-// Hook que proporciona el contexto de autenticación
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
-
 // Proveedor de autenticación
-export const AuthProvider = ({ children }) => {
-  const [usuario, setUsuario] = useState(JSON.parse(localStorage.getItem('usuario')) || null);
-  const [rol, setRol] = useState(localStorage.getItem('rol') || null);
-  const [loading, setLoading] = useState(true);
+export function AuthProvider({ children }) {
+  const [usuario, setUsuario] = useState(null);
+  const [rol, setRol] = useState(null);
 
   // Función para cargar permisos del usuario
   const cargarPermisos = async (userId) => {
@@ -25,93 +20,48 @@ export const AuthProvider = ({ children }) => {
         .single();
 
       if (permisosError || !permisos) {
-        setRol(null);
-        localStorage.removeItem('rol');
+        setRol(null); // Si no tiene permisos o hay error
       } else {
-        setRol(permisos.rol);
-        localStorage.setItem('rol', permisos.rol);
+        setRol(permisos.rol); // Asignar el rol del usuario
       }
     } catch (error) {
-      setRol(null);
-      localStorage.removeItem('rol');
+      setRol(null); // En caso de error
     }
   };
 
+  // Obtener el estado de la sesión y escuchar cambios en la sesión
   useEffect(() => {
-    const verificarSesion = async () => {
-      setLoading(true); // Asegúrate de que el estado "loading" esté activo mientras verificas la sesión
-
-      // Intentamos recuperar la sesión del localStorage primero
-      const storedUsuario = JSON.parse(localStorage.getItem('usuario'));
-      const storedRol = localStorage.getItem('rol');
-
-      console.log("Verificando sesión...");
-      console.log("Usuario desde localStorage:", storedUsuario);
-      console.log("Rol desde localStorage:", storedRol);
-
-
-      if (storedUsuario) {
-        setUsuario(storedUsuario);
-        setRol(storedRol);
-        await cargarPermisos(storedUsuario.id);
-      } else {
-        // Si no hay sesión en el almacenamiento local, verificamos con Supabase
-        try {
-          const { data: { session } } = await supabase.auth.getSession();
-
-          if (session?.user) {
-            setUsuario(session.user);
-            localStorage.setItem('usuario', JSON.stringify(session.user));
-            await cargarPermisos(session.user.id);
-          } else {
-            setUsuario(null);
-            setRol(null);
-            localStorage.removeItem('usuario');
-            localStorage.removeItem('rol');
-          }
-        } catch (error) {
-          console.error("Error al verificar la sesión: ", error);
-          setUsuario(null);
-          setRol(null);
-          localStorage.removeItem('usuario');
-          localStorage.removeItem('rol');
-        }
-      }
-
-      setLoading(false); // Deja de mostrar el cargando
-    };
-
-    verificarSesion();
-
-    const { data: subscription } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setLoading(true);
-
-      console.log("Evento de cambio de sesión", _event);
-      console.log("Nuevo usuario o sesión", session?.user);
-
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUsuario(session?.user ?? null);
 
       if (session?.user) {
-        setUsuario(session.user);
-        localStorage.setItem('usuario', JSON.stringify(session.user));
-        await cargarPermisos(session.user.id);
-      } else {
-        setUsuario(null);
-        setRol(null);
-        localStorage.removeItem('usuario');
-        localStorage.removeItem('rol');
+        cargarPermisos(session.user.id); // Cargar permisos después de la autenticación
       }
+    };
+    getSession();
 
-      setLoading(false);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUsuario(session?.user ?? null);
+      if (session?.user) {
+        cargarPermisos(session.user.id); // Cargar permisos cuando cambia la sesión
+      }
     });
 
     return () => {
-      subscription?.unsubscribe?.();
+      subscription.unsubscribe();
     };
   }, []);
 
+  // Proveer el contexto a los componentes hijos
   return (
-    <AuthContext.Provider value={{ usuario, rol, loading }}>
+    <AuthContext.Provider value={{ usuario, rol }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
+
+// Hook para acceder al contexto de autenticación
+export function useAuth() {
+  return useContext(AuthContext);
+}
