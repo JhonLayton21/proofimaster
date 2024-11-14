@@ -266,7 +266,7 @@ const Informes = () => {
           correoUsuario={userEmail}
           showTablaProductos={false}
           titulo={"INFORMES"}
-          subtitulo={"Impulsa tu negocio con reportes e informes detallados"}
+          subtitulo={"Descarga y visualiza los informes más importantes"}
         >
           {/* Alerta */}
           {alerta.mostrar && (

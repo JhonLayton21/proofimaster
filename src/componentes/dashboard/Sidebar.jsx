@@ -26,7 +26,7 @@ const Sidebar = ({ isDrawerOpen, closeDrawer, open, handleOpen, isActive }) => {
             >
                 {/* HEADER */}
                 <div className="mb-2 block p-4 border-b border-solid">
-                    <h1 className="text-left text-slate-100 hover:text-orange-800 md:text-xl lg:text-2xl font-bold whitespace-nowrap overflow-hidden">
+                    <h1 className="text-left text-slate-100 hover:text-orange-800 text-sm md:text-xl lg:text-2xl font-bold whitespace-nowrap overflow-hidden">
                         <Link to="/">PROOFIMASTER</Link>
                     </h1>
                     <h2 className="text-left text-[#242424] font-semibold text-base pt-2">Proofisillas LTDA.</h2>

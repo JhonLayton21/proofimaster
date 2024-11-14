@@ -81,7 +81,8 @@ const BentoGrid = ({ correoUsuario }) => {
             const { data, error } = await supabase
                 .from('proveedores')
                 .select('*')
-                .limit(3);
+                .limit(3)
+                .order('id', { ascending: false });
 
             if (error) {
                 console.error("Error mostrando proveedores");
@@ -97,7 +98,8 @@ const BentoGrid = ({ correoUsuario }) => {
             const { data, error } = await supabase
                 .from('clientes')
                 .select('*')
-                .limit(3);
+                .limit(3)
+                .order('id', { ascending: false });
 
             if (error) {
                 console.error("Error mostrando clientes");
@@ -337,7 +339,7 @@ const BentoGrid = ({ correoUsuario }) => {
     };
 
     return (
-        <MenuPrincipal correoUsuario={correoUsuario} titulo={"MENÚ PRINCIPAL"} subtitulo={"Ingresa rápidamente al contenido en Proofimaster"}>
+        <MenuPrincipal correoUsuario={correoUsuario} titulo={"MENÚ PRINCIPAL"} subtitulo={"Ingresa y visualiza rápidamente el contenido en Proofimaster"}>
             <div className="flex flex-col justify-end items-end space-y-2">
                 <button
                     onClick={generatePDF}

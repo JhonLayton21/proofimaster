@@ -100,15 +100,15 @@ const HistorialCambios = () => {
             <div className="col-span-12">
                 <MenuPrincipal
                     titulo="Historial de cambios"
-                    subtitulo="Visualiza los cambios realizados por los distintos miembros"
+                    subtitulo="Visualiza los últimos cambios realizados"
                 >
                     <div className="mb-4">
-                        <label htmlFor="resultLimit" className="mr-2">Mostrar:</label>
+                        <label htmlFor="resultLimit" className="mr-2 text-slate-500">Mostrar:</label>
                         <select
                             id="resultLimit"
                             value={limit}
                             onChange={(e) => setLimit(parseInt(e.target.value))}
-                            className="p-2 border rounded"
+                            className="p-2 border rounded text-slate-500"
                         >
                             <option className="bg-orange-500" value={5}>5 resultados</option>
                             <option className="bg-orange-500" value={10}>10 resultados</option>

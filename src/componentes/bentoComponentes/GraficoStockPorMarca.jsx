@@ -48,32 +48,51 @@ const GraficoStockPorMarca = () => {
     const stockPorMarcaData = Object.values(stockPorMarca);
 
     // Gráfico de torta
-    const data = {
-        labels: nombresMarcas,
-        datasets: [
-            {
-                label: 'Stock',
-                data: stockPorMarcaData,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',
-                ],
-                borderWidth: 1,
-            },
-        ],
-    };
+const data = {
+    labels: nombresMarcas,
+    datasets: [
+        {
+            label: 'Stock',
+            data: stockPorMarcaData,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',   // Rojo claro
+                'rgba(54, 162, 235, 0.2)',   // Azul
+                'rgba(255, 206, 86, 0.2)',   // Amarillo
+                'rgba(75, 192, 192, 0.2)',   // Verde agua
+                'rgba(153, 102, 255, 0.2)',  // Púrpura
+                'rgba(255, 159, 64, 0.2)',   // Naranja
+                'rgba(101, 204, 219, 0.2)',  // Turquesa
+                'rgba(181, 165, 213, 0.2)',  // Lavanda
+                'rgba(231, 233, 237, 0.2)',  // Gris claro
+                'rgba(241, 148, 138, 0.2)',  // Salmón
+                'rgba(174, 214, 241, 0.2)',  // Azul cielo
+                'rgba(120, 144, 156, 0.2)',  // Gris azulado
+                'rgba(244, 208, 63, 0.2)',   // Oro
+                'rgba(123, 239, 178, 0.2)',  // Verde lima
+                'rgba(255, 87, 34, 0.2)'     // Naranja oscuro
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',   // Rojo claro
+                'rgba(54, 162, 235, 1)',   // Azul
+                'rgba(255, 206, 86, 1)',   // Amarillo
+                'rgba(75, 192, 192, 1)',   // Verde agua
+                'rgba(153, 102, 255, 1)',  // Púrpura
+                'rgba(255, 159, 64, 1)',   // Naranja
+                'rgba(101, 204, 219, 1)',  // Turquesa
+                'rgba(181, 165, 213, 1)',  // Lavanda
+                'rgba(231, 233, 237, 1)',  // Gris claro
+                'rgba(241, 148, 138, 1)',  // Salmón
+                'rgba(174, 214, 241, 1)',  // Azul cielo
+                'rgba(120, 144, 156, 1)',  // Gris azulado
+                'rgba(244, 208, 63, 1)',   // Oro
+                'rgba(123, 239, 178, 1)',  // Verde lima
+                'rgba(255, 87, 34, 1)'     // Naranja oscuro
+            ],
+            borderWidth: 1,
+        },
+    ],
+};
+
 
     const options = {
         responsive: true,

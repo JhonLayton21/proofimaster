@@ -43,19 +43,54 @@ const VentasPorCliente = ({ }) => {
     const nombresClientes = Object.keys(ventasClienteConteo);
     const VentasPorCliente = Object.values(ventasClienteConteo);
 
-    //Grafico
-    const data = {
-        labels: nombresClientes,
-        datasets: [
-            {
-                label: 'Compras realizadas',
-                data: VentasPorCliente,
-                backgroundColor: 'rgba(255, 0, 255, 0.2)', // Color de las barras
-                borderColor: 'rgba(255, 0, 255, 1)', // Color de los bordes
-                borderWidth: 1,
-            },
-        ],
-    };
+    // Grafico
+const data = {
+    labels: nombresClientes,
+    datasets: [
+        {
+            label: 'Compras realizadas',
+            data: VentasPorCliente,
+            backgroundColor: [
+                'rgba(255, 0, 255, 0.2)',    // Fucsia
+                'rgba(54, 162, 235, 0.2)',   // Azul claro
+                'rgba(255, 206, 86, 0.2)',   // Amarillo
+                'rgba(75, 192, 192, 0.2)',   // Verde agua
+                'rgba(153, 102, 255, 0.2)',  // Púrpura
+                'rgba(255, 159, 64, 0.2)',   // Naranja
+                'rgba(201, 203, 207, 0.2)',  // Gris claro
+                'rgba(123, 239, 178, 0.2)',  // Verde lima
+                'rgba(255, 99, 132, 0.2)',   // Rojo claro
+                'rgba(174, 214, 241, 0.2)',  // Azul cielo
+                'rgba(181, 165, 213, 0.2)',  // Lavanda
+                'rgba(244, 208, 63, 0.2)',   // Oro
+                'rgba(255, 87, 34, 0.2)',    // Naranja oscuro
+                'rgba(120, 144, 156, 0.2)',  // Gris azulado
+                'rgba(41, 128, 185, 0.2)',   // Azul profundo
+                'rgba(142, 68, 173, 0.2)'    // Morado oscuro
+            ],
+            borderColor: [
+                'rgba(255, 0, 255, 1)',    // Fucsia
+                'rgba(54, 162, 235, 1)',   // Azul claro
+                'rgba(255, 206, 86, 1)',   // Amarillo
+                'rgba(75, 192, 192, 1)',   // Verde agua
+                'rgba(153, 102, 255, 1)',  // Púrpura
+                'rgba(255, 159, 64, 1)',   // Naranja
+                'rgba(201, 203, 207, 1)',  // Gris claro
+                'rgba(123, 239, 178, 1)',  // Verde lima
+                'rgba(255, 99, 132, 1)',   // Rojo claro
+                'rgba(174, 214, 241, 1)',  // Azul cielo
+                'rgba(181, 165, 213, 1)',  // Lavanda
+                'rgba(244, 208, 63, 1)',   // Oro
+                'rgba(255, 87, 34, 1)',    // Naranja oscuro
+                'rgba(120, 144, 156, 1)',  // Gris azulado
+                'rgba(41, 128, 185, 1)',   // Azul profundo
+                'rgba(142, 68, 173, 1)'    // Morado oscuro
+            ],
+            borderWidth: 1,
+        },
+    ],
+};
+
 
     const options = {
         responsive: true,
