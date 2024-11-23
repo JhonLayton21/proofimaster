@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faPlus, faTrashCan, faFileArrowDown, faEye } from "@fortawesome/free-solid-svg-icons";
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 
 const indicadorStock = (stock, nivel_minimo_stock) => {
     console.log(`Stock: ${stock}, Nivel mínimo de stock: ${nivel_minimo_stock}`);
@@ -67,7 +67,7 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, generatePDF, 
                                         {typeof fila[columna] === 'object' && fila[columna] !== null
                                             ? JSON.stringify(fila[columna])
                                             : columna === 'fecha_entrada' || columna === 'fecha_venta'
-                                                ? format(new Date(fila[columna]), 'dd/MM/yyyy')
+                                                ? format(parse(fila[columna], 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy')
                                                 : columna === 'precio_compra' || columna === 'precio_venta' || columna === 'precio' || columna === 'subtotal' || columna === 'total'
                                                     ? `${parseFloat(fila[columna]).toLocaleString('es-CO')} COP`
                                                     : fila[columna]
