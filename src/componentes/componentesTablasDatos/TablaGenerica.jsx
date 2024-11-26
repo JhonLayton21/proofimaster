@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faPlus, faTrashCan, faFileArrowDown, faEye } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faPlus, faTrashCan, faFileArrowDown, faEye, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { format, parse } from 'date-fns';
 
 const indicadorStock = (stock, nivel_minimo_stock) => {
@@ -15,7 +15,7 @@ const indicadorStock = (stock, nivel_minimo_stock) => {
     return { color: 'border-2 border-red-500 bg-red-700', message: 'Stock Bajo' };
 };
 
-const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, generatePDF, onAlert, disableEdit = false, showDownloadButton = false, semaforoStock = false }) => {
+const TablaGenerica = ({ columnas, datos, onEdit, onAdd, onDelete, semaforoStock = false, disableEdit = false, showDownloadButton = false, showEditButton = true, setIsEditModalOpen, setEditingItem, generatePDF, ...props }) => {
     const [isModalOpen, setModalOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
 
@@ -133,7 +133,17 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, generatePDF, 
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
                     <div className="dark:bg-[#292929] bg-white p-6 rounded-lg shadow-lg w-96">
-                        <h2 className="text-2xl font-bold mb-4 text-[#ff6f00]">Detalles</h2>
+                        <div className="flex justify-end">
+                            <button
+                                className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+                                onClick={handleCloseModal}
+                            >
+                                Cerrar
+                                <FontAwesomeIcon icon={faXmark} className="ml-1" />
+                            </button>
+                        </div>
+
+                        <h2 className="text-2xl font-bold my-4 text-[#ff6f00]">Detalles</h2>
                         <div className="space-y-2">
                             {Object.keys(selectedRow).map((key) => (
                                 <div key={key} className="flex justify-between">
@@ -153,12 +163,45 @@ const TablaGenerica = ({ columnas, datos, onAdd, onEdit, onDelete, generatePDF, 
                                 </div>
                             ))}
                         </div>
-                        <button
-                            className="mt-4 px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
-                            onClick={handleCloseModal}
-                        >
-                            Cerrar
-                        </button>
+                        <div className="flex justify-end mt-4 space-x-4">
+                            {showDownloadButton && (
+                                <button
+                                    className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                                    onClick={() => generatePDF(selectedRow)}
+                                >
+                                    Descargar
+                                    <FontAwesomeIcon icon={faFileArrowDown} className="ml-1" />
+                                </button>
+                            )}
+                            {showEditButton && (
+                                <button
+                                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                    onClick={() => {
+                                        setModalOpen(false); // Cierra el modal de visualización
+                                        setEditingItem(selectedRow); // Define el registro como el que se va a editar
+                                        setIsEditModalOpen(true); // Abre el modal de edición
+                                    }}
+                                >
+                                    Editar
+                                    <FontAwesomeIcon icon={faPenToSquare} className="ml-1" />
+                                </button>
+                            )}
+                            <button
+                                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                                onClick={() => {
+                                    const confirmDelete = window.confirm(
+                                        '¿Estás seguro de que deseas eliminar este elemento? Esta acción no se puede deshacer.'
+                                    );
+                                    if (confirmDelete) {
+                                        onDelete(selectedRow.id); // Llama a la función de eliminación
+                                        setModalOpen(false); // Cierra el modal después de la eliminación
+                                    }
+                                }}
+                            >
+                                Eliminar
+                                <FontAwesomeIcon icon={faTrashCan} className="ml-1" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

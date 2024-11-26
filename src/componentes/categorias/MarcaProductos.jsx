@@ -127,6 +127,8 @@ const MarcaProductos = () => {
                         onEdit={handleEdit}
                         onDelete={handleDelete} 
                         onAlert={showAlert}
+                        setIsEditModalOpen={setIsEditModalOpen}
+                        setEditingItem={setEditingItem}
                     />
                     <Paginacion
                         currentPage={currentPage}

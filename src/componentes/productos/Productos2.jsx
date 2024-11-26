@@ -366,6 +366,8 @@ const Productos2 = () => {
                         generatePDF={generatePDF}
                         showDownloadButton={true}
                         semaforoStock={true}
+                        setIsEditModalOpen={setIsEditModalOpen}
+                        setEditingItem={setEditingItem}
                     />
                     <Paginacion
                         currentPage={currentPage}

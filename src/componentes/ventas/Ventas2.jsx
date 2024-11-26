@@ -343,6 +343,9 @@ const Ventas2 = () => {
                         disableEdit={true}
                         generatePDF={generatePDF}
                         showDownloadButton={true}
+                        showEditButton={false}
+                        setIsEditModalOpen={setIsEditModalOpen}
+                        setEditingItem={setEditingItem}
                     />
                     <Paginacion
                         currentPage={currentPage}
